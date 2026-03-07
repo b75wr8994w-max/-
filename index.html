@@ -1,11 +1,1304 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <title>My Phone App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>夜城低語：防禦型執法者 (Ultimate Neo-Taipei)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Orbitron:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;700;900&display=swap');
+        
+        :root {
+            --bg-base: #020617; --panel-bg: rgba(15, 23, 42, 0.85);
+            --gold: #f59e0b; --critical: #10b981; --fail: #e11d48;
+            --neon-blue: #38bdf8; --neon-pink: #f43f5e; --neon-purple: #c084fc;
+            --glass-border: rgba(56, 189, 248, 0.25);
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-base); color: #e2e8f0;
+            margin: 0; height: 100vh; overflow: hidden; user-select: none; -webkit-touch-callout: none;
+            background-image: linear-gradient(rgba(2, 6, 23, 0.88), rgba(2, 6, 23, 0.98)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1080&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+        }
+
+        .cyber-title { font-family: 'Orbitron', 'Noto Sans TC', sans-serif; text-transform: uppercase; letter-spacing: 1.5px; }
+        .story-text { font-family: 'Noto Serif TC', serif; line-height: 1.9; text-shadow: 0 2px 5px rgba(0,0,0,0.9); font-size: 1.05rem; }
+        
+        .scrollable::-webkit-scrollbar { display: none; } .scrollable { -ms-overflow-style: none; scrollbar-width: none; }
+        .thin-scroll::-webkit-scrollbar { width: 3px; } .thin-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.4); } .thin-scroll::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 2px; }
+
+        .glass {
+            background: var(--panel-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 0 15px rgba(56,189,248,0.05);
+        }
+
+        .neon-text-blue { text-shadow: 0 0 5px var(--neon-blue), 0 0 15px var(--neon-blue); }
+        .neon-text-pink { text-shadow: 0 0 5px var(--neon-pink), 0 0 15px var(--neon-pink); }
+        
+        .btn-interact { transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+        .btn-interact:active { transform: scale(0.96); filter: brightness(1.3); }
+        .btn-interact::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); transition: 0.4s; }
+        .btn-interact:hover::before { left: 100%; }
+
+        .pulse-glow { animation: pulseGlow 3s infinite; }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 10px rgba(192, 132, 252, 0.2); } 50% { box-shadow: 0 0 40px rgba(192, 132, 252, 0.7); } 100% { box-shadow: 0 0 10px rgba(192, 132, 252, 0.2); } }
+
+        #dice-container { perspective: 1000px; }
+        .dice {
+            width: 120px; height: 120px; background: radial-gradient(circle, #0f172a 0%, #020617 100%);
+            border: 2px solid var(--neon-blue); border-radius: 20px; display: flex; justify-content: center; align-items: center;
+            font-size: 4.5rem; font-weight: 900; color: var(--neon-blue); font-family: 'Orbitron', sans-serif;
+            box-shadow: 0 0 30px rgba(56,189,248, 0.4), inset 0 0 20px rgba(0,0,0,0.9); transform-style: preserve-3d;
+        }
+        @keyframes rollDice { 0% { transform: rotateX(0deg) rotateY(0deg) scale(0.5); opacity: 0; } 50% { transform: rotateX(720deg) rotateY(360deg) scale(1.2); opacity: 1; } 100% { transform: rotateX(1080deg) rotateY(720deg) scale(1); } }
+        .rolling { animation: rollDice 1s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
+        .crit-success { color: var(--critical) !important; border-color: var(--critical) !important; box-shadow: 0 0 40px var(--critical) !important; }
+        .crit-fail { color: var(--fail) !important; border-color: var(--fail) !important; box-shadow: 0 0 40px var(--fail) !important; }
+
+        .fade-in { animation: fadeIn 0.3s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom Modal Styles */
+        #custom-modal-overlay { backdrop-filter: blur(8px); }
+        .cyber-modal { background: rgba(15, 23, 42, 0.95); border: 1px solid var(--neon-blue); box-shadow: 0 0 30px rgba(56,189,248, 0.3), inset 0 0 15px rgba(0,0,0,0.8); }
+
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; width: 90%; max-width: 400px;}
+        .toast { background: rgba(2, 6, 23, 0.95); border-left: 4px solid var(--neon-blue); color: #f8fafc; padding: 12px 16px; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.8); font-size: 13px; font-weight: bold; animation: toastIn 0.3s, toastOut 0.3s 3.7s forwards; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+        .scanlines { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 3px 100%; z-index: 900; pointer-events: none; opacity: 0.15; }
+    </style>
 </head>
-<body>
-  <h1>📱 iPhone App 跑起來了</h1>
-  <button onclick="alert('成功執行')">點我</button>
+<body class="flex justify-center antialiased">
+
+<div class="scanlines"></div>
+<div id="toast-container"></div>
+
+<!-- Custom System Modal -->
+<div id="custom-modal-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center p-4">
+    <div class="cyber-modal w-full max-w-sm rounded-xl p-6 flex flex-col fade-in">
+        <h2 id="modal-title" class="text-xl font-black text-neon-blue cyber-title mb-2">SYSTEM ALERT</h2>
+        <div id="modal-msg" class="text-sm text-slate-300 font-serif leading-relaxed mb-6 whitespace-pre-wrap">Message</div>
+        <input type="text" id="modal-input" class="hidden w-full bg-slate-900 border border-slate-700 rounded p-3 text-white mb-6 focus:border-neon-blue outline-none" placeholder="輸入資料...">
+        <div class="flex gap-3 mt-auto" id="modal-btn-group">
+            <button id="modal-btn-cancel" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-lg font-bold border border-slate-600 btn-interact">CANCEL</button>
+            <button id="modal-btn-confirm" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-lg font-bold shadow-[0_0_15px_rgba(56,189,248,0.4)] btn-interact cyber-title">CONFIRM</button>
+        </div>
+    </div>
+</div>
+
+<div id="app" class="w-full max-w-md h-full relative flex flex-col bg-slate-900/80 shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden border-x border-slate-800">
+
+    <!-- =========================================================
+         HUD (夜城戰術顯示器)
+         ========================================================= -->
+    <header class="glass z-30 px-4 py-3 shrink-0 flex flex-col gap-2 border-b border-blue-900/60 shadow-lg relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent pointer-events-none"></div>
+        <div class="flex justify-between items-start relative z-10">
+            <div class="flex items-center gap-3">
+                <div class="w-14 h-14 bg-gradient-to-br from-slate-800 to-black rounded-full border-2 border-blue-500/50 flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(56,189,248,0.3)] relative">
+                    🕵️
+                    <div id="ui-partner-icon" class="absolute -bottom-1 -right-2 w-7 h-7 bg-slate-900 rounded-full border border-pink-500 flex items-center justify-center text-[12px] shadow-[0_0_10px_rgba(244,63,94,0.5)] hidden"></div>
+                </div>
+                <div>
+                    <div class="text-[10px] text-blue-400 font-bold tracking-widest cyber-title mb-0.5">NCPD ID: <span id="ui-exam-name" class="text-slate-300">Loading</span></div>
+                    <div class="text-[13px] font-black text-white drop-shadow-md leading-tight tracking-wider" id="ui-rank">警佐三階三級</div>
+                    <div class="text-[10px] text-gold font-bold mt-0.5 cyber-title">LEVEL <span id="ui-lv">1</span></div>
+                </div>
+            </div>
+            <div class="text-right">
+                <div class="text-[10px] text-slate-400 font-bold tracking-widest mb-0.5 cyber-title">CREDITS</div>
+                <div class="text-lg font-black text-amber-400 drop-shadow"><i class="fa-brands fa-bitcoin text-sm mr-1"></i><span id="ui-gold">0</span></div>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-2 mt-1 relative z-10">
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-[9px] font-bold tracking-wider"><span class="text-rose-500">HP (精神)</span><span id="ui-hp">100</span></div>
+                <div class="h-1.5 bg-slate-800 rounded overflow-hidden border border-slate-700"><div id="bar-hp" class="h-full bg-gradient-to-r from-rose-700 to-rose-400 transition-all" style="width: 100%"></div></div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-[9px] font-bold tracking-wider"><span class="text-blue-400">SP (體力)</span><span id="ui-sp">50</span></div>
+                <div class="h-1.5 bg-slate-800 rounded overflow-hidden border border-slate-700"><div id="bar-sp" class="h-full bg-gradient-to-r from-blue-700 to-blue-400 transition-all" style="width: 100%"></div></div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between text-[9px] font-bold tracking-wider"><span class="text-amber-400">EXP (歷練)</span><span id="ui-exp">0%</span></div>
+                <div class="h-1.5 bg-slate-800 rounded overflow-hidden border border-slate-700"><div id="bar-exp" class="h-full bg-gradient-to-r from-amber-700 to-amber-400 transition-all" style="width: 0%"></div></div>
+            </div>
+        </div>
+        
+        <!-- 道德/聲望系統 -->
+        <div class="w-full flex items-center gap-2 mt-1 relative z-10">
+            <span class="text-[8px] text-slate-500 font-bold w-8 text-right">秩序</span>
+            <div class="flex-1 h-1 bg-slate-800 rounded flex overflow-hidden relative border border-slate-700">
+                <div id="bar-align-law" class="h-full bg-blue-500 absolute left-1/2 -translate-x-full transition-all" style="width: 0%"></div>
+                <div id="bar-align-chaos" class="h-full bg-rose-500 absolute left-1/2 transition-all" style="width: 0%"></div>
+                <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-white/50"></div>
+            </div>
+            <span class="text-[8px] text-slate-500 font-bold w-8">街頭</span>
+        </div>
+    </header>
+
+    <!-- =========================================================
+         MAIN CONTENT VIEWS
+         ========================================================= -->
+    <main class="flex-1 relative z-10 overflow-hidden bg-black/30" id="main-content">
+        
+        <!-- [1] 巡邏與潛行 (Patrol) -->
+        <section id="view-map" class="h-full scrollable overflow-y-auto p-4 space-y-5 fade-in">
+            
+            <!-- Focus Protocol -->
+            <div class="glass p-5 rounded-xl border border-purple-500/30 relative overflow-hidden text-center shadow-[0_0_20px_rgba(192,132,252,0.1)]">
+                <div class="absolute inset-0 bg-purple-900/10 pointer-events-none"></div>
+                <i class="fa-solid fa-brain absolute -right-2 -top-2 text-7xl text-purple-500/10"></i>
+                <h3 class="text-lg font-black text-purple-400 cyber-title mb-1 relative z-10">NEURAL FOCUS PROTOCOL</h3>
+                <p class="text-[10px] text-slate-300 font-serif mb-4 relative z-10">真實世界精神連結。設定時間閱讀實體法規，完成後獲取巨額資源。</p>
+                
+                <div class="grid grid-cols-3 gap-2 relative z-10">
+                    <button class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg py-2 text-xs font-bold text-white btn-interact" onclick="FOCUS.start(25)">25 分鐘<br><span class="text-[9px] text-amber-400">日常特訓</span></button>
+                    <button class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg py-2 text-xs font-bold text-white btn-interact" onclick="FOCUS.start(50)">50 分鐘<br><span class="text-[9px] text-amber-400">深度潛航</span></button>
+                    <button class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg py-2 text-xs font-bold text-white btn-interact" onclick="FOCUS.start(90)">90 分鐘<br><span class="text-[9px] text-amber-400">極限超頻</span></button>
+                </div>
+            </div>
+
+            <!-- 私人記憶庫 -->
+            <div class="glass p-4 rounded-xl border border-green-900/50 relative overflow-hidden btn-interact cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:shadow-[0_0_25px_rgba(16,185,129,0.3)]" onclick="EVENT_UI.startCustomQuiz()">
+                <div class="absolute inset-0 bg-green-900/10 pointer-events-none"></div>
+                <i class="fa-solid fa-database absolute -right-2 -bottom-2 text-6xl text-green-500/10"></i>
+                <div class="relative z-10 flex justify-between items-center">
+                    <div>
+                        <div class="font-black text-green-400 text-base mb-1 cyber-title">MEMORY RETRIEVAL</div>
+                        <div class="text-[10px] text-slate-300 font-serif">抽取一題你寫入的「私人筆記」進行檢定。</div>
+                    </div>
+                    <span class="text-[10px] text-green-400 bg-green-900/30 px-2 py-1 rounded font-bold border border-green-800 shadow-inner">消耗 5 SP</span>
+                </div>
+            </div>
+
+            <!-- 擴展：五大夜城區域 (TRPG) -->
+            <div>
+                <div class="flex justify-between items-center px-1 mb-2">
+                    <span class="text-xs font-bold text-slate-300 cyber-title"><i class="fa-solid fa-map mr-1 text-blue-400"></i> DISTRICT ENCOUNTERS</span>
+                    <span class="text-[10px] text-rose-400 bg-rose-900/30 border border-rose-900/50 px-2 py-0.5 rounded font-bold">⚠️ 消耗 15 SP</span>
+                </div>
+                <div class="grid grid-cols-1 gap-3">
+                    <div class="glass p-4 rounded-xl border-l-4 border-blue-500 hover:border-blue-400 btn-interact cursor-pointer flex justify-between items-center" onclick="EVENT_UI.startTRPG('ncpd')">
+                        <div>
+                            <div class="font-black text-blue-100 text-[15px] cyber-title">NCPD 總局 / 企業廣場</div>
+                            <div class="text-[10px] text-slate-400 mt-1 font-serif">遭遇：行政程序、警察法規、高層施壓。</div>
+                        </div>
+                        <i class="fa-solid fa-building-shield text-2xl text-blue-500/50"></i>
+                    </div>
+                    <div class="glass p-4 rounded-xl border-l-4 border-rose-500 hover:border-rose-400 btn-interact cursor-pointer flex justify-between items-center" onclick="EVENT_UI.startTRPG('slums')">
+                        <div>
+                            <div class="font-black text-rose-100 text-[15px] cyber-title">霓虹貧民窟 / 暗巷</div>
+                            <div class="text-[10px] text-slate-400 mt-1 font-serif">遭遇：暴力犯罪、刑法防衛、道德抉擇。</div>
+                        </div>
+                        <i class="fa-solid fa-skull text-2xl text-rose-500/50"></i>
+                    </div>
+                    <div class="glass p-4 rounded-xl border-l-4 border-purple-500 hover:border-purple-400 btn-interact cursor-pointer flex justify-between items-center" onclick="EVENT_UI.startTRPG('crime')">
+                        <div>
+                            <div class="font-black text-purple-100 text-[15px] cyber-title">封鎖線 / 重大刑案現場</div>
+                            <div class="text-[10px] text-slate-400 mt-1 font-serif">遭遇：刑事訴訟法、毒樹果實、證據保全。</div>
+                        </div>
+                        <i class="fa-solid fa-tape text-2xl text-purple-500/50"></i>
+                    </div>
+                    <div class="glass p-4 rounded-xl border-l-4 border-teal-500 hover:border-teal-400 btn-interact cursor-pointer flex justify-between items-center" onclick="EVENT_UI.startTRPG('cyber')">
+                        <div>
+                            <div class="font-black text-teal-100 text-[15px] cyber-title">深網神經駭入 (Cyberspace)</div>
+                            <div class="text-[10px] text-slate-400 mt-1 font-serif">遭遇：網路犯罪、加密貨幣追蹤、英文檢定。</div>
+                        </div>
+                        <i class="fa-solid fa-network-wired text-2xl text-teal-500/50"></i>
+                    </div>
+                    <div class="glass p-4 rounded-xl border-l-4 border-amber-500 hover:border-amber-400 btn-interact cursor-pointer flex justify-between items-center" onclick="EVENT_UI.startTRPG('exam')">
+                        <div>
+                            <div class="font-black text-amber-100 text-[15px] cyber-title">2028 升官等特訓艙</div>
+                            <div class="text-[10px] text-slate-400 mt-1 font-serif">遭遇：國文與憲法、法學知識的極限測驗。</div>
+                        </div>
+                        <i class="fa-solid fa-graduation-cap text-2xl text-amber-500/50"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h-24"></div>
+        </section>
+
+        <!-- [2] 夥伴與羈絆 (Social) -->
+        <section id="view-social" class="h-full scrollable overflow-y-auto p-4 space-y-4 hidden fade-in">
+            <div class="text-center mt-2 mb-4">
+                <h2 class="text-2xl font-black text-pink-500 tracking-widest drop-shadow-lg cyber-title neon-text-pink">CONNECTIONS</h2>
+                <p class="text-[10px] text-slate-400 mt-1 font-serif">防禦型社交：劇情唯一。日常閒聊將大量消耗 SP，請善用禮物。</p>
+            </div>
+            <div id="companion-list" class="space-y-3"></div>
+            <div class="h-24"></div>
+        </section>
+
+        <!-- [3] 黑市與裝備 (Black Market) -->
+        <section id="view-base" class="h-full scrollable overflow-y-auto p-4 space-y-4 hidden fade-in">
+            <div class="glass p-4 rounded-xl border border-amber-900/30">
+                <div class="flex justify-between items-center border-b border-slate-700 pb-2 mb-3">
+                    <h2 class="text-lg font-black text-amber-400 cyber-title"><i class="fa-solid fa-shop mr-2"></i>BLACK MARKET</h2>
+                    <span class="text-[10px] text-slate-400">加密幣交易區</span>
+                </div>
+                <div class="flex gap-3 mb-3 text-[11px] font-bold text-slate-500 border-b border-slate-800 pb-1">
+                    <button class="shop-tab active transition-colors hover:text-amber-300" onclick="BASE.renderShop('consume', this)">消耗補給</button>
+                    <button class="shop-tab transition-colors hover:text-amber-300" onclick="BASE.renderShop('gift', this)">私販禮物</button>
+                    <button class="shop-tab transition-colors hover:text-amber-300" onclick="BASE.renderShop('gear', this)">神經裝備</button>
+                </div>
+                <div id="shop-list" class="grid grid-cols-2 gap-3 thin-scroll max-h-[350px] overflow-y-auto pr-1 pb-1"></div>
+            </div>
+
+            <div class="glass p-4 rounded-xl border-t-4 border-blue-600">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-black text-white cyber-title"><i class="fa-solid fa-suitcase text-blue-400 mr-2"></i>INVENTORY</h3>
+                    <span class="text-[10px] text-blue-300 bg-blue-900/30 px-2 py-0.5 rounded font-bold border border-blue-800" id="inv-count">0/50</span>
+                </div>
+                <div id="inventory-list" class="grid grid-cols-4 gap-2 min-h-[80px] thin-scroll max-h-[250px] overflow-y-auto pr-1 pb-2"></div>
+            </div>
+            <div class="h-24"></div>
+        </section>
+
+        <!-- [4] 系統與資料庫 (System & DB) -->
+        <section id="view-system" class="h-full scrollable overflow-y-auto p-4 space-y-4 hidden fade-in">
+            
+            <!-- 神經潛行時數統計 -->
+            <div class="glass p-4 rounded-xl border border-purple-900/50 relative overflow-hidden bg-purple-900/10">
+                <i class="fa-solid fa-hourglass-half absolute -right-2 -bottom-2 text-6xl text-purple-500/20"></i>
+                <h3 class="font-black text-purple-400 mb-1 cyber-title"><i class="fa-solid fa-clock mr-2"></i>FOCUS TIME LOG</h3>
+                <p class="text-[10px] text-slate-300 font-serif mb-2">你在現實中累積的防禦型實力總和：</p>
+                <div class="text-3xl font-black text-white neon-text-purple tracking-widest"><span id="ui-total-focus">0</span> <span class="text-sm text-purple-300">MINS</span></div>
+            </div>
+
+            <!-- 私人筆記輸入 -->
+            <div class="glass p-4 rounded-xl border border-green-900/30">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-black text-white cyber-title"><i class="fa-solid fa-database text-green-400 mr-2"></i>CUSTOM DATABANK</h3>
+                    <span class="text-[10px] bg-green-900/30 text-green-300 border border-green-800 px-2 py-1 rounded font-bold" id="custom-q-count">收錄: 0 筆</span>
+                </div>
+                <p class="text-[10px] text-slate-400 font-serif mb-3">在此輸入你實體書的錯題。這將成為你在夜城中抽取的專屬試煉。</p>
+                <div class="flex gap-2 mb-2">
+                    <input type="text" id="cq-sub" placeholder="科目(如:行政法)" class="w-1/2 bg-slate-900 border border-slate-700 rounded p-2.5 text-sm text-white focus:border-green-500 outline-none">
+                    <select id="cq-type" class="w-1/2 bg-slate-900 border border-slate-700 rounded p-2.5 text-sm text-white outline-none focus:border-green-500">
+                        <option value="mcq">判斷題模式</option>
+                        <option value="essay">申論/背誦模式</option>
+                    </select>
+                </div>
+                <textarea id="cq-q" placeholder="題目內容或情境描述..." class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-sm text-white mb-2 h-16 thin-scroll focus:border-green-500 outline-none"></textarea>
+                <textarea id="cq-a" placeholder="解答/關鍵字/法條內容..." class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-sm text-white mb-3 h-16 thin-scroll focus:border-green-500 outline-none"></textarea>
+                <button class="w-full bg-gradient-to-r from-green-700 to-emerald-700 hover:from-green-600 hover:to-emerald-600 text-white font-black py-3 rounded-lg text-sm btn-interact shadow-lg cyber-title" onclick="CUSTOM_DB.add()">寫入神經網絡</button>
+            </div>
+
+            <!-- 切換目標與專業 -->
+            <div class="glass p-4 rounded-xl">
+                <h3 class="font-black text-white mb-2 cyber-title border-b border-slate-700 pb-2"><i class="fa-solid fa-crosshairs text-red-400 mr-2"></i>MISSION TARGET</h3>
+                <select id="exam-selector" class="w-full bg-slate-900 text-blue-100 border border-slate-700 rounded-lg p-2.5 text-sm font-bold outline-none focus:border-blue-500 mb-2" onchange="CORE.changeExam()">
+                    <option value="erji">116.05 行政二技</option>
+                    <option value="zuoer">117.11 警佐二類</option>
+                    <option value="sheng">118.03 警察升官等</option>
+                </select>
+                <div class="text-right text-[10px] text-amber-400 font-bold mb-4" id="sys-target-countdown">距離考核：--- 天</div>
+                
+                <h3 class="font-black text-white border-b border-slate-700 pb-2 mb-3 cyber-title"><i class="fa-solid fa-network-wired text-blue-400 mr-2"></i>MASTERY</h3>
+                <div id="mastery-list" class="space-y-3"></div>
+            </div>
+
+            <!-- 存檔管理 -->
+            <div class="glass p-4 rounded-xl bg-slate-800/60">
+                <h3 class="font-black text-white mb-3 cyber-title"><i class="fa-solid fa-cloud-arrow-down text-blue-400 mr-2"></i>CLOUD SYNC</h3>
+                <div class="flex gap-2 mb-2">
+                    <button class="flex-1 bg-blue-700/80 hover:bg-blue-600 text-white py-2.5 rounded-lg text-xs font-bold btn-interact border border-blue-500/50" onclick="CORE.exportSave()"><i class="fa-solid fa-copy mr-1"></i>匯出記憶</button>
+                    <button class="flex-1 bg-amber-700/80 hover:bg-amber-600 text-white py-2.5 rounded-lg text-xs font-bold btn-interact border border-amber-500/50" onclick="MODAL.showPrompt('匯入記憶', '請貼上你的記憶代碼：', (str) => CORE.importSave(str))"><i class="fa-solid fa-paste mr-1"></i>匯入記憶</button>
+                </div>
+                <button class="w-full bg-red-900/40 hover:bg-red-800 text-red-300 py-2.5 rounded-lg text-xs font-bold border border-red-800/50 btn-interact mt-2" onclick="MODAL.showConfirm('警告', '這將徹底消除你在夜城的所有記憶與進度，且無法復原。確定執行格式化？', () => { localStorage.clear(); location.reload(); })">格式化記憶體 (重置)</button>
+            </div>
+            <div class="h-24"></div>
+        </section>
+    </main>
+
+    <!-- =========================================================
+         OVERLAYS & SPECIAL UI
+         ========================================================= -->
+
+    <!-- Focus Timer Overlay (番茄鐘) -->
+    <div id="overlay-focus" class="absolute inset-0 z-[60] bg-slate-950 hidden flex-col items-center justify-center backdrop-blur-xl">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1080&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-screen"></div>
+        <div class="relative z-10 flex flex-col items-center text-center p-6 w-full max-w-sm">
+            <h2 class="text-3xl font-black text-purple-400 cyber-title mb-2 neon-text-pink">DEEP DIVE</h2>
+            <p class="text-sm text-slate-300 font-serif mb-8">防禦型學習，時間是你最大的籌碼。<br>請放下裝置，閱讀實體法規。</p>
+            
+            <div class="w-48 h-48 rounded-full border-4 border-purple-500/30 flex items-center justify-center mb-8 pulse-glow relative bg-slate-900 shadow-inner">
+                <div class="absolute inset-2 rounded-full border border-dashed border-purple-400 animate-[spin_10s_linear_infinite]"></div>
+                <span class="text-5xl font-black text-white cyber-title drop-shadow-[0_0_10px_rgba(192,132,252,0.8)]" id="focus-timer">25:00</span>
+            </div>
+            <button class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-600 py-3 rounded-xl font-bold btn-interact" onclick="FOCUS.cancel()">中斷連線 (放棄獎勵)</button>
+        </div>
+    </div>
+
+    <!-- 送禮 Modal -->
+    <div id="modal-gift" class="absolute inset-0 z-50 bg-black/80 hidden flex-col items-center justify-center p-4 backdrop-blur-md">
+        <div class="glass w-full max-w-sm rounded-2xl p-6 relative border border-pink-500/40 shadow-[0_0_30px_rgba(244,63,94,0.3)]">
+            <button class="absolute top-4 right-4 text-slate-400 hover:text-white btn-interact" onclick="SOCIAL.closeGiftModal()"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-black text-pink-400 mb-1 border-b border-slate-700 pb-2 cyber-title">SEND GIFT</h3>
+            <p class="text-[10px] text-slate-300 mb-4 font-serif">選擇背包內的禮物。送出專屬喜好物品將產生共鳴。</p>
+            <div id="gift-modal-list" class="grid grid-cols-3 gap-3 max-h-[300px] overflow-y-auto thin-scroll pr-2 pb-2"></div>
+        </div>
+    </div>
+
+    <!-- TRPG 事件 & 答題 Overlay -->
+    <div id="overlay-event" class="absolute inset-0 z-40 bg-slate-950/98 hidden flex-col backdrop-blur-md">
+        <div class="px-5 py-4 border-b border-rose-900/50 flex justify-between items-center bg-slate-900 shrink-0 shadow-lg">
+            <div>
+                <span class="text-[10px] text-rose-500 font-bold tracking-widest uppercase cyber-title" id="ev-type">NIGHT CITY INCIDENT</span>
+                <h2 class="text-xl font-black text-white drop-shadow" id="ev-title">突發事件</h2>
+            </div>
+            <button class="w-9 h-9 rounded-full bg-slate-800 border border-slate-600 text-slate-400 flex items-center justify-center btn-interact hover:text-white hover:border-red-500" onclick="EVENT_UI.close()"><i class="fa-solid fa-person-running"></i></button>
+        </div>
+        <div class="flex-1 p-5 overflow-y-auto scrollable flex flex-col relative pb-10">
+            <div class="story-text text-slate-200 mb-8 leading-relaxed bg-slate-900/50 p-4 rounded-xl border border-slate-800" id="ev-desc">載入中...</div>
+            <div id="ev-mcq-area" class="space-y-3 mb-6 hidden mt-auto"></div>
+            <div id="ev-essay-area" class="mb-6 hidden flex-col mt-auto">
+                <div class="text-sm text-slate-300 bg-slate-800/80 p-5 rounded-xl border border-purple-500/30 mb-4 text-center leading-relaxed shadow-inner">
+                    <i class="fa-solid fa-brain text-purple-400 text-3xl mb-3 block drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]"></i>
+                    進入深層記憶檢索。<br>請在腦海中擬定完整大綱，完成後進行神經比對。
+                </div>
+                <button class="w-full bg-gradient-to-r from-purple-700 to-indigo-700 text-white font-black py-4 rounded-xl btn-interact shadow-[0_4px_15px_rgba(79,70,229,0.4)] border border-purple-500/50 cyber-title" onclick="EVENT_UI.showEssayAns()">執行神經比對 (檢視解答)</button>
+            </div>
+            <div id="ev-action-area" class="mt-auto space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- D20 骰子結算 Overlay -->
+    <div id="overlay-dice" class="absolute inset-0 z-50 bg-black/95 hidden flex-col items-center justify-center backdrop-blur-lg">
+        <h2 class="text-3xl font-black text-white mb-2 tracking-widest cyber-title neon-text-blue">FATE ROLL</h2>
+        <p class="text-sm text-slate-300 font-serif mb-8 bg-blue-900/30 px-5 py-1.5 rounded-full border border-blue-900/50 shadow-inner">難度 DC: <span class="text-rose-400 font-black text-lg" id="dice-dc">0</span></p>
+        
+        <div id="dice-container" class="mb-8"><div class="dice" id="the-dice">20</div></div>
+        
+        <div class="glass p-5 rounded-2xl w-[85%] max-w-sm hidden flex-col gap-2 fade-in border border-slate-600 shadow-[0_0_30px_rgba(0,0,0,0.8)]" id="dice-math">
+            <div class="flex justify-between text-sm text-slate-300"><span>神經亂數 (D20)</span><span id="math-base" class="text-white font-black text-base">0</span></div>
+            <div class="flex justify-between text-sm text-slate-300"><span>專業專精 (<span id="math-sub" class="text-[10px]"></span>)</span><span id="math-mastery" class="text-blue-400 font-black text-base">+0</span></div>
+            <div class="flex justify-between text-sm text-slate-300 border-b border-slate-700 pb-3 mb-1"><span>義體/搭檔支援</span><span id="math-buff" class="text-pink-400 font-black text-base">+0</span></div>
+            <div class="flex justify-between font-black text-2xl mt-1"><span class="text-white">系統總和</span><span id="math-total" class="text-white drop-shadow">0</span></div>
+            
+            <div class="text-center mt-5 border-t border-slate-700 pt-5">
+                <div class="text-3xl font-black uppercase tracking-widest mb-3 cyber-title" id="dice-res">SUCCESS</div>
+                <div class="text-[12px] text-slate-300 font-serif text-left bg-slate-900 p-4 rounded-lg h-32 overflow-y-auto thin-scroll leading-relaxed border border-slate-700/50" id="dice-lore">...</div>
+            </div>
+            <button class="w-full mt-5 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-black py-3.5 rounded-xl btn-interact shadow-lg border border-slate-600 cyber-title" onclick="DICE.close()">CONFIRM</button>
+        </div>
+    </div>
+
+    <!-- VN (視覺小說/對話) Overlay -->
+    <div id="overlay-vn" class="absolute inset-0 z-50 bg-black hidden flex-col">
+        <div class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity" style="background-image: url('https://images.unsplash.com/photo-1513681414983-4acdfa39b343?q=80&w=1080&auto=format&fit=crop');"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/60 to-black pointer-events-none z-10"></div>
+        
+        <div class="absolute top-0 w-full p-4 flex justify-between items-center z-20">
+            <div class="px-4 py-1.5 bg-black/80 border border-pink-500/30 rounded-full text-xs font-bold text-white shadow-[0_0_10px_rgba(244,63,94,0.3)]"><i class="fa-solid fa-heart text-pink-500 mr-1"></i> <span id="vn-aff" class="text-pink-200">0</span></div>
+            <button class="w-10 h-10 bg-black/80 rounded-full text-white/50 btn-interact hover:text-white border border-slate-700" onclick="VN.exit()"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        
+        <div class="flex-1 flex justify-center items-end relative z-10 pb-[320px]">
+            <div class="text-[240px] drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] transition-transform duration-500" id="vn-sprite">👩‍💼</div>
+        </div>
+        
+        <div class="absolute bottom-0 w-full h-[38%] bg-gradient-to-t from-black via-black/95 to-black/90 p-6 flex flex-col justify-end z-20 cursor-pointer border-t border-slate-800/50" onclick="VN.nextLine()">
+            <div class="text-pink-400 font-black text-2xl mb-2 drop-shadow-md tracking-widest cyber-title" id="vn-name">角色名</div>
+            <div class="story-text text-white text-lg mb-2 min-h-[90px]" id="vn-text">對話內容...</div>
+            <div class="text-right text-[10px] text-blue-400/50 animate-pulse uppercase tracking-widest mt-auto cyber-title">Tap to continue ▼</div>
+        </div>
+        <div id="vn-choices" class="absolute inset-0 bg-black/95 z-30 hidden flex-col justify-center items-center p-6 gap-4 backdrop-blur-md"></div>
+    </div>
+
+    <!-- =========================================================
+         BOTTOM NAV (主導覽列)
+         ========================================================= -->
+    <nav class="glass absolute bottom-0 w-full h-16 flex justify-around items-center z-30 border-t border-slate-700/80 shrink-0">
+        <button class="flex flex-col items-center justify-center w-full h-full text-neon-blue nav-btn" onclick="UI.switchTab('map', this)"><i class="fa-solid fa-map-location-dot text-[22px] drop-shadow-[0_0_5px_rgba(56,189,248,0.8)]"></i><span class="text-[9px] font-bold mt-1 cyber-title">PATROL</span></button>
+        <button class="flex flex-col items-center justify-center w-full h-full text-slate-500 hover:text-pink-400 transition-colors nav-btn" onclick="UI.switchTab('social', this)"><i class="fa-solid fa-user-group text-[22px]"></i><span class="text-[9px] font-bold mt-1 cyber-title">SOCIAL</span></button>
+        <button class="flex flex-col items-center justify-center w-full h-full text-slate-500 hover:text-amber-400 transition-colors nav-btn" onclick="UI.switchTab('base', this)"><i class="fa-solid fa-store text-[22px]"></i><span class="text-[9px] font-bold mt-1 cyber-title">MARKET</span></button>
+        <button class="flex flex-col items-center justify-center w-full h-full text-slate-500 hover:text-white transition-colors nav-btn" onclick="UI.switchTab('system', this)"><i class="fa-solid fa-gear text-[22px]"></i><span class="text-[9px] font-bold mt-1 cyber-title">SYSTEM</span></button>
+    </nav>
+</div>
+
+<script>
+/**
+ * ============================================================================
+ * UTILS & MODAL SYSTEM (取代原生 alert/confirm 以防 Bug)
+ * ============================================================================
+ */
+const MODAL = {
+    cb: null,
+    showAlert(title, msg, onConfirm = null) {
+        this.cb = onConfirm;
+        document.getElementById("modal-title").innerText = title;
+        document.getElementById("modal-msg").innerText = msg;
+        document.getElementById("modal-input").classList.add("hidden");
+        document.getElementById("modal-btn-cancel").classList.add("hidden");
+        document.getElementById("custom-modal-overlay").classList.remove("hidden");
+        document.getElementById("custom-modal-overlay").classList.add("flex");
+        document.getElementById("modal-btn-confirm").onclick = () => { this.close(); if(this.cb) this.cb(); };
+    },
+    showConfirm(title, msg, onConfirm) {
+        this.cb = onConfirm;
+        document.getElementById("modal-title").innerText = title;
+        document.getElementById("modal-msg").innerText = msg;
+        document.getElementById("modal-input").classList.add("hidden");
+        document.getElementById("modal-btn-cancel").classList.remove("hidden");
+        document.getElementById("custom-modal-overlay").classList.remove("hidden");
+        document.getElementById("custom-modal-overlay").classList.add("flex");
+        document.getElementById("modal-btn-cancel").onclick = () => this.close();
+        document.getElementById("modal-btn-confirm").onclick = () => { this.close(); if(this.cb) this.cb(true); };
+    },
+    showPrompt(title, msg, onConfirm) {
+        this.cb = onConfirm;
+        document.getElementById("modal-title").innerText = title;
+        document.getElementById("modal-msg").innerText = msg;
+        const inp = document.getElementById("modal-input");
+        inp.classList.remove("hidden"); inp.value = "";
+        document.getElementById("modal-btn-cancel").classList.remove("hidden");
+        document.getElementById("custom-modal-overlay").classList.remove("hidden");
+        document.getElementById("custom-modal-overlay").classList.add("flex");
+        document.getElementById("modal-btn-cancel").onclick = () => this.close();
+        document.getElementById("modal-btn-confirm").onclick = () => { this.close(); if(this.cb) this.cb(inp.value); };
+    },
+    close() {
+        document.getElementById("custom-modal-overlay").classList.add("hidden");
+        document.getElementById("custom-modal-overlay").classList.remove("flex");
+    }
+};
+
+const Utils = {
+    toast(msg, type = 'info') {
+        const c = document.getElementById("toast-container");
+        const t = document.createElement("div"); 
+        t.className = "toast"; 
+        if(type === 'success') t.style.borderLeftColor = "var(--critical)";
+        if(type === 'error') t.style.borderLeftColor = "var(--fail)";
+        if(type === 'warning') t.style.borderLeftColor = "var(--gold)";
+        if(type === 'purple') t.style.borderLeftColor = "var(--neon-purple)";
+        t.innerHTML = msg;
+        c.appendChild(t); setTimeout(() => t.remove(), 3500);
+    },
+    ranks: ["警佐三階三級","警佐三階二級","警佐三階一級","警佐二階三級","警佐二階二級","警佐二階一級","警佐一階三級","警佐一階二級","警佐一階一級","警正四階三級","警正四階二級","警正四階一級","警正三階三級","警正三階二級","警正三階一級","警正二階","警正一階"],
+    getRank(lv) { let idx = Math.floor((lv - 1) / 3); return idx >= this.ranks.length ? "警監 (NCPD 傳說)" : this.ranks[idx]; },
+    getExpNeed(lv) { return Math.floor(100 * Math.pow(1.35, lv - 1)); }
+};
+
+/**
+ * ============================================================================
+ * DATABASE (超高密度史詩級資料庫 - 模擬 3000行資料載量)
+ * ============================================================================
+ */
+const DB = {
+    exams: {
+        "erji": { name: "116.05 二技", date: "2027-05-01", sub: ["國文與憲法", "英文", "警察勤務", "警察法規"] },
+        "zuoer": { name: "117.11 警佐", date: "2028-11-01", sub: ["國文與憲法", "警察法規", "警察勤務", "刑法及刑事訴訟法"] },
+        "sheng": { name: "118.03 升官等", date: "2029-03-01", sub: ["法學知識與憲法", "國文", "行政法", "警察法規", "警察勤務", "刑法與刑事訴訟法"] }
+    },
+    chars: {
+        lexie: { name: "蕾克希", type: "romance", icon: "👩‍💼", color: "text-pink-400", desc: "NCPD 法制科冷酷巡官。絕對的程序正義。", buffText: "行政法/法規 +3", buffSubj: ["行政法", "法規"], buffVal: 3, favGift: "gift_coffee",
+            events: [
+                { req: 0, lines: [{t:"夜城的街頭法則代替不了法律。這份裁量權基準寫錯了，重寫。"}, {choices:[{text:"對不起長官，我重讀行政程序法。", aff:15, next:"哼。記住，『明確性原則』是你的保命符。"}, {text:"實務上根本沒時間管那麼多...", aff:-10, next:"就是你這種『實務心態』，警局才賠那麼多錢。"}]}] },
+                { req: 60, lines: [{t:"（深夜辦公室，她遞來黑咖啡）升官等不好考，但你的努力我看到了。如果在街頭遇到幫派，別逞強，呼叫我。"}] },
+                { req: 120, lines: [{t:"這是我整理的行政法最新釋字筆記。拿去。別誤會，我只是不想看到自己的部下在法庭上被律師電爆。"}] },
+                { req: 200, lines: [{t:"（假日的射擊場，她靠得很近幫你調整姿勢）你的準度提升了。就像你對法條的掌握一樣。"}, {choices:[{text:"是因為有學姊的教導。", aff:20, next:"（臉微紅）...少貧嘴。等你考上警正班再說。"}, {text:"我可是要活到2030年的人。", aff:5, next:"...活下去，才是夜城唯一的真理。"}]}] }
+            ]
+        },
+        muxue: { name: "沐雪", type: "romance", icon: "🕵️‍♀️", color: "text-blue-400", desc: "孤狼刑警。精通刑法，遊走在灰色地帶。", buffText: "刑法/刑訴 +3", buffSubj: ["刑法", "訴訟法"], buffVal: 3, favGift: "gift_gun_oil",
+            events: [
+                { req: 0, lines: [{t:"（犯罪現場）菜鳥，別踩到血跡。毒樹果實理論聽過吧？證據被污染，法庭上就成了廢紙。"}, {choices:[{text:"我會注意封鎖線程序的。", aff:15, next:"很好，保持謹慎。"}, {text:"先把人抓了再說吧！", aff:-10, next:"你想讓犯人因為程序瑕疵被無罪釋放嗎？"}]}] },
+                { req: 50, lines: [{t:"下班了？陪我去喝一杯。放心，我喝合成酒精而已。你覺得法律真的能制裁夜城所有的罪惡嗎？"}] },
+                { req: 150, lines: [{t:"昨天那個幫派份子被無罪釋放了。這就是刑訴法的『無罪推定』。"}, {choices:[{text:"正義遲早會到來的。", aff:10, next:"希望如此。"}, {text:"或許我們該用『街頭』的方式解決？", aff:20, next:"（她深深看了你一眼）你有這個膽量嗎？"}]}] }
+            ]
+        },
+        xiaoya: { name: "小雅", type: "romance", icon: "👧", color: "text-amber-400", desc: "剛畢業的熱血菜鳥。相信正義與光明。", buffText: "戰鬥勝利恢復 5 SP", buffType: "heal_sp", buffVal: 5, favGift: "gift_cake",
+            events: [
+                { req: 0, lines: [{t:"學長好！我是剛分發來的新人！請多多指教！"}, {choices:[{text:"跟緊我，夜城很危險。", aff:15, next:"是！學長好帥喔！"}, {text:"別扯後腿就好。", aff:-5, next:"嗚...我會努力的。"}]}] },
+                { req: 60, lines: [{t:"學長，你一直看書不會累嗎？我買了草莓蛋糕，我們一人一半吧！吃了才有體力對抗壞人！"}] },
+                { req: 120, lines: [{t:"昨天看到學長面對暴徒的背影...我覺得，如果能一直跟在學長身邊就好了。"}] }
+            ]
+        },
+        kaelen: { name: "凱琳", type: "romance", icon: "👩‍💻", color: "text-purple-400", desc: "網安專家。深諳加密貨幣與暗網生態。", buffText: "冷錢包收益+30%。英文+3", buffSubj: ["英文"], buffVal: 3, favGift: "gift_keyboard",
+            events: [
+                { req: 0, lines: [{t:"你知道比特幣 2030 年的預測模型嗎？這是對抗通膨的防禦型武器。"}, {choices:[{text:"我是長期持有者，我有冷錢包。", aff:25, next:"懂行！我們是同路人！下次有情報我通知你。"}, {text:"那都是虛擬的騙局。", aff:-15, next:"...無知限制了你的階級與財富。"}]}] },
+                { req: 100, lines: [{t:"我剛剛截獲了一段企業的加密通訊。這個世界是由數據構成的。只要你掌握了數據，你就掌握了權力。"}] },
+                { req: 180, lines: [{t:"如果有一天，夜城的網路徹底崩潰。你願意帶我離開這裡嗎？帶上我們的冷錢包。"}] }
+            ]
+        },
+        yuna: { name: "由奈", type: "romance", icon: "👩‍⚖️", color: "text-rose-400", desc: "鐵血檢察官。憲法與人權的絕對捍衛者。", buffText: "憲法/行政法 +2", buffSubj: ["憲法", "行政法"], buffVal: 2, favGift: "gift_pen",
+            events: [
+                { req: 0, lines: [{t:"警官，這份卷宗的拘捕程序有瑕疵。退回重查。"}] },
+                { req: 80, lines: [{t:"我不在乎嫌犯是不是人渣。我在乎的是國家的公權力，不能越過憲法的底線。這是我們與野獸的區別。"}] },
+                { req: 160, lines: [{t:"他們說我太古板。但在這個瘋狂的城市裡，如果不抓住點什麼堅固的原則，人是會崩潰的。你懂嗎？"}] }
+            ]
+        },
+        shizuku: { name: "靜", type: "romance", icon: "👩‍🔬", color: "text-teal-400", desc: "地下無照醫生轉任的鑑識官。少言寡語。", buffText: "大失敗(1)免除懲罰", buffType: "resist_fail", favGift: "gift_magnifier",
+            events: [
+                { req: 0, lines: [{t:"...（她遞給你一份血跡檢驗報告，並塞了一罐止痛藥給你）"}] },
+                { req: 80, lines: [{t:"活人會說謊。但屍體和微物跡證不會。你的傷口裂開了...過來，我幫你縫合。"}] },
+                { req: 150, lines: [{t:"（她輕輕靠在你的肩膀上）...這樣，能聽見你的心跳。很平穩。我喜歡。"}] }
+            ]
+        },
+        chen: { name: "陳局長", type: "mentor", icon: "👴", color: "text-slate-300", desc: "圓滑的老狐狸。教導防禦型保命心法。", buffText: "失敗時 HP 減傷 50%", buffType: "defense", favGift: "gift_tea",
+            events: [
+                { req: 0, lines: [{t:"小夥子，抓賊是一時的，平安領退休金才是一輩子的。這叫防禦型人生。"}] },
+                { req: 50, lines: [{t:"在夜城，太過剛直容易折斷。適時的低頭，是為了爬得更高。這杯高山茶，你品品。"}] }
+            ]
+        },
+        iron_lin: { name: "鐵漢林哥", type: "mentor", icon: "🪖", color: "text-slate-300", desc: "前特種部隊。只相信肌肉與火力。", buffText: "警察勤務 +4", buffSubj: ["勤務"], buffVal: 4, favGift: "gift_protein",
+            events: [
+                { req: 0, lines: [{t:"拔槍太慢了！在街頭，慢零點一秒就是死！給我去做一百個伏地挺身！"}] },
+                { req: 60, lines: [{t:"書本救不了你的命，只有這把槍可以。但既然你要考升官等，就給我拿出攻堅的氣勢來！"}] }
+            ]
+        }
+    },
+
+    items: {
+        "con_coffee": { name: "黑市合成咖啡", cat: "consume", icon: "☕", desc: "恢復 30 HP。熬夜刷題必備。", price: 50, effect: { hp: 30 } },
+        "con_energy": { name: "軍用興奮劑", cat: "consume", icon: "🔋", desc: "恢復 20 SP。強行透支體力。", price: 80, effect: { sp: 20 } },
+        "con_bread": { name: "神經修復凝膠", cat: "consume", icon: "💊", desc: "同時恢復 25 HP/SP。", price: 150, effect: { hp: 25, sp: 25 } },
+        "con_stimpack": { name: "大腦超頻藥劑", cat: "consume", icon: "💉", desc: "極限恢復 50 SP。傷身。", price: 200, effect: { sp: 50 } },
+        "con_pizza": { name: "合成披薩", cat: "consume", icon: "🍕", desc: "恢復 15 HP/SP。", price: 100, effect: { hp: 15, sp: 15 } },
+        
+        "gift_coffee": { name: "藝伎咖啡豆", cat: "gift", icon: "☕", desc: "蕾克希最愛。", price: 150, aff: 15 },
+        "gift_cake": { name: "全息草莓蛋糕", cat: "gift", icon: "🍰", desc: "小雅最愛。", price: 150, aff: 15 },
+        "gift_gun_oil": { name: "納米槍油", cat: "gift", icon: "🔫", desc: "沐雪最愛。", price: 150, aff: 15 },
+        "gift_keyboard": { name: "量子鍵盤軸", cat: "gift", icon: "⌨️", desc: "凱琳最愛。", price: 150, aff: 15 },
+        "gift_pen": { name: "古董鋼筆", cat: "gift", icon: "🖋️", desc: "由奈最愛。", price: 200, aff: 20 },
+        "gift_magnifier": { name: "光學分析鏡", cat: "gift", icon: "🔍", desc: "靜最愛。", price: 200, aff: 20 },
+        "gift_tea": { name: "高山烏龍茶", cat: "gift", icon: "🍵", desc: "陳局長最愛。", price: 100, aff: 10 },
+        "gift_protein": { name: "戰鬥營養粉", cat: "gift", icon: "💪", desc: "林哥最愛。", price: 100, aff: 10 },
+        "gift_bitcoin": { name: "實體紀念幣", cat: "gift", icon: "🪙", desc: "極稀有，所有人好感大增。", price: 500, aff: 50 },
+        
+        "gear_law_basic": { name: "神經法典晶片(基)", cat: "gear", icon: "💾", desc: "被動：法科檢定 +1。", price: 400, type: "passive" },
+        "gear_law_pro": { name: "神經法典晶片(極)", cat: "gear", icon: "💽", desc: "被動：法科檢定 +2。", price: 1000, type: "passive" },
+        "gear_vest": { name: "皮下防彈裝甲", cat: "gear", icon: "🦺", desc: "被動：最大 HP +30。", price: 800, type: "passive_hp", val: 30 },
+        "gear_glasses": { name: "光學分析義眼", cat: "gear", icon: "👓", desc: "被動：獲取經驗值 +15%。", price: 1200, type: "passive_exp", val: 1.15 },
+        "gear_synapse": { name: "神經反應突觸", cat: "gear", icon: "🧠", desc: "被動：最大 SP +20。", price: 900, type: "passive_sp", val: 20 },
+        "gear_amulet": { name: "2028 國考御守", cat: "gear", icon: "🧧", desc: "被動：檢定額外獲得 20% 金幣。", price: 1500, type: "passive_goldrate", val: 1.2 },
+        "wallet_cold": { name: "2030 冷錢包", cat: "gear", icon: "🛡️", desc: "被動：每日產生巨額複利。", price: 3000, type: "passive_gold" }
+    },
+
+    // 區域 TRPG 事件 (包含五大區域的深度道德與法理決策)
+    events: {
+        slums: [
+            { title: "暗巷的加密交易", desc: "你在巡邏時撞見幫派分子進行非法交易。對方丟出一個裝滿加密幣的硬碟，暗示你『睜一隻眼閉一隻眼』。",
+              opt: [
+                { t: "[刑法] 拒絕賄賂，依現行犯將其逮捕！", sub: "刑法", dc: 15, align: "law", s: "【執法如山】成功制伏嫌犯，維護了法律尊嚴。(秩序+)", f: "【火力壓制】對方火力強大，你受重傷。", exp: 80, dmg: 40 },
+                { t: "[道德] 假裝沒看見，拿走硬碟作為辦案經費。", sub: "警察勤務", dc: 8, align: "chaos", s: "【街頭生存】獲得大量資金，但良心受譴。(街頭+)", f: "【東窗事發】督察組盯上了你。", exp: 10, dmg: 20, gold: 800 },
+                { t: "[行政法] 扣押違禁品，但放人離開。", sub: "行政法", dc: 13, align: "neutral", s: "【灰色地帶】遊走在程序邊緣，沒收贓物且未引發交火。", f: "【程序瑕疵】扣押程序錯誤，惹上麻煩。", exp: 40, dmg: 25, gold: 200 }
+              ]},
+            { title: "賽博精神病暴走", desc: "一名過度植入義體的傭兵正在街頭無差別攻擊路人。現場血肉模糊。",
+              opt: [
+                { t: "[警規] 情況急迫，依警械條例逕行射擊！", sub: "警察法規", dc: 16, align: "law", s: "【致命武力】精準擊斃暴走族，拯救平民。", f: "【判斷失誤】未能擊中要害，反被重創。", exp: 90, dmg: 50 },
+                { t: "[刑訴] 呼叫支援並使用談判技巧拖延。", sub: "刑事訴訟法", dc: 14, align: "neutral", s: "【兵不血刃】成功拖到特勤隊抵達，將其活捉。", f: "【錯失良機】談判失敗，無辜市民死傷。", exp: 50, dmg: 40 }
+              ]}
+        ],
+        ncpd: [
+            { title: "高層的施壓", desc: "某企業高管涉嫌內線交易，上級長官暗示你『程序上稍微放水』，讓對方得以交保。",
+              opt: [
+                { t: "[行政法] 堅守程序正義，拒絕非法指示。", sub: "行政法", dc: 17, align: "law", s: "【不畏強權】你引經據典，長官無話可說。", f: "【職場霸凌】你被冷凍，考績大受影響。", exp: 70, dmg: 35 },
+                { t: "[勤務] 表面答應，暗中將關鍵證據備份。", sub: "警察勤務", dc: 14, align: "chaos", s: "【防禦型生存】保住飯碗，也留下底牌。", f: "【操作失誤】備份被發現，面臨雙重夾擊。", exp: 50, dmg: 30 }
+              ]},
+            { title: "裝備科的貪腐", desc: "你發現負責採購防彈衣的同僚，私下收取廠商回扣，採購了劣質品。",
+              opt: [
+                { t: "[刑訴] 秘密蒐集貪污證據，移送檢調。", sub: "刑事訴訟法", dc: 16, align: "law", s: "【肅清內鬼】證據確鑿，同僚被捕。", f: "【打草驚蛇】被對方發現，你遭到孤立。", exp: 65, dmg: 30 },
+                { t: "[道德] 威脅他交出部分回扣，否則舉發。", sub: "警察法規", dc: 10, align: "chaos", s: "【同流合污】獲得一筆黑錢。(街頭+)", f: "【反咬一口】對方先發制人誣陷你。", exp: 20, dmg: 40, gold: 600 }
+              ]}
+        ],
+        crime: [
+            { title: "毒樹上的果實", desc: "搜索毒品工廠時發現關鍵帳冊，但帶隊學長坦承剛剛破門並未取得搜索票。",
+              opt: [
+                { t: "[刑訴] 主張第158-4條『權衡理論』保住證據。", sub: "刑事訴訟法", dc: 15, align: "neutral", s: "【法益權衡】成功說服法官，打擊重大犯罪。", f: "【證據排除】法官認定違法搜索，證據無效。", exp: 60, dmg: 35 },
+                { t: "[憲法] 基於正當法律程序，拒絕使用此證據。", sub: "憲法", dc: 13, align: "law", s: "【程序正義】避免了未來的違憲爭議與風波。", f: "【上級不滿】學長痛罵你書呆子，關係惡化。", exp: 40, dmg: 25 }
+              ]},
+            { title: "毀滅的證據", desc: "嫌犯正試圖將裝有兒童色情影片的硬碟丟入焚化爐！",
+              opt: [
+                { t: "[刑法] 不顧一切衝入火場搶救證據！", sub: "刑法", dc: 18, align: "law", s: "【奮不顧身】你搶出了硬碟，將犯人繩之以法。", f: "【嚴重燒傷】證據燒毀，你也受了重傷。", exp: 100, dmg: 60 },
+                { t: "[勤務] 放棄硬碟，直接制伏嫌犯保命。", sub: "警察勤務", dc: 11, align: "neutral", s: "【防禦優先】雖然少了關鍵證據，但人抓到了。", f: "【嫌犯脫逃】連人都沒抓到，一無所獲。", exp: 30, dmg: 15 }
+              ]}
+        ],
+        cyber: [
+            { title: "暗網的釣魚陷阱", desc: "在追蹤一筆非法洗錢金流時，你發現了一個宣稱『絕對保本高息』的智能合約漏洞。",
+              opt: [
+                { t: "[英文] 解析合約原始碼，追蹤駭客IP。", sub: "英文", dc: 16, align: "law", s: "【識破騙局】成功攔截金流並鎖定駭客位置。", f: "【陷入陷阱】被反向追蹤，神經模組受損。", exp: 60, dmg: 35 },
+                { t: "[道德] 利用漏洞，將資金轉入自己的冷錢包。", sub: "法學知識與憲法", dc: 12, align: "chaos", s: "【黑吃黑】獲得巨額利潤，這就是防禦型投資。(街頭+)", f: "【合約反噬】資金被鎖死，反而損失慘重。", exp: 20, dmg: 40, gold: 1500 }
+              ]}
+        ],
+        exam: [
+            { title: "2028 終極模擬考", desc: "進入特訓艙，系統向你投放了最嚴苛的歷屆綜合試題。",
+              opt: [
+                { t: "[綜合] 挑戰全科綜合神經檢定！", sub: "法學知識與憲法", dc: 18, align: "neutral", s: "【神明附體】你突破了極限，獲得海量經驗。", f: "【精神耗弱】難度太高，你頭痛欲裂被迫登出。", exp: 150, dmg: 50 },
+                { t: "[防禦] 選擇基礎題庫穩健答題。", sub: "國文與憲法", dc: 12, align: "neutral", s: "【穩步前進】積少成多，這就是防禦型策略。", f: "【粗心大意】連基礎題都錯，信心受挫。", exp: 40, dmg: 20 }
+              ]}
+        ]
+    }
+};
+
+/**
+ * ============================================================================
+ * CORE STATE & MANAGERS
+ * ============================================================================
+ */
+const STATE = {
+    hp: 100, maxHp: 100, sp: 50, maxSp: 50,
+    exp: 0, lv: 1, gold: 200, target: "sheng", activePartner: null,
+    alignLaw: 50, alignChaos: 50, totalFocusTime: 0,
+    inventory: ["con_coffee", "con_energy"], customQs: [], aff: {}, mastery: {},
+    completedEvents: {}
+};
+
+for(let k in DB.chars) { STATE.aff[k] = 0; STATE.completedEvents[k] = []; }
+DB.exams.sheng.sub.forEach(s => STATE.mastery[s] = 0);
+
+const CORE = {
+    init() {
+        this.load(); this.calcPassiveStats(); this.changeExam(true);
+        UI.update(); setInterval(() => this.passiveTick(), 60000);
+    },
+    save() { localStorage.setItem("vanguard_focus_ult", JSON.stringify(STATE)); },
+    load() {
+        const s = localStorage.getItem("vanguard_focus_ult");
+        if(s) { Object.assign(STATE, JSON.parse(s)); }
+        for(let k in DB.chars) { if(!STATE.completedEvents[k]) STATE.completedEvents[k] = []; }
+        if(typeof STATE.totalFocusTime === 'undefined') STATE.totalFocusTime = 0;
+    },
+    exportSave() {
+        const str = btoa(encodeURIComponent(JSON.stringify(STATE)));
+        navigator.clipboard.writeText(str).then(() => Utils.toast("✅ 記憶代碼已備份至剪貼簿！", "success")).catch(() => {
+            MODAL.showPrompt("備份代碼", "請手動複製以下代碼：", () => {});
+            document.getElementById("modal-input").value = str;
+        });
+    },
+    importSave(str) {
+        if(str) { try { Object.assign(STATE, JSON.parse(decodeURIComponent(atob(str)))); this.save(); location.reload(); } catch(e) { Utils.toast("❌ 記憶代碼損毀！", "error"); } }
+    },
+    calcPassiveStats() {
+        STATE.maxHp = 100 + (STATE.lv - 1) * 15;
+        STATE.maxSp = 50 + Math.floor((STATE.lv - 1) * 5);
+        STATE.inventory.forEach(id => { 
+            if(DB.items[id]) {
+                if(DB.items[id].type === 'passive_hp') STATE.maxHp += DB.items[id].val;
+                if(DB.items[id].type === 'passive_sp') STATE.maxSp += DB.items[id].val;
+            }
+        });
+        if(STATE.hp > STATE.maxHp) STATE.hp = STATE.maxHp;
+        if(STATE.sp > STATE.maxSp) STATE.sp = STATE.maxSp;
+    },
+    changeExam(isInit = false) {
+        if(!isInit) STATE.target = document.getElementById("exam-selector").value;
+        const exam = DB.exams[STATE.target];
+        
+        let uiName = document.getElementById("ui-exam-name"); if(uiName) uiName.innerText = exam.name;
+        let mapName = document.getElementById("map-target-exam"); if(mapName) mapName.innerText = exam.name;
+        
+        const days = Math.ceil((new Date(exam.date) - Date.now()) / 86400000);
+        let mapCountdown = document.getElementById("map-target-countdown");
+        if(mapCountdown) mapCountdown.innerText = days > 0 ? `距離考核：約 ${days} 天` : "已達目標日期";
+        let sysCountdown = document.getElementById("sys-target-countdown");
+        if(sysCountdown) sysCountdown.innerText = days > 0 ? `距離考核：約 ${days} 天` : "已達目標日期";
+
+        let sysTime = document.getElementById("ui-total-focus");
+        if(sysTime) sysTime.innerText = STATE.totalFocusTime;
+
+        if(!isInit) { this.save(); UI.switchTab('system'); } 
+    },
+    passiveTick() {
+        let updated = false;
+        if(STATE.sp < STATE.maxSp) { STATE.sp += 1; updated = true; } 
+        if(STATE.inventory.includes("wallet_cold")) {
+            let interest = STATE.lv * 6;
+            if(STATE.activePartner === 'kaelen') interest = Math.floor(interest * 1.3);
+            STATE.gold += interest; updated = true;
+        }
+        if(updated) { UI.update(); this.save(); }
+    }
+};
+
+const UI = {
+    update() {
+        document.getElementById("ui-hp").innerText = `${Math.floor(STATE.hp)}`;
+        document.getElementById("bar-hp").style.width = `${(STATE.hp/STATE.maxHp)*100}%`;
+        document.getElementById("ui-sp").innerText = `${Math.floor(STATE.sp)}`;
+        document.getElementById("bar-sp").style.width = `${(STATE.sp/STATE.maxSp)*100}%`;
+        
+        let need = Utils.getExpNeed(STATE.lv);
+        document.getElementById("ui-exp").innerText = `${Math.floor((STATE.exp/need)*100)}%`;
+        document.getElementById("bar-exp").style.width = `${(STATE.exp/need)*100}%`;
+        
+        document.getElementById("ui-lv").innerText = STATE.lv;
+        document.getElementById("ui-rank").innerText = Utils.getRank(STATE.lv);
+        document.getElementById("ui-gold").innerText = Math.floor(STATE.gold);
+
+        const pIcon = document.getElementById("ui-partner-icon");
+        if(STATE.activePartner) { pIcon.innerText = DB.chars[STATE.activePartner].icon; pIcon.classList.remove("hidden"); } 
+        else { pIcon.classList.add("hidden"); }
+        
+        document.getElementById("inv-count").innerText = `${STATE.inventory.length}/50`;
+
+        let totalAlign = STATE.alignLaw + STATE.alignChaos; if(totalAlign === 0) totalAlign = 1;
+        document.getElementById("bar-align-law").style.width = `${(STATE.alignLaw/totalAlign)*100}%`;
+        document.getElementById("bar-align-chaos").style.width = `${(STATE.alignChaos/totalAlign)*100}%`;
+        
+        let sysTime = document.getElementById("ui-total-focus");
+        if(sysTime) sysTime.innerText = STATE.totalFocusTime;
+    },
+    switchTab(tabId, btnEl) {
+        document.querySelectorAll("main > section").forEach(el => el.classList.add("hidden"));
+        document.querySelectorAll(".nav-btn").forEach(el => { el.classList.remove("text-neon-blue", "text-pink-400", "text-amber-400", "text-white"); el.classList.add("text-slate-500"); el.querySelector('i').style.filter = "none"; });
+        
+        document.getElementById(`view-${tabId}`).classList.remove("hidden");
+        
+        if(btnEl) {
+            if(tabId==='map') { btnEl.classList.replace("text-slate-500", "text-neon-blue"); btnEl.querySelector('i').style.filter = "drop-shadow(0 0 5px rgba(56,189,248,0.8))"; }
+            if(tabId==='social') { btnEl.classList.replace("text-slate-500", "text-pink-400"); btnEl.querySelector('i').style.filter = "drop-shadow(0 0 5px rgba(244,63,94,0.8))"; SOCIAL.render(); }
+            if(tabId==='base') { btnEl.classList.replace("text-slate-500", "text-amber-400"); btnEl.querySelector('i').style.filter = "drop-shadow(0 0 5px rgba(245,158,11,0.8))"; BASE.renderShop('consume', document.querySelector('.shop-tab')); }
+            if(tabId==='system') { btnEl.classList.replace("text-slate-500", "text-white"); btnEl.querySelector('i').style.filter = "drop-shadow(0 0 5px rgba(255,255,255,0.8))"; document.getElementById("custom-q-count").innerText = `收錄: ${STATE.customQs.length} 筆`; PROFILE.renderMastery(); }
+        }
+    }
+};
+
+/**
+ * ============================================================================
+ * FOCUS PROTOCOL (真實讀書計時器引擎)
+ * ============================================================================
+ */
+const FOCUS = {
+    timer: null, timeLeft: 0, totalTime: 0,
+    start(mins) {
+        this.totalTime = mins * 60;
+        this.timeLeft = this.totalTime;
+        document.getElementById("overlay-focus").classList.remove("hidden");
+        document.getElementById("overlay-focus").classList.add("flex");
+        this.updateDisplay();
+        
+        this.timer = setInterval(() => {
+            this.timeLeft--;
+            this.updateDisplay();
+            if(this.timeLeft <= 0) this.complete();
+        }, 1000);
+    },
+    updateDisplay() {
+        let m = Math.floor(this.timeLeft / 60); let s = this.timeLeft % 60;
+        document.getElementById("focus-timer").innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    },
+    cancel() {
+        clearInterval(this.timer);
+        document.getElementById("overlay-focus").classList.add("hidden");
+        document.getElementById("overlay-focus").classList.remove("flex");
+        Utils.toast("⚠️ 精神連結中斷。未獲得獎勵。", "error");
+    },
+    complete() {
+        clearInterval(this.timer);
+        document.getElementById("overlay-focus").classList.add("hidden");
+        document.getElementById("overlay-focus").classList.remove("flex");
+        
+        let mins = this.totalTime / 60;
+        let expGain = mins * 15; 
+        let goldGain = mins * 10;
+        let spGain = Math.floor(mins * 1);
+        
+        STATE.exp += expGain; STATE.gold += goldGain; 
+        STATE.sp = Math.min(STATE.maxSp, STATE.sp + spGain);
+        STATE.totalFocusTime += mins; 
+        
+        if(Math.random() > 0.4) { STATE.inventory.push("con_coffee"); Utils.toast(`🎁 獲得戰利品：黑市合成咖啡！`, "purple"); }
+        if(Math.random() > 0.8) { STATE.inventory.push("con_bread"); Utils.toast(`🎁 獲得戰利品：神經修復凝膠！`, "purple"); }
+        
+        DICE.checkLevel(); UI.update(); CORE.save();
+        MODAL.showAlert("神經潛行完成", `專注了 ${mins} 分鐘。\n獲得 EXP +${expGain}\nCREDITS +${goldGain}\nSP 恢復 +${spGain}`);
+    }
+};
+
+/**
+ * ============================================================================
+ * BLACK MARKET & INVENTORY
+ * ============================================================================
+ */
+const BASE = {
+    renderShop(cat, tabEl) {
+        document.querySelectorAll('.shop-tab').forEach(el => el.classList.remove('active', 'text-amber-400'));
+        if(tabEl) { tabEl.classList.add('active', 'text-amber-400'); }
+
+        const sList = document.getElementById("shop-list"); sList.innerHTML = "";
+        for(let id in DB.items) {
+            let item = DB.items[id];
+            if(item.cat !== cat) continue;
+            
+            sList.innerHTML += `
+                <button class="bg-slate-800/90 hover:bg-slate-700 border border-slate-600 rounded-xl p-4 flex flex-col items-center btn-interact relative shadow-lg" onclick="BASE.buy('${id}')">
+                    <div class="text-4xl mb-2 drop-shadow-md">${item.icon}</div>
+                    <div class="text-[12px] text-white font-black whitespace-nowrap overflow-hidden text-ellipsis w-full text-center cyber-title">${item.name}</div>
+                    <div class="text-[9px] text-slate-400 mt-1 line-clamp-2 h-7 font-serif leading-tight">${item.desc}</div>
+                    <div class="text-[12px] text-amber-400 font-black mt-3 bg-black/50 w-full rounded py-1.5 border border-amber-900/50 shadow-inner"><i class="fa-brands fa-bitcoin mr-1"></i>${item.price}</div>
+                </button>`;
+        }
+        this.renderInventory();
+    },
+    buy(id) {
+        let item = DB.items[id];
+        if(STATE.gold < item.price) return Utils.toast("❌ 資金不足！", "error");
+        if(STATE.inventory.length >= 50) return Utils.toast("❌ 背包已滿！", "error");
+        
+        MODAL.showConfirm("購買確認", `花費 ${item.price} 購買【${item.name}】？`, (res) => {
+            if(res) {
+                STATE.gold -= item.price; STATE.inventory.push(id);
+                CORE.calcPassiveStats(); CORE.save(); UI.update(); this.renderInventory();
+                Utils.toast(`🛒 交易成功：${item.name}`, "success");
+            }
+        });
+    },
+    renderInventory() {
+        const iList = document.getElementById("inventory-list"); iList.innerHTML = "";
+        let counts = {}; STATE.inventory.forEach(id => counts[id] = (counts[id] || 0) + 1);
+        
+        for(let id in counts) {
+            let item = DB.items[id];
+            if(!item) continue;
+            iList.innerHTML += `
+                <div class="bg-slate-800 border border-blue-900/50 rounded-lg p-2 text-center btn-interact cursor-pointer relative shadow-inner hover:border-blue-500" onclick="BASE.use('${id}')">
+                    <div class="absolute -top-2 -right-2 bg-gradient-to-br from-blue-600 to-indigo-700 text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-lg border border-slate-900 text-white">${counts[id]}</div>
+                    <div class="text-3xl mb-1">${item.icon}</div>
+                    <div class="text-[9px] text-white font-bold leading-tight line-clamp-1">${item.name}</div>
+                </div>`;
+        }
+        if(STATE.inventory.length === 0) iList.innerHTML = `<div class="col-span-4 text-center text-slate-500 text-xs py-4 cyber-title">EMPTY</div>`;
+        document.getElementById("inv-count").innerText = `${STATE.inventory.length}/50`;
+    },
+    use(id) {
+        let item = DB.items[id];
+        if(item.cat === 'gear') return Utils.toast(`🛡️ 義體/裝備置於背包即被動生效。`, "info");
+        if(item.cat === 'gift') return Utils.toast(`🎁 這是私販禮物，請至「羈絆」介面贈送給夥伴。`, "warning");
+        
+        MODAL.showConfirm("使用確認", `啟動消耗品【${item.name}】？\n效果：${item.desc}`, (res) => {
+            if(res) {
+                if(item.cat === 'consume') {
+                    if(item.effect.hp) STATE.hp = Math.min(STATE.maxHp, STATE.hp + item.effect.hp);
+                    if(item.effect.sp) STATE.sp = Math.min(STATE.maxSp, STATE.sp + item.effect.sp);
+                    Utils.toast(`💉 狀態已恢復！`, "success");
+                }
+                STATE.inventory.splice(STATE.inventory.indexOf(id), 1);
+                CORE.save(); UI.update(); this.renderInventory();
+            }
+        });
+    }
+};
+
+/**
+ * ============================================================================
+ * SOCIAL & VN (防禦型社交引擎)
+ * ============================================================================
+ */
+const SOCIAL = {
+    render() {
+        const list = document.getElementById("companion-list"); list.innerHTML = "";
+        for(let id in DB.chars) {
+            let c = DB.chars[id]; let aff = STATE.aff[id];
+            
+            let btnPartner = STATE.activePartner === id ? 
+                `<button class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-3 py-1.5 rounded text-[10px] font-bold btn-interact shadow-[0_0_10px_rgba(79,70,229,0.5)] border border-blue-400" onclick="SOCIAL.setPartner(null)">解除搭檔</button>` :
+                `<button class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded text-[10px] font-bold btn-interact border border-slate-600" onclick="SOCIAL.setPartner('${id}')">設為搭檔</button>`;
+
+            list.innerHTML += `
+                <div class="glass p-4 rounded-xl flex gap-4 items-center relative overflow-hidden ${STATE.activePartner===id?'border border-blue-500 shadow-[0_0_20px_rgba(56,189,248,0.2)] bg-blue-900/10':''}">
+                    <div class="w-16 h-16 rounded-full bg-black flex items-center justify-center text-4xl shadow-inner border-2 ${STATE.activePartner===id?'border-blue-400':'border-slate-700'} shrink-0 relative z-10">${c.icon}</div>
+                    <div class="flex-1 relative z-10">
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-black ${c.color} text-lg drop-shadow cyber-title">${c.name}</h3>
+                            ${btnPartner}
+                        </div>
+                        <p class="text-[9px] text-amber-400 mb-2 leading-tight bg-amber-900/20 inline-block px-1.5 py-0.5 rounded border border-amber-900/50"><i class="fa-solid fa-bolt mr-1"></i>${c.buffText}</p>
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-heart text-pink-500 text-[10px]"></i>
+                            <div class="h-1.5 flex-1 bg-slate-800 rounded overflow-hidden border border-slate-700"><div class="h-full bg-gradient-to-r from-pink-700 to-pink-400" style="width:${Math.min(100, (aff/400)*100)}%"></div></div>
+                            <span class="text-[10px] text-pink-300 font-bold cyber-title">${aff}</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2 shrink-0 relative z-10">
+                        <button class="bg-pink-900/40 hover:bg-pink-800/60 text-pink-300 border border-pink-700/50 rounded-lg py-2 px-3 text-[10px] font-bold btn-interact flex items-center justify-center gap-1 shadow" onclick="SOCIAL.openGiftModal('${id}')"><i class="fa-solid fa-gift"></i>送禮</button>
+                        <button class="bg-slate-800 hover:bg-slate-700 text-blue-300 border border-blue-900/50 rounded-lg py-2 px-3 text-[10px] font-bold btn-interact flex items-center justify-center gap-1 shadow" onclick="VN.start('${id}')"><i class="fa-solid fa-comments"></i>交流</button>
+                    </div>
+                </div>`;
+        }
+    },
+    setPartner(id) {
+        STATE.activePartner = id; CORE.save(); this.render(); UI.update();
+        if(id) Utils.toast(`🤝 ${DB.chars[id].name} 已加入你的小隊。`, "info");
+    },
+    targetGiftCharId: null,
+    openGiftModal(id) {
+        this.targetGiftCharId = id;
+        const gList = document.getElementById("gift-modal-list"); gList.innerHTML = "";
+        let hasGifts = false; let counts = {}; STATE.inventory.forEach(i => counts[i] = (counts[i] || 0) + 1);
+        
+        for(let itemId in counts) {
+            let item = DB.items[itemId];
+            if(item && item.cat === 'gift') {
+                hasGifts = true;
+                gList.innerHTML += `
+                    <button class="bg-slate-800 border border-pink-900/50 rounded-xl p-3 flex flex-col items-center btn-interact relative hover:border-pink-500 shadow-lg" onclick="SOCIAL.giveGift('${itemId}')">
+                        <div class="absolute -top-2 -right-2 bg-pink-600 text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold text-white shadow">${counts[itemId]}</div>
+                        <div class="text-4xl mb-2">${item.icon}</div>
+                        <div class="text-[10px] text-white font-bold leading-tight">${item.name}</div>
+                    </button>`;
+            }
+        }
+        if(!hasGifts) gList.innerHTML = `<div class="col-span-3 text-center text-slate-500 text-xs py-6 cyber-title">NO GIFTS FOUND.</div>`;
+        
+        document.getElementById("modal-gift").classList.remove("hidden"); document.getElementById("modal-gift").classList.add("flex");
+    },
+    closeGiftModal() { document.getElementById("modal-gift").classList.add("hidden"); document.getElementById("modal-gift").classList.remove("flex"); },
+    giveGift(itemId) {
+        let char = DB.chars[this.targetGiftCharId]; let item = DB.items[itemId];
+        STATE.inventory.splice(STATE.inventory.indexOf(itemId), 1);
+        
+        let affGain = item.aff; let isFav = (char.favGift === itemId);
+        if(isFav) affGain = Math.floor(affGain * 1.5);
+        
+        STATE.aff[this.targetGiftCharId] += affGain; CORE.save();
+        this.closeGiftModal(); this.render();
+        
+        if(isFav) MODAL.showAlert("【共鳴大成功】", `${char.name}：「你怎麼知道我喜歡這個？謝謝你！」\n\n好感度大幅提升 +${affGain}！`);
+        else Utils.toast(`🎁 送出 ${item.name}。${char.name} 好感度 +${affGain}。`, "success");
+    }
+};
+
+const VN = {
+    charId: null, event: null, lineIdx: 0, isTyping: false, typingTimer: null,
+    start(id) {
+        this.charId = id; let c = DB.chars[id]; let aff = STATE.aff[id];
+        
+        let availableEvents = c.events.map((e, idx) => ({...e, orgIdx: idx})).filter(e => aff >= e.req && !STATE.completedEvents[id].includes(e.orgIdx));
+        
+        if(availableEvents.length === 0) {
+            if(STATE.sp < 15) { return MODAL.showAlert("神經衰弱", "體力不足 (需 15 SP)。你累得無法進行深入的閒聊。"); }
+            MODAL.showConfirm("日常維繫", "目前沒有新的劇情。\n進行日常閒聊將消耗 15 SP，並微幅提升好感度。確定？", (res) => {
+                if(res) {
+                    STATE.sp -= 15; STATE.aff[id] += 2; UI.update(); CORE.save();
+                    document.getElementById("overlay-vn").classList.remove("hidden"); document.getElementById("overlay-vn").classList.add("flex");
+                    document.getElementById("vn-sprite").innerText = c.icon;
+                    document.getElementById("vn-aff").innerText = STATE.aff[id];
+                    this.event = { lines: [{t: "你們在夜城的街角進行了一段日常的閒聊...加深了彼此的理解。"}, {t: "（防禦機制：消耗 15 SP，好感度微幅上升 +2）"}] };
+                    this.lineIdx = 0; this.nextLine();
+                }
+            });
+            return;
+        } 
+        
+        document.getElementById("overlay-vn").classList.remove("hidden"); document.getElementById("overlay-vn").classList.add("flex");
+        document.getElementById("vn-sprite").innerText = c.icon;
+        document.getElementById("vn-aff").innerText = aff;
+        this.event = availableEvents[0]; 
+        STATE.completedEvents[id].push(this.event.orgIdx); 
+        CORE.save();
+        
+        this.lineIdx = 0; this.nextLine();
+    },
+    nextLine() {
+        if(this.isTyping) {
+            clearInterval(this.typingTimer);
+            document.getElementById("vn-text").innerHTML = this.event.lines[this.lineIdx - 1].t;
+            this.isTyping = false; return;
+        }
+        
+        if(this.lineIdx >= this.event.lines.length) return this.exit();
+        
+        let line = this.event.lines[this.lineIdx];
+        if(line.choices) this.showChoices(line.choices);
+        else {
+            document.getElementById("vn-choices").classList.add("hidden");
+            document.getElementById("vn-name").innerText = DB.chars[this.charId].name;
+            this.typewriter(line.t); this.lineIdx++;
+        }
+    },
+    typewriter(text) {
+        let el = document.getElementById("vn-text"); el.innerHTML = ""; this.isTyping = true; let i = 0;
+        this.typingTimer = setInterval(() => {
+            el.innerHTML += text.charAt(i); i++;
+            if(i >= text.length) { clearInterval(this.typingTimer); this.isTyping = false; }
+        }, 20);
+    },
+    showChoices(choices) {
+        const cBox = document.getElementById("vn-choices"); cBox.innerHTML = ""; 
+        cBox.classList.remove("hidden"); cBox.classList.add("flex");
+        choices.forEach(c => {
+            let btn = document.createElement("button");
+            btn.className = "w-full bg-slate-800/95 border-2 border-slate-600 text-white font-bold py-4 px-6 rounded-xl hover:border-neon-blue btn-interact text-left shadow-[0_4px_15px_rgba(0,0,0,0.8)] story-text";
+            btn.innerText = c.text;
+            btn.onclick = (e) => { e.stopPropagation(); this.makeChoice(c); };
+            cBox.appendChild(btn);
+        });
+    },
+    makeChoice(c) {
+        STATE.aff[this.charId] += c.aff;
+        document.getElementById("vn-aff").innerText = STATE.aff[this.charId];
+        document.getElementById("vn-choices").classList.add("hidden");
+        document.getElementById("vn-name").innerText = DB.chars[this.charId].name;
+        this.typewriter(c.next);
+        this.lineIdx = this.event.lines.length; 
+        CORE.save(); SOCIAL.render();
+    },
+    exit() { document.getElementById("overlay-vn").classList.add("hidden"); document.getElementById("overlay-vn").classList.remove("flex"); }
+};
+
+/**
+ * ============================================================================
+ * TRPG & COMBAT (道德與街頭檢定引擎)
+ * ============================================================================
+ */
+const EVENT_UI = {
+    currentQ: null, currentSubj: null,
+    
+    startCustomQuiz() {
+        if(STATE.hp <= 10) return Utils.toast("⚠️ 精神崩潰邊緣，請回補給站！", "error");
+        if(STATE.sp < 5) return Utils.toast("⚠️ 體力 SP 不足！", "error");
+        if(STATE.customQs.length === 0) { UI.switchTab('system'); return Utils.toast("⚠️ 私人記憶庫為空！請先在此輸入你的筆記。", "warning"); }
+        
+        STATE.sp -= 5; UI.update();
+        this.currentQ = STATE.customQs[Math.floor(Math.random() * STATE.customQs.length)];
+        this.currentSubj = { name: this.currentQ.s, dc: 14 }; 
+
+        const ov = document.getElementById("overlay-event");
+        ov.classList.remove("hidden"); ov.classList.add("flex");
+        document.getElementById("ev-type").innerText = "PRIVATE MEMORY RECALL";
+        document.getElementById("ev-title").innerText = `${this.currentQ.s} 記憶檢索`;
+        document.getElementById("ev-desc").innerHTML = `<span class='text-amber-400 font-bold'>【自訂筆記題】</span><br>${this.currentQ.q}`;
+
+        const actionArea = document.getElementById("ev-action-area"); actionArea.innerHTML = "";
+        
+        if(this.currentQ.t === 'mcq') {
+            document.getElementById("ev-mcq-area").classList.remove("hidden");
+            document.getElementById("ev-essay-area").classList.add("hidden");
+            
+            let options = ["正確/完全相符", "這是一段錯誤的概念", "部分有瑕疵"];
+            options.sort(() => Math.random() - 0.5);
+            
+            let mcqArea = document.getElementById("ev-mcq-area"); mcqArea.innerHTML = "";
+            options.forEach(opt => {
+                let btn = document.createElement("button");
+                btn.className = "w-full text-left p-5 glass rounded-xl border border-slate-700 hover:border-neon-blue btn-interact text-sm font-bold shadow-lg leading-relaxed";
+                btn.innerText = opt;
+                btn.onclick = () => DICE.roll(opt === "正確/完全相符"); 
+                mcqArea.appendChild(btn);
+            });
+        } else {
+            document.getElementById("ev-mcq-area").classList.add("hidden");
+            document.getElementById("ev-essay-area").classList.remove("hidden");
+            document.getElementById("ev-essay-area").classList.add("flex");
+        }
+    },
+    startTRPG(areaId) {
+        if(STATE.hp <= 20) return Utils.toast("⚠️ 精神過低，極易在街頭喪命！", "error");
+        if(STATE.sp < 15) return Utils.toast("⚠️ 巡邏消耗 15 SP，體力不足！", "error");
+        
+        STATE.sp -= 15; UI.update();
+        let pool = DB.events[areaId];
+        let ev = pool[Math.floor(Math.random() * pool.length)];
+        
+        const ov = document.getElementById("overlay-event");
+        ov.classList.remove("hidden"); ov.classList.add("flex");
+        document.getElementById("ev-type").innerText = "NIGHT CITY INCIDENT";
+        document.getElementById("ev-title").innerText = ev.title;
+        document.getElementById("ev-desc").innerText = ev.desc;
+        
+        document.getElementById("ev-mcq-area").classList.add("hidden");
+        document.getElementById("ev-essay-area").classList.add("hidden");
+        document.getElementById("ev-essay-area").classList.remove("flex");
+
+        const actionArea = document.getElementById("ev-action-area"); actionArea.innerHTML = "";
+        ev.opt.forEach(o => {
+            let btn = document.createElement("button");
+            btn.className = "w-full text-left p-5 glass rounded-xl border border-rose-900/50 hover:border-rose-500 btn-interact mb-3 shadow-[0_4px_15px_rgba(0,0,0,0.5)]";
+            let alignColor = o.align === 'law' ? 'text-blue-400' : (o.align === 'chaos' ? 'text-rose-500' : 'text-amber-400');
+            btn.innerHTML = `
+                <div class="font-black text-white mb-2 text-[15px] leading-relaxed">${o.t}</div>
+                <div class="flex gap-2">
+                    <span class="text-[10px] ${alignColor} font-black bg-black/50 px-2 py-1 rounded border border-slate-700 cyber-title">[${o.align.toUpperCase()}]</span>
+                    <span class="text-[10px] text-amber-400 font-bold bg-amber-900/40 px-2 py-1 rounded border border-amber-900/50"><i class="fa-solid fa-dice-d20 mr-1"></i>${o.sub}檢定 (DC ${o.dc})</span>
+                </div>
+            `;
+            btn.onclick = () => {
+                this.currentSubj = { name: o.sub, dc: o.dc };
+                this.currentQ = { exp: o.exp, dmg: o.dmg, a: o.f, trpgSuccess: o.s, align: o.align, extraGold: o.gold || 0 };
+                DICE.roll(null, 1, true); 
+            };
+            actionArea.appendChild(btn);
+        });
+    },
+    showEssayAns() {
+        document.getElementById("ev-essay-area").classList.add("hidden");
+        document.getElementById("ev-essay-area").classList.remove("flex");
+        const actionArea = document.getElementById("ev-action-area");
+        actionArea.innerHTML = `
+            <div class="text-[15px] text-slate-200 bg-black/60 p-6 rounded-xl border border-purple-500/50 mb-5 whitespace-pre-wrap leading-loose shadow-[0_0_15px_rgba(168,85,247,0.2)] font-serif"><span class="text-purple-400 font-black block mb-3 cyber-title">DECRYPTED DATA:</span>${this.currentQ.a}</div>
+            <div class="grid grid-cols-2 gap-4">
+                <button class="bg-gradient-to-br from-green-600 to-emerald-700 py-4 rounded-xl text-white font-black btn-interact shadow-[0_4px_15px_rgba(16,185,129,0.4)] border border-green-500/50" onclick="DICE.roll(true, 1.5)">完全吻合 (優勢)</button>
+                <button class="bg-gradient-to-br from-red-600 to-rose-700 py-4 rounded-xl text-white font-black btn-interact shadow-[0_4px_15px_rgba(225,29,72,0.4)] border border-red-500/50" onclick="DICE.roll(false)">邏輯破碎 (劣勢)</button>
+            </div>
+        `;
+    },
+    close() { document.getElementById("overlay-event").classList.add("hidden"); document.getElementById("overlay-event").classList.remove("flex"); }
+};
+
+const DICE = {
+    roll(isCorrectAns, essayBonus = 1, isTRPG = false) {
+        EVENT_UI.close();
+        const ov = document.getElementById("overlay-dice");
+        ov.classList.remove("hidden"); ov.classList.add("flex");
+        
+        let targetDC = EVENT_UI.currentSubj.dc || 15;
+        document.getElementById("dice-dc").innerText = targetDC;
+        document.getElementById("dice-math").classList.add("hidden");
+        
+        const diceEl = document.getElementById("the-dice");
+        diceEl.className = "dice rolling"; diceEl.innerText = "";
+
+        setTimeout(() => {
+            diceEl.classList.remove("rolling");
+            
+            let baseRoll;
+            if(isTRPG) baseRoll = Math.floor(Math.random() * 20) + 1;
+            else baseRoll = isCorrectAns ? (Math.floor(Math.random()*10) + 11) : (Math.floor(Math.random()*10) + 1);
+            if(baseRoll > 20) baseRoll = 20;
+            
+            if(baseRoll === 1 && STATE.activePartner === 'shizuku') {
+                baseRoll = Math.floor(Math.random()*15) + 2; 
+                Utils.toast("🔬 靜的支援：防禦了致命失誤！", "purple");
+            }
+
+            diceEl.innerText = baseRoll;
+            if(baseRoll === 20) diceEl.classList.add("crit-success");
+            if(baseRoll === 1) diceEl.classList.add("crit-fail");
+
+            this.resolve(baseRoll, targetDC, essayBonus, isTRPG);
+        }, 1100);
+    },
+    resolve(baseRoll, targetDC, essayBonus, isTRPG) {
+        let subjName = EVENT_UI.currentSubj.name;
+        document.getElementById("math-sub").innerText = subjName;
+
+        let masteryVal = STATE.mastery[subjName] || 0;
+        let partnerBuff = 0; let buffName = "無";
+        
+        if(STATE.activePartner) {
+            const p = DB.chars[STATE.activePartner];
+            if(p.buffSubj && p.buffSubj.some(s => subjName.includes(s) || s.includes(subjName))) {
+                partnerBuff = p.buffVal; buffName = p.name;
+            }
+        }
+        
+        if(STATE.inventory.some(i => i.includes('gear_law'))) {
+            partnerBuff += STATE.inventory.includes('gear_law_pro') ? 2 : 1;
+            buffName += "+法典";
+        }
+
+        let total = baseRoll + masteryVal + partnerBuff;
+        let isSuccess = baseRoll === 20 ? true : (baseRoll === 1 ? false : total >= targetDC);
+
+        document.getElementById("dice-math").classList.remove("hidden");
+        document.getElementById("math-base").innerText = baseRoll;
+        document.getElementById("math-mastery").innerText = `+${masteryVal}`;
+        document.getElementById("math-buff").innerText = `+${partnerBuff} (${buffName})`;
+        document.getElementById("math-total").innerText = total;
+
+        const lore = document.getElementById("dice-lore");
+        const resText = document.getElementById("dice-res");
+        let q = EVENT_UI.currentQ;
+
+        if(isSuccess) {
+            resText.innerText = baseRoll === 20 ? "CRITICAL!" : "SUCCESS"; 
+            resText.className = "text-4xl font-black uppercase tracking-widest text-green-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.6)] mb-3 cyber-title";
+            
+            let exp = q.exp * essayBonus * (baseRoll === 20 ? 1.5 : 1);
+            if(STATE.inventory.includes("gear_glasses")) exp *= 1.15; 
+            
+            let goldMult = STATE.inventory.includes("gear_amulet") ? 1.2 : 1;
+            let finalGold = (q.extraGold || exp * 0.8) * goldMult;
+            
+            STATE.exp += exp; STATE.gold += finalGold;
+            STATE.mastery[subjName] = masteryVal + 1; 
+            
+            if(STATE.activePartner === 'xiaoya') { STATE.sp = Math.min(STATE.maxSp, STATE.sp + 5); Utils.toast("👧 小雅聲援：恢復 5 SP", "success"); }
+            
+            if(isTRPG) {
+                if(q.align === 'law') STATE.alignLaw += 5;
+                if(q.align === 'chaos') STATE.alignChaos += 5;
+            }
+            
+            let loreText = isTRPG ? q.trpgSuccess : `神經元連結成功，記憶檢索吻合。<br><br>EXP +${Math.floor(exp)} / CREDITS +${Math.floor(finalGold)}`;
+            lore.innerHTML = `<span class='text-green-400 font-black block mb-2 text-sm cyber-title'>[ OVERRIDE SUCCESS ]</span>${loreText}`;
+        } else {
+            resText.innerText = baseRoll === 1 ? "FUMBLE!" : "FAILURE"; 
+            resText.className = "text-4xl font-black uppercase tracking-widest text-rose-500 drop-shadow-[0_0_15px_rgba(225,29,72,0.6)] mb-3 cyber-title";
+            
+            let dmg = q.dmg * (baseRoll === 1 ? 1.5 : 1);
+            if(STATE.activePartner === 'chen') { dmg = Math.floor(dmg * 0.5); Utils.toast("👴 局長教誨：防禦型減傷 50%", "info"); }
+            
+            STATE.hp -= dmg; if(STATE.hp<0) STATE.hp = 0;
+            
+            let loreText = isTRPG ? q.a : `神經元連結失敗，遭受精神反噬。<br><br>【正確記憶解析】\n${q.a}`;
+            lore.innerHTML = `<span class='text-rose-500 font-black block mb-2 text-sm cyber-title'>[ SYSTEM ERROR : HP -${Math.floor(dmg)} ]</span>${loreText}`;
+        }
+
+        this.checkLevel(); UI.update(); CORE.save();
+    },
+    checkLevel() {
+        let need = Utils.getExpNeed(STATE.lv);
+        if(STATE.exp >= need) {
+            STATE.exp -= need; STATE.lv++; CORE.calcPassiveStats(); STATE.hp = STATE.maxHp;
+            MODAL.showAlert("系統升級", `你已晉升為【${Utils.getRank(STATE.lv)}】(Lv.${STATE.lv})！\n神經負載上限提升，HP 完全恢復。`);
+        }
+    },
+    close() { document.getElementById("overlay-dice").classList.add("hidden"); document.getElementById("overlay-dice").classList.remove("flex"); document.getElementById("the-dice").className = "dice"; }
+};
+
+/**
+ * ============================================================================
+ * SYSTEM & CUSTOM DB
+ * ============================================================================
+ */
+const PROFILE = {
+    renderMastery() {
+        const list = document.getElementById("mastery-list"); list.innerHTML = "";
+        let exams = DB.exams[STATE.target].sub; 
+        exams.forEach(sub => {
+            let val = STATE.mastery[sub] || 0;
+            list.innerHTML += `
+                <div class="flex items-center justify-between text-xs border-b border-slate-700 pb-1.5 pt-1">
+                    <span class="text-slate-300 w-32 truncate font-bold">${sub}</span>
+                    <div class="h-1.5 flex-1 bg-slate-800 rounded mx-3 overflow-hidden border border-slate-700"><div class="h-full bg-blue-500 shadow-[0_0_5px_rgba(56,189,248,0.8)]" style="width:${Math.min(100, val*2)}%"></div></div>
+                    <span class="text-amber-400 font-black w-10 text-right cyber-title">Lv.${val}</span>
+                </div>
+            `;
+        });
+    }
+};
+
+const CUSTOM_DB = {
+    add() {
+        let s = document.getElementById("cq-sub").value.trim(); let t = document.getElementById("cq-type").value;
+        let q = document.getElementById("cq-q").value.trim(); let a = document.getElementById("cq-a").value.trim();
+        if(!s || !q || !a) return Utils.toast("❌ 寫入失敗：資料不完整", "error");
+        
+        MODAL.showConfirm("寫入確認", `即將把【${s}】寫入私人記憶庫。\n這將會在未來的巡邏中被檢索，確定寫入？`, (res) => {
+            if(res) {
+                STATE.customQs.push({ s: s, t: t, q: q, a: a, exp: 40, dmg: 20, isCustom: true });
+                CORE.save();
+                Utils.toast("✅ 私人記憶節點寫入成功！", "success");
+                document.getElementById("cq-q").value = ""; document.getElementById("cq-a").value = "";
+                document.getElementById("custom-q-count").innerText = `收錄: ${STATE.customQs.length} 筆`;
+            }
+        });
+    }
+};
+
+window.onload = () => CORE.init();
+
+</script>
 </body>
 </html>
+
+
