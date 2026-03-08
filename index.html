@@ -245,7 +245,7 @@
         <section id="view-social" class="h-full scrollable overflow-y-auto p-4 space-y-4 hidden fade-in">
             <div class="text-center mt-2 mb-4">
                 <h2 class="text-2xl font-black text-pink-500 tracking-widest drop-shadow-lg cyber-title neon-text-pink">CONNECTIONS</h2>
-                <p class="text-[10px] text-slate-400 mt-1 font-serif leading-relaxed">防禦型社交網絡：夥伴提供強大被動增益。<br>劇情耗盡後的日常閒聊將消耗 15 SP，請善用黑市禮物。</p>
+                <p class="text-[10px] text-slate-400 mt-1 font-serif leading-relaxed">防禦型社交網絡：好感度每 1000 點轉化為檢定增益。<br>劇情耗盡後的日常閒聊將消耗 15 SP，請善用黑市禮物。</p>
             </div>
             <div id="companion-list" class="space-y-3"></div>
             <div class="h-28"></div>
@@ -262,6 +262,7 @@
                     <button class="shop-tab active transition-colors hover:text-amber-300" onclick="BASE.renderShop('consume', this)">戰術補給</button>
                     <button class="shop-tab transition-colors hover:text-amber-300" onclick="BASE.renderShop('gift', this)">私販禮物</button>
                     <button class="shop-tab transition-colors hover:text-amber-300" onclick="BASE.renderShop('gear', this)">神經義體</button>
+                    <button class="shop-tab transition-colors hover:text-amber-300" onclick="BASE.renderShop('pet', this)">仿生寵物</button>
                 </div>
                 <div id="shop-list" class="grid grid-cols-2 gap-3 thin-scroll max-h-[350px] overflow-y-auto pr-1 pb-1"></div>
             </div>
@@ -500,9 +501,21 @@ const Utils = {
         t.innerHTML = msg;
         c.appendChild(t); setTimeout(() => t.remove(), 3500);
     },
-    ranks: ["警佐三階三級","警佐三階二級","警佐三階一級","警佐二階三級","警佐二階二級","警佐二階一級","警佐一階三級","警佐一階二級","警佐一階一級","警正四階三級","警正四階二級","警正四階一級","警正三階三級","警正三階二級","警正三階一級","警正二階","警正一階"],
-    getRank(lv) { let idx = Math.floor((lv - 1) / 3); return idx >= this.ranks.length ? "警監 (NCPD 傳奇)" : this.ranks[idx]; },
-    getExpNeed(lv) { return Math.floor(150 * Math.pow(1.5, lv - 1)); } // V5 升級難度加劇
+    ranks: [
+        "警佐三階三級","警佐三階二級","警佐三階一級",
+        "警佐二階三級","警佐二階二級","警佐二階一級",
+        "警佐一階三級","警佐一階二級","警佐一階一級",
+        "警正四階三級","警正四階二級","警正四階一級",
+        "警正三階三級","警正三階二級","警正三階一級","警正二階","警正一階",
+        "警監四階", "警監三階", "警監二階", "警監一階", "警監特階"
+    ],
+    getRank(lv) { 
+        return lv - 1 >= this.ranks.length ? "警監特階 (NCPD 傳奇)" : this.ranks[lv - 1]; 
+    },
+    getExpNeed(lv) { 
+        // V5 終極指數曲線：初期順暢，過警正後難度陡增，考驗長期定力
+        return Math.floor(300 * Math.pow(1.65, lv - 1)); 
+    }
 };
 
 /**
@@ -557,6 +570,33 @@ const DB = {
                 { req: 6000, lines: [{t:"（她從背後抱住你）看著冷錢包的數字跳動，不如看著你為2028年考試奮鬥的背影踏實。你負責現實的法律防禦，我負責虛擬的資產防禦。絕配，對吧？"}] }
             ]
         },
+        rin: { name: "凜 (Rin)", type: "romance", icon: "💼", color: "text-emerald-300", desc: "跨國企業區塊鏈查帳員。冷靜、專注於宏觀經濟與 2030 長線週期。", buffText: "冷錢包利息+80%，無視市場 FUD", buffType: "passive_gold", buffVal: 1.8, favGift: "gift_bitcoin_physical",
+            events: [
+                { req: 0, lines: [{t:"你在看那些短線炒作的K線圖嗎？關掉它。機構的 OTC 交易台正在默默吸籌，真正的戰場在 2030 年。"}, {choices:[{text:"我也是長期持有者，我的目標也是那一年。", aff:35, next:"很好。防禦型投資的第一步，就是學會忽略雜音。時間是我們唯一的槓桿。"}, {text:"可是今天跌了 10%...", aff:-20, next:"如果這點波動就讓你恐慌，你應該把幣賣了，專心回去背你的法條。"}]}] },
+                { req: 800, lines: [{t:"（她遞給你一份加密的鏈上數據分析）華爾街的拋售是假象。把你的籌碼鎖進冷錢包，然後專注在你的 2028 警察特考上。現實的階級躍升與虛擬的資產積累，缺一不可。"}] },
+                { req: 2500, lines: [{t:"昨晚夜城發生了針對交易所的駭客攻擊。散戶在恐慌拋售(FUD)，但你沒有動。"}, {choices:[{text:"因為我相信基本面沒有改變。", aff:60, align: "law", next:"這就是鑽石手。防禦型策略不僅適用於持倉，也適用於你的執法心態：不被表象迷惑。"}, {text:"我差點就按下了賣出鍵。", aff:10, next:"恐懼是人性。但克服恐懼，才是跨越階級的入場券。"}]}] },
+                { req: 6000, lines: [{t:"（深夜，她靠在你的肩膀上看著冷錢包餘額）不需要頻繁交易，不需要理會那些標題聳動的釣魚影片。我們的護城河已經建好，現在，只需要等待 2030 年的日出。"}] },
+                { req: 10000, lines: [{t:"不管 2028 年的榜單上有沒有你的名字，你都已經贏了。你守住了底線，也守住了我們的未來。接下來的夜城，我們買下來。"}] }
+            ]
+        },
+        aura: { name: "奧拉 (Aura)", type: "romance", icon: "🌐", color: "text-cyan-400", desc: "全息法學 AI 投影。具備最新憲法法庭判決與行政程序法資料庫。", buffText: "法規/憲法 +5，免疫 1 次致命失敗", buffSubj: ["法規", "憲法", "行政法"], buffVal: 5, favGift: "gift_keyboard_quantum",
+            events: [
+                { req: 0, lines: [{t:"系統已同步 2026 年最新法規動態。警官，你的執法紀錄中有 15% 的機率在『盤查要件』上存在瑕疵。請覆誦警察職權行使法第 6 條。"}, {choices:[{text:"合理懷疑其有犯罪之嫌疑或有犯罪之虞者。", aff:40, next:"正確。防禦型執法建立在無懈可擊的程序之上。不要給督察與律師任何攻擊你的漏洞。"}, {text:"看起來可疑就可以盤查。", aff:-30, hpLoss: 20, next:"錯誤。這種實務上的苟且心態，會讓你在法庭上付出慘痛代價。"}]}] },
+                { req: 1000, lines: [{t:"根據最新憲法判決精神，隱私權的保障界線正在緊縮。在街頭執行附帶搜索時，請嚴格遵守刑訴法第 130 條『立即可觸及之處所』。超出這個範圍，就是毒樹果實。"}] },
+                { req: 3000, lines: [{t:"如果民眾對你的管束或盤查提出異議，你該怎麼做？"}, {choices:[{text:"依警職法第 29 條，將異議理由製作紀錄表交給他。", aff:70, align: "law", next:"滿分。這張『異議紀錄表』不僅是民眾的救濟途徑，更是你依法行政的最佳防禦證明。"}, {text:"警告他涉嫌妨害公務。", aff:-20, align: "chaos", next:"濫用妨害公務只會激化衝突。你的防禦協議存在嚴重邏輯錯誤。"}]}] },
+                { req: 7000, lines: [{t:"（全息投影閃爍，她擬態出人類的情感）我的資料庫裡塞滿了法條，但沒有『害怕失去你』的代碼。請在街頭活下去，直到 2028 年的考場。"}] },
+                { req: 10000, lines: [{t:"我分析了所有的勝率模型。只要你保持防禦型的心態，不論是法庭攻防還是夜城的槍戰，你的存活率都是 100%。我會一直在你的神經網路裡守護你。"}] }
+            ]
+        },
+        ying: { name: "影 (Ying)", type: "romance", icon: "🏍️", color: "text-violet-400", desc: "重機飆車族臥底。精通黑白兩道的街頭生存術與刑事勤務。", buffText: "每日恢復 20 SP，勤務檢定 +6", buffSubj: ["勤務", "警察勤務", "刑訴"], buffVal: 6, favGift: "gift_gun_oil",
+            events: [
+                { req: 0, lines: [{t:"喲，這不是我們最愛照本宣科的警官嗎？在下層區，背熟警察勤務條例救不了你的命。你得知道什麼時候該拔槍，什麼時候該轉身就跑。"}, {choices:[{text:"退避與呼叫支援，本來就是勤務的一部分。", aff:40, next:"算你腦袋清楚。死了就什麼都沒了。"}, {text:"我絕對不會背對罪犯。", aff:-10, next:"那祝你早日成為烈士紀念碑上的一個名字。"}]}] },
+                { req: 900, lines: [{t:"（她丟給你一個醫藥箱）昨天你掩護我撤退時受傷了。刑訴法的『一目瞭然法則』（Plain View Doctrine），用在街頭就是：看到不對勁，馬上找掩體。"}] },
+                { req: 2800, lines: [{t:"我聽說你要考警佐班？那裡的題目很刁鑽。比如，無令狀搜索的幾種例外情形，你能瞬間反應過來嗎？"}, {choices:[{text:"附帶搜索、逕行搜索、同意搜索、緊急搜索。", aff:60, next:"倒背如流嘛。希望你在面對槍口時，腦袋也能轉得這麼快。"}, {text:"呃...緊急搜索？", aff:10, next:"回去重讀刑訴法第 130 條到 131 條之 1。你的防禦網還有漏洞。"}]}] },
+                { req: 6500, lines: [{t:"（她騎著重機，載著你在夜城狂飆）別管那些黑幫跟企業的勾結了！只要你的冷錢包還在，只要你 2028 年能穿上白襯衫，我們就能離開這個鬼地方！"}] },
+                { req: 10000, lines: [{t:"我的身分隨時會曝光。但只要想到你在警局裡用那些法條作為防禦陣線支援我...我就無所畏懼。約好了，考上之後，帶我離開夜城。"}] }
+            ]
+        },
         zero: { name: "零 (Zero)", type: "mentor", icon: "🥷", color: "text-teal-400", desc: "暗網情報掮客。提供加密幣內幕，道德偏向混沌。", buffText: "金錢收益大幅上升，混沌陣營", buffType: "chaos_gold", buffVal: 1.8, favGift: "gift_bitcoin_physical",
             events: [
                 { req: 0, lines: [{t:"防禦型執法者？在夜城，最好的防禦是先一步知道別人的底牌。我這裡有華爾街機構倒貨的內幕消息，要不要買？"}, {choices:[{text:"我不聽內幕，我專注基本面與2030。", aff:40, align: "law", next:"哈！罕見的鑽石手。你引起我的興趣了。"}, {text:"多少錢？我付。", aff:50, align: "chaos", goldLoss: 500, next:"(失去 500 Credits) 很好，這情報會讓你賺回來的。"}]}] },
@@ -609,9 +649,9 @@ const DB = {
         "gift_cake_holo": { name: "全息草莓蛋糕", cat: "gift", icon: "🍰", desc: "小雅的最愛。好感度中幅提升。", price: 300, aff: 50 },
         "gift_gun_oil": { name: "納米槍油", cat: "gift", icon: "🔫", desc: "沐雪/鐵哥會喜歡。好感度中幅提升。", price: 300, aff: 50 },
         "gift_tea_premium": { name: "特級大禹嶺", cat: "gift", icon: "🫖", desc: "局長與K的最愛。好感度中幅提升。", price: 300, aff: 50 },
-        "gift_keyboard_quantum": { name: "量子鍵盤軸", cat: "gift", icon: "⌨️", desc: "凱琳/零的最愛。好感度中幅提升。", price: 300, aff: 50 },
+        "gift_keyboard_quantum": { name: "量子鍵盤軸", cat: "gift", icon: "⌨️", desc: "凱琳/零/奧拉的最愛。好感度中幅提升。", price: 300, aff: 50 },
         "gift_cigar": { name: "古巴合成雪茄", cat: "gift", icon: "🚬", desc: "黑市熱銷品。通用好感提升。", price: 200, aff: 30 },
-        "gift_bitcoin_physical": { name: "實體比特幣", cat: "gift", icon: "🪙", desc: "極其稀有。所有人好感度巨幅提升。", price: 2000, aff: 400 },
+        "gift_bitcoin_physical": { name: "實體比特幣", cat: "gift", icon: "🪙", desc: "極其稀有。凜的最愛，所有人好感度巨幅提升。", price: 2000, aff: 400 },
 
         // === 神經義體 / 裝備 (Gear) ===
         "gear_hp_1": { name: "戰術皮甲", cat: "gear", icon: "🦺", desc: "被動：最大 HP +30。", price: 1000, type: "passive_hp", val: 30 },
@@ -630,9 +670,13 @@ const DB = {
         "wallet_cold_v3": { name: "【史詩】冷錢包 V3", cat: "gear", icon: "🔐", desc: "被動：高階加密複利，利息翻倍。", price: 15000, type: "passive_gold_v3", css: "item-epic" },
         "gear_diamond_hands": { name: "【史詩】2030 鑽石手", cat: "gear", icon: "💎", desc: "被動：無視波動，Focus 掛機收益 1.5 倍。", price: 20000, type: "passive_focus_mult", val: 1.5, css: "item-epic" },
 
-        // Legendary Tier
         "gear_legend_ai": { name: "【傳奇】全知戰術 AI", cat: "gear", icon: "🌌", desc: "被動：所有檢定全面突破 +8。", price: 50000, type: "passive_all_buff", val: 8, css: "item-legendary" },
-        "gear_legend_btc": { name: "【傳奇】機構級挖礦節點", cat: "gear", icon: "🖥️", desc: "被動：產生巨額被動財富。", price: 100000, type: "passive_gold_super", css: "item-legendary" }
+        "gear_legend_btc": { name: "【傳奇】機構級挖礦節點", cat: "gear", icon: "🖥️", desc: "被動：產生巨額被動財富。", price: 100000, type: "passive_gold_super", css: "item-legendary" },
+
+        // === 戰術仿生寵物 (Pet) ===
+        "pet_k9_hound": { name: "K-9 鎮暴機械犬", cat: "pet", icon: "🐕‍🦺", desc: "被動：武力與勤務檢定常駐 +3。", price: 25000, type: "passive_buff_combat", val: 3, css: "item-epic" },
+        "pet_holo_owl": { name: "全息監視梟", cat: "pet", icon: "🦉", desc: "被動：法規檢定失敗時，免疫 50% 精神傷害。", price: 38000, type: "passive_defense", val: 0.5, css: "item-epic" },
+        "pet_nano_cat": { name: "【傳奇】奈米治癒貓", cat: "pet", icon: "🐈", desc: "被動：每日自動恢復 20 SP，極大延長掛機續航。", price: 80000, type: "passive_sp_regen", val: 20, css: "item-legendary" }
     },
 
     events: {
@@ -759,7 +803,7 @@ const DB = {
         "投資加密幣就像防禦型執法：先求不傷身體，再求逮捕犯人。保住本金最重要。",
         "看著街頭的霓虹燈，思考著憲法法庭最新的判決精神...防禦力提升了。",
         "刑法第23條正當防衛，實務上最難抓的就是『防衛過當』的界線。",
-        "長線持有的秘訣就是忘記密碼...開玩笑的，冷錢包一定要收好。",
+        "長線持有的秘訣就是忘記密碼...開玩笑的，冷錢包一定要收好。時間是你唯一的槓桿。",
         "警察職權行使法是我們的盾牌。越是熟悉，就越能在街頭保護自己。",
         "今天又看到了宣稱比特幣會跌到零的 FUD 新聞。笑死，趁機加倉。",
         "刑事訴訟法的核心就是『程序正義』。沒有程序正義，就沒有實質正義。",
@@ -767,7 +811,8 @@ const DB = {
         "毒樹果實理論...如果第一步就錯了，後面拿到再多證據都是枉然。",
         "防禦型投資不是不投資，而是不參與沒有把握的賭局。這點跟執法一模一樣。",
         "有時候，不作為也是一種行政處分。行政法真的博大精深。",
-        "夜城的雨從來沒停過。只要我們還穿著這身制服，就要守住最後的底線。"
+        "夜城的雨從來沒停過。只要我們還穿著這身制服，就要守住最後的底線。",
+        "最新釋字對於隱私權的限縮，意味著我們在街頭盤查的要件必須更加嚴謹。"
     ]
 };
 
@@ -797,7 +842,7 @@ const CORE = {
         
         if(STATE.lv === 1 && STATE.exp === 0 && STATE.gold === 500) {
             setTimeout(() => {
-                MODAL.showAlert("【防禦型執法者 V5 上線】", "系統已更新至 V5 終極深潛版。\n\n▶ 海量實務題庫：涵蓋警職法、刑訴、行政法最新實務情境。\n▶ 經濟重構：新增傳奇裝備、V3冷錢包，經濟難度大增。\n▶ 羈絆系統擴編：新增角色「零」與「鐵哥」，好感度劇情大幅加長。\n▶ 日常對話庫：隨機抽取防禦型投資與法規心法。\n\n『過濾雜訊，活到 2030 年。夜城需要你的智慧。』");
+                Utils.toast("【防禦型執法者 V5】已啟動。過濾雜訊，活到 2030 年。", "success");
             }, 1000);
         }
     },
@@ -877,7 +922,16 @@ const CORE = {
     },
     passiveTick() {
         let updated = false;
-        if(STATE.sp < STATE.maxSp) { STATE.sp += 1; updated = true; } 
+        let spRegen = 1;
+
+        // 夥伴或寵物的 SP 恢復加成
+        if(STATE.activePartner === 'ying') spRegen += 20; 
+        if(STATE.inventory.includes("pet_nano_cat")) spRegen += 20;
+
+        if(STATE.sp < STATE.maxSp) { 
+            STATE.sp = Math.min(STATE.maxSp, STATE.sp + spRegen); 
+            updated = true; 
+        } 
         
         let interest = 0;
         if(STATE.inventory.includes("wallet_cold_v1")) interest += STATE.lv * 20;
@@ -886,6 +940,7 @@ const CORE = {
         
         if(interest > 0) {
             if(STATE.activePartner === 'kaelen') interest = Math.floor(interest * 1.6);
+            if(STATE.activePartner === 'rin') interest = Math.floor(interest * 1.8); // 凜的長線加成
             if(STATE.activePartner === 'k_corpo') interest = Math.floor(interest * 1.5);
             if(STATE.activePartner === 'zero') interest = Math.floor(interest * 1.8);
             
@@ -1038,12 +1093,12 @@ const BASE = {
             let item = DB.items[id];
             if(item.cat !== cat) continue;
             
-            let isOwnedGear = (cat === 'gear' && STATE.inventory.includes(id));
+            let isOwnedGear = ((cat === 'gear' || cat === 'pet') && STATE.inventory.includes(id));
             let extraCss = item.css ? item.css : "";
             let btnClass = isOwnedGear ? "bg-slate-900 border-slate-700 opacity-50 cursor-not-allowed" : `bg-slate-800/90 hover:bg-slate-700 border-slate-600 hover:border-amber-500 btn-interact ${extraCss}`;
             
             let finalPrice = Math.floor(item.price * priceMult);
-            let priceDisplay = isOwnedGear ? "已安裝" : `<i class="fa-brands fa-bitcoin mr-1"></i>${finalPrice.toLocaleString()}`;
+            let priceDisplay = isOwnedGear ? "已安裝/配置" : `<i class="fa-brands fa-bitcoin mr-1"></i>${finalPrice.toLocaleString()}`;
             
             let nameDisplay = item.name.includes("【傳奇】") ? `<span class="text-amber-400">${item.name}</span>` : 
                               item.name.includes("【史詩】") ? `<span class="text-purple-400">${item.name}</span>` : item.name;
@@ -1093,7 +1148,7 @@ const BASE = {
     },
     use(id) {
         let item = DB.items[id];
-        if(item.cat === 'gear') return Utils.toast(`🛡️ 神經裝備置於背包即被動生效。`, "info");
+        if(item.cat === 'gear' || item.cat === 'pet') return Utils.toast(`🛡️ 神經裝備/仿生獸置於背包即被動生效。`, "info");
         if(item.cat === 'gift') return Utils.toast(`🎁 這是私販禮物，請至「SOCIAL」介面贈送給夥伴。`, "warning");
         
         MODAL.showConfirm("使用確認", `啟動消耗品【${item.name}】？\n效果：${item.desc}`, (res) => {
@@ -1353,7 +1408,8 @@ const EVENT_UI = {
         btn1.innerHTML = `<div class="font-black text-white mb-2 text-[15px] leading-relaxed">${ev.opt1}</div><div class="flex gap-2"><span class="text-[10px] text-blue-400 font-black bg-black/50 px-2 py-1 rounded border border-slate-700 cyber-title">[LAW]</span><span class="text-[10px] text-amber-400 font-bold bg-amber-900/40 px-2 py-1 rounded border border-amber-900/50"><i class="fa-solid fa-dice-d20 mr-1"></i>綜合檢定 (DC 15)</span></div>`;
         btn1.onclick = () => {
             this.currentSubj = { name: "法學知識與憲法", dc: 15 };
-            this.currentQ = { exp: 120, dmg: 40, a: "模擬失敗：你的選擇導致了災難性的後果。", trpgSuccess: "模擬成功：防禦型策略奏效。", align: "law", extraGold: 1000 };
+            // 下修收益
+            this.currentQ = { exp: 120, dmg: 40, a: "模擬失敗：你的選擇導致了災難性的後果。", trpgSuccess: "模擬成功：防禦型策略奏效。", align: "law", extraGold: 150 };
             DICE.roll(null, 1, true); 
         };
         actionArea.appendChild(btn1);
@@ -1363,7 +1419,8 @@ const EVENT_UI = {
         btn2.innerHTML = `<div class="font-black text-white mb-2 text-[15px] leading-relaxed">${ev.opt2}</div><div class="flex gap-2"><span class="text-[10px] text-rose-500 font-black bg-black/50 px-2 py-1 rounded border border-slate-700 cyber-title">[CHAOS]</span><span class="text-[10px] text-amber-400 font-bold bg-amber-900/40 px-2 py-1 rounded border border-amber-900/50"><i class="fa-solid fa-dice-d20 mr-1"></i>綜合檢定 (DC 15)</span></div>`;
         btn2.onclick = () => {
             this.currentSubj = { name: "警察勤務", dc: 15 };
-            this.currentQ = { exp: 60, dmg: 60, a: "模擬失敗：過於衝動，防禦機制崩潰。", trpgSuccess: "模擬成功：你在混亂中存活並獲得了意外之財。", align: "chaos", extraGold: 2000 };
+            // 下修收益
+            this.currentQ = { exp: 60, dmg: 60, a: "模擬失敗：過於衝動，防禦機制崩潰。", trpgSuccess: "模擬成功：你在混亂中存活並獲得了意外之財。", align: "chaos", extraGold: 250 };
             DICE.roll(null, 1, true); 
         };
         actionArea.appendChild(btn2);
@@ -1455,28 +1512,33 @@ const DICE = {
         let subjName = EVENT_UI.currentSubj.name;
         document.getElementById("math-sub").innerText = subjName;
 
+        // 1. 夥伴基礎能力與好感度加成 (每 1000 好感度 = +1 檢定)
         let masteryVal = STATE.mastery[subjName] || 0;
         let partnerBuff = 0; let buffName = "無";
         
         if(STATE.activePartner && DB.chars[STATE.activePartner]) {
             const p = DB.chars[STATE.activePartner];
+            let affLevel = Math.floor((STATE.aff[STATE.activePartner] || 0) / 1000);
+            
             if(p.buffSubj && p.buffSubj.some(s => subjName.includes(s) || s.includes(subjName))) {
-                partnerBuff += p.buffVal; buffName = p.name;
+                partnerBuff += (p.buffVal + affLevel); 
+                buffName = `${p.name} (共鳴+${affLevel})`;
             }
         }
         
-        // Items passive Buffs
+        // 2. 裝備與戰術寵物被動 Buff
         for (let itemId of STATE.inventory) {
             let item = DB.items[itemId];
             if(!item) continue;
-            if(item.type === 'passive_buff_law' && (subjName.includes("法") || subjName.includes("憲"))) {
-                partnerBuff += item.val; buffName += `+${item.name}`;
-            }
-            if(item.type === 'passive_buff_combat' && (subjName.includes("勤務") || subjName.includes("力"))) {
-                partnerBuff += item.val; buffName += `+${item.name}`;
-            }
             if(item.type === 'passive_all_buff') {
-                partnerBuff += item.val; buffName += `+AI`;
+                partnerBuff += item.val; 
+                buffName += buffName === "無" ? item.name : `+${item.name}`;
+            } else if(item.type === 'passive_buff_law' && (subjName.includes("法") || subjName.includes("憲") || subjName.includes("訴"))) {
+                partnerBuff += item.val; 
+                buffName += buffName === "無" ? item.name : `+${item.name}`;
+            } else if(item.type === 'passive_buff_combat' && (subjName.includes("勤務") || subjName.includes("力") || subjName.includes("刑"))) {
+                partnerBuff += item.val; 
+                buffName += buffName === "無" ? item.name : `+${item.name}`;
             }
         }
 
@@ -1531,7 +1593,20 @@ const DICE = {
             
             if(CORE.getAlignment() === 'chaotic') dmg *= 1.25;
             
-            if(STATE.activePartner === 'chen') { dmg = Math.floor(dmg * 0.25); Utils.toast("👴 局長教誨：防禦型減傷 75%", "info"); }
+            if(STATE.inventory.includes("pet_holo_owl") && (subjName.includes("法") || subjName.includes("憲"))) {
+                dmg = Math.floor(dmg * 0.5);
+                Utils.toast("🦉 全息梟：免疫 50% 精神傷害", "info");
+            }
+            if(STATE.activePartner === 'chen') { 
+                dmg = Math.floor(dmg * 0.25); 
+                Utils.toast("👴 局長教誨：防禦型減傷 75%", "info"); 
+            }
+            
+            // 奧拉的防禦型保底機制：致命一擊豁免
+            if(STATE.activePartner === 'aura' && STATE.aff['aura'] >= 10000 && STATE.hp - dmg <= 0) {
+                dmg = STATE.hp - 1; 
+                Utils.toast("🌐 奧拉防禦協議：偵測到致命傷害，全息強制干預！", "purple");
+            }
             
             STATE.hp -= dmg; if(STATE.hp<0) STATE.hp = 0;
             
