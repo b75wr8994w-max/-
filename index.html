@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>夜城防禦網：終極成癮版 7.1 (Study Addiction - Ultimate)</title>
+    <title>夜城防禦網：終極成癮版 8.0 (Study Addiction - Ultimate)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -237,7 +237,7 @@
 </div>
 
 <!-- ========================================== -->
-<!-- MAIN APP (改為 absolute inset-0 滿版，解決 iOS 底部滾動裁切問題) -->
+<!-- MAIN APP -->
 <!-- ========================================== -->
 <div id="app" class="absolute inset-0 mx-auto w-full max-w-md flex flex-col bg-slate-950/90 shadow-2xl border-x border-slate-900 overflow-hidden">
 
@@ -270,7 +270,7 @@
             </div>
         </div>
         
-        <div class="grid grid-cols-2 gap-3 mt-2 relative z-10 cursor-help" onclick="Utils.toast('SAN 理智：事件檢定失敗時扣除。歸零將大幅噴錢。\nEXP 歷練：讀書獲得，升級解鎖更高警階。', 'info')">
+        <div class="grid grid-cols-2 gap-3 mt-2 relative z-10 cursor-help" onclick="Utils.toast('SAN 理智：事件檢定失敗時扣除。歸零將啟動防禦型停損。\nEXP 歷練：讀書獲得，升級解鎖更高警階。', 'info')">
             <div class="flex flex-col gap-1">
                 <div class="flex justify-between text-[9px] font-bold tracking-wider">
                     <span class="text-rose-400">理智 (SAN)</span>
@@ -292,7 +292,7 @@
         </div>
     </header>
 
-    <!-- MAIN VIEWS (flex-1 佔滿剩餘空間，支援內部滾動) -->
+    <!-- MAIN VIEWS -->
     <main class="flex-1 relative z-10 overflow-hidden bg-transparent" id="main-content">
         
         <!-- [1] 專注引擎 (核心資源獲取) -->
@@ -442,15 +442,24 @@
                     <h3 class="font-bold text-emerald-400 text-[11px] cyber-title tracking-widest"><i class="fa-solid fa-network-wired mr-1"></i>NEURAL MASTERY (神經專精)</h3>
                     <button class="text-[9px] bg-emerald-900/40 text-emerald-300 px-2 py-1 rounded border border-emerald-700/50 btn-interact hover:bg-emerald-800/60" onclick="SYSTEM_UI.addSubject()"><i class="fa-solid fa-plus mr-1"></i>新增科目</button>
                 </div>
-                <p class="text-[9px] text-slate-400 font-serif mb-3 leading-relaxed">這裡列出你所有的研讀科目。<br>每次專注時產生的時數與 EXP 將直接加總於你選擇的專精科目上。等級愈高，在此科目相關的 TRPG 檢定就愈容易通過。</p>
+                <p class="text-[9px] text-slate-400 font-serif mb-3 leading-relaxed">每次專注時產生的時數與 EXP 將直接加總於你選擇的專精科目上。等級愈高，在此科目相關的 TRPG 檢定就愈容易通過。</p>
                 <div id="system-mastery-list" class="space-y-3"></div>
+            </div>
+
+            <!-- 月度總結算 (新增：防禦型復盤) -->
+            <div class="glass p-4 rounded-xl border border-amber-900/40">
+                <h3 class="font-bold text-amber-400 text-[11px] cyber-title tracking-widest border-b border-amber-900/50 pb-2 mb-3"><i class="fa-solid fa-calendar-check mr-1"></i>MONTHLY SUMMARY (防禦型復盤)</h3>
+                <p class="text-[9px] text-slate-400 font-serif mb-3 leading-relaxed">長線的戰役不在於一天讀了多少，而在於每個月的穩定累積。檢視你的基本面護城河。</p>
+                <div id="system-monthly-list" class="space-y-2 max-h-[150px] overflow-y-auto thin-scroll"></div>
             </div>
 
             <!-- 維護備份 -->
             <div class="glass p-4 rounded-xl border border-slate-700 mb-8">
                 <h3 class="text-[11px] font-bold text-slate-300 cyber-title tracking-widest mb-3 border-b border-slate-800 pb-2"><i class="fa-solid fa-cloud-arrow-down mr-1"></i>MAINTENANCE</h3>
+                <p class="text-[9px] text-rose-400 font-serif mb-3">防禦型策略的第一步：定期備份資產。若系統快取被清除，未備份的心血將歸零。</p>
+                <div class="text-[10px] text-slate-400 cyber-title mb-2" id="sys-last-backup">最後備份：---</div>
                 <div class="flex gap-2 mb-3">
-                    <button class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded text-[10px] font-bold btn-interact border border-slate-600" onclick="SYSTEM_UI.exportData()">記憶備份 (匯出)</button>
+                    <button class="flex-1 bg-gradient-to-r from-blue-900 to-indigo-900 text-blue-200 py-2.5 rounded text-[10px] font-bold btn-interact border border-blue-700" onclick="SYSTEM_UI.exportData()">記憶備份 (匯出代碼)</button>
                     <button class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded text-[10px] font-bold btn-interact border border-slate-600" onclick="SYSTEM_UI.importData()">備份還原 (匯入)</button>
                 </div>
                 <button class="w-full bg-rose-950/30 text-rose-500 py-2.5 rounded text-[10px] font-bold border border-rose-900/50 btn-interact hover:bg-rose-900/50" onclick="MODAL.showConfirm('系統重置', '將清除所有時數、等級與資產，且無法復原。確定？', (res)=>{if(res){localStorage.removeItem('study_addiction_ultimate');location.reload();}})">重置系統 (WIPE DATA)</button>
@@ -458,7 +467,7 @@
         </section>
     </main>
 
-    <!-- BOTTOM NAV (針對 iOS 完美適配：移除寫死的 h-70px，改為 min-h 搭配 pb-safe 彈性推齊) -->
+    <!-- BOTTOM NAV -->
     <nav class="glass w-full flex justify-around items-center z-30 border-t border-slate-800/80 shrink-0 pb-safe pt-2 bg-slate-950/95 min-h-[80px]">
         <button class="flex flex-col items-center justify-center w-full text-emerald-400 nav-btn btn-interact transition-colors" onclick="UI.switchTab('focus', this)">
             <i class="fa-solid fa-stopwatch text-2xl mb-1 drop-shadow-[0_0_5px_rgba(16,185,129,0.8)]"></i>
@@ -542,10 +551,15 @@ const MODAL = {
 };
 
 // ============================================================================
-// DATABASE & LORE (Added New Items, Pets & Gears)
+// DATABASE & LORE (Expanded)
 // ============================================================================
 const DB = {
-    getExpNeed(lv) { return Math.floor(300 * Math.pow(1.12, lv - 1)); },
+    getExpNeed(lv) { 
+        // 改善長線升級體驗，40級(二線二星)以後轉為線性增長，避免撞牆期
+        if (lv <= 40) return Math.floor(300 * Math.pow(1.12, lv - 1)); 
+        let base40 = 300 * Math.pow(1.12, 39);
+        return Math.floor(base40 + (lv - 40) * 5000);
+    },
     getRankName(lv) {
         if (lv < 10) return "[一線三星] 警員";
         if (lv < 20) return "[一線四星] 巡佐 / 小隊長";
@@ -571,15 +585,13 @@ const DB = {
     items: {
         "con_pet_food": { name: "高能飼料/能源", cat: "consume", icon: "🍖", desc: "恢復伴隨單位 40% 飽食/能源。(專注機率掉落)", price: 200, effect: { pet_hunger: 40 } },
         "con_pet_toy": { name: "維護套件包", cat: "consume", icon: "🔧", desc: "恢復伴隨單位 40% 狀態/同步率。(專注機率掉落)", price: 200, effect: { pet_mood: 40 } },
-        "con_coffee_synth": { name: "合成咖啡", cat: "consume", icon: "☕", desc: "恢復 30 SAN 理智。", price: 200, effect: { hp: 30 } },
+        "con_def_coffee": { name: "防禦型濾掛咖啡", cat: "consume", icon: "☕", desc: "恢復 50 SAN。不受市場雜音干擾。", price: 400, effect: { hp: 50 } },
         "con_energy_drink": { name: "急救能量針", cat: "consume", icon: "💉", desc: "恢復 10 SP 體力 (應急用，昂貴)", price: 1500, effect: { sp: 10 } },
-        "con_memory_stim": { name: "記憶強化刺針", cat: "consume", icon: "🧪", desc: "恢復 50 SAN 理智 (強力鎮定劑)。", price: 500, effect: { hp: 50 } },
         "con_legal_redbull": { name: "法學狂牛能量飲", cat: "consume", icon: "🥫", desc: "恢復 20 SP 體力 (熬夜考前必備)。", price: 2800, effect: { sp: 20 } },
         
         "gift_gun_oil": { name: "納米槍油", cat: "gift", icon: "🔫", desc: "沐雪/鐵哥/影 喜好。", price: 400, aff: 50 },
         "gift_tea_premium": { name: "特級大禹嶺", cat: "gift", icon: "🫖", desc: "局長/K 喜好。", price: 400, aff: 50 },
         "gift_keyboard_quantum": { name: "量子鍵盤", cat: "gift", icon: "⌨️", desc: "多數科技與法規系角色喜好。", price: 400, aff: 50 },
-        "gift_cake_holo": { name: "全息蛋糕", cat: "gift", icon: "🍰", desc: "小雅喜好。", price: 400, aff: 50 },
         "gift_cigar": { name: "古巴合成雪茄", cat: "gift", icon: "🚬", desc: "零/林督察 喜好。", price: 400, aff: 50 },
         "gift_vintage_lawbook": { name: "絕版紙質六法", cat: "gift", icon: "📖", desc: "蕾克希/奧拉/林督察 喜好。", price: 800, aff: 100 },
         "gift_hardware_wallet": { name: "冷錢包 T-Model", cat: "gift", icon: "💽", desc: "凜/零/凱琳 喜好。", price: 1000, aff: 120 },
@@ -587,13 +599,15 @@ const DB = {
 
         "gear_law_1": { name: "初階法典晶片", cat: "gear", icon: "⚖️", desc: "被動：所有 TRPG 檢定 +2。", price: 8000, type: "buff_all", val: 2 },
         "gear_invest_1": { name: "基礎K線分析模組", cat: "gear", icon: "📈", desc: "被動：專注獲取 Cr +15%。", price: 15000, type: "passive_focus_mult", val: 1.15 },
+        "gear_hodl_tracker": { name: "鏈上巨鯨追蹤器", cat: "gear", icon: "🛰️", desc: "被動：專注獲取 Cr +20%。過濾短線雜訊。", price: 25000, type: "passive_focus_mult", val: 1.2 },
         "gear_exam_2028": { name: "【史詩】2028 必勝頭環", cat: "gear", icon: "👑", desc: "被動：所有 TRPG 檢定 +3。", price: 80000, type: "buff_all", val: 3, css: "item-epic" },
+        "gear_police_2028": { name: "【史詩】警佐二類密卷", cat: "gear", icon: "📜", desc: "被動：專注獲得的 EXP 提升 20%。(專為 2028 備戰)", price: 60000, type: "passive_focus_mult", val: 1.2, css: "item-epic" },
         "gear_diamond_hands": { name: "【史詩】鑽石手套", cat: "gear", icon: "💎", desc: "被動：專注獲得的資金與經驗 1.5 倍。", price: 50000, type: "passive_focus_mult", val: 1.5, css: "item-epic" },
         
         "pet_cat": { name: "流浪橘貓", cat: "unit", icon: "🐈", desc: "普通的貓，沒有特殊能力。陪伴你度過漫漫長夜。", price: 500, type: "pet" },
         "pet_dog": { name: "退役警犬", cat: "unit", icon: "🐕‍🦺", desc: "被動：專注時 SAN 恢復效率 +50%。", price: 15000, type: "pet" },
         "pet_owl": { name: "仿生夜鷹", cat: "unit", icon: "🦉", desc: "被動：專注時獲得體力(SP)效率 +50%。", price: 25000, type: "pet" },
-        "merc_drone": { name: "哨兵無人機", cat: "unit", icon: "🛸", desc: "被動：專注獲取 EXP 額外 +15%。", price: 30000, type: "pet", css: "item-epic" },
+        "pet_robo_cat": { name: "【史詩】仿生機械貓", cat: "unit", icon: "🐱", desc: "被動：專注時體力恢復效率 +80%。完全不需要餵食情緒穩定。", price: 65000, type: "pet", css: "item-epic" },
         "pet_capybara": { name: "【史詩】禪意水豚", cat: "unit", icon: "🦦", desc: "被動：專注時 SAN 恢復效率 +100% (極致防禦)。", price: 80000, type: "pet", css: "item-epic" },
         "merc_netrunner": { name: "竄網使雛機", cat: "unit", icon: "🤖", desc: "被動：專注獲取 Cr 額外 +25%。", price: 80000, type: "pet", css: "item-epic" },
         "merc_lawyer": { name: "【史詩】落魄的企業律師", cat: "unit", icon: "🕴️", desc: "被動：TRPG 檢定常駐 +3。", price: 120000, type: "pet", css: "item-epic" },
@@ -603,21 +617,25 @@ const DB = {
     },
     estates: [
         { id: "est_apt", name: "下層區微型公寓", icon: "🏢", desc: "最大 SAN +100", price: 80000, sanBuff: 100 },
+        { id: "est_btc_node", name: "微型全節點伺服器房", icon: "🖥️", desc: "最大 SAN +150。成為網路的防禦者。", price: 150000, sanBuff: 150 },
         { id: "est_condo", name: "中層區防禦宅", icon: "🌆", desc: "最大 SAN +250", price: 300000, sanBuff: 250 },
-        { id: "est_penthouse", name: "夜城頂層行宮", icon: "🌌", desc: "最大 SAN +800。階級躍升的終點。", price: 1000000, sanBuff: 800 }
+        { id: "est_penthouse", name: "夜城頂層行宮", icon: "🌌", desc: "最大 SAN +800。階級躍升的終點。", price: 1000000, sanBuff: 800 },
+        { id: "est_villa", name: "2030 財富自由別墅", icon: "🏡", desc: "最大 SAN +1500。長線鑽石手的應許之地。", price: 3000000, sanBuff: 1500 }
     ],
     chars: {
         lexie: { name: "蕾克希", icon: "👩‍💼", color: "text-pink-400", desc: "NCPD 法制科巡官。絕對的程序正義與法規權威。", buffText: "檢定常駐 +2", buffVal: 2, favGift: ["gift_keyboard_quantum", "gift_vintage_lawbook"],
             events: [
                 { req: 0, cost: 20, lines: [{t:"在夜城，防禦型公文跟防禦型執法一樣重要。你這份裁量權基準寫錯了，重寫。"}, {choices:[{text:"對不起長官，我這就去讀書。", aff:30, next:"記住，『明確性原則』是你的保命符。去啟動專注引擎吧。"}, {text:"實務上根本沒時間管那麼多...", aff:-20, hpLoss: 15, next:"就是你這種心態，警局才賠那麼多錢。去把法規背熟再來見我！"}]}] },
                 { req: 300, cost: 20, lines: [{t:"最新憲法法庭判決看過了嗎？關於強制採尿的違憲審查。"}, {choices:[{text:"有，已更新筆錄公版格式。", aff:40, next:"很好。準備 2028 的考試就是要時刻掌握修法脈動，不能只靠老經驗。"}, {text:"又是恐龍法官的見解？", aff:-10, hpLoss: 10, next:"法官是不是恐龍不重要，重要的是在考卷上你要能寫出甲乙說。去讀書！"}]}] },
-                { req: 800, cost: 20, lines: [{t:"準備 2028 年的考試？那你的行政法與警察法規最好背得跟呼吸一樣自然。遇到模糊地帶，別逞強。時間是你唯一的籌碼，別浪費在無謂的社交上。"}] }
+                { req: 800, cost: 20, lines: [{t:"準備 2028 年的考試？那你的行政法與警察法規最好背得跟呼吸一樣自然。遇到模糊地帶，別逞強。時間是你唯一的籌碼，別浪費在無謂的社交上。"}] },
+                { req: 1200, cost: 20, lines: [{t:"2028 的警佐二類考試不只是考法規，更是考驗你的防禦型執法意識。選擇題可以靠背誦，但實務申論題必須融入你的靈魂。堅持下去，我會在總局等你。"}] }
             ]
         },
         rin: { name: "凜 (Rin)", icon: "💼", color: "text-emerald-300", desc: "長線鑽石手。專注於基本面與 2030。", buffText: "專注獲取 Cr +20%", buffVal: 0, favGift: ["gift_bitcoin_physical", "gift_hardware_wallet"],
             events: [
                 { req: 0, cost: 20, lines: [{t:"你在看那些短線炒作的K線圖嗎？關掉它。防禦型投資的第一步，就是學會忽略雜音。把精力拿去準備你的考試，資產會自己長大。"}] },
-                { req: 400, cost: 20, lines: [{t:"剛才 YouTube 推播了一個標題寫『幣圈大崩盤！快逃！』的影片，你看過了？"}, {choices:[{text:"那種釣魚標題我連點都不點。", aff:50, next:"正確。機構都在偷偷建倉，散戶卻被 FUD 嚇得交出籌碼。你的目標是 2030 年，拿緊冷錢包就好。"}, {text:"有點擔心，是不是該先獲利了結？", aff:-20, hpLoss: 20, next:"如果你連這點波動都承受不住，那就一輩子當領死薪水的一線三星吧。"}]}] }
+                { req: 400, cost: 20, lines: [{t:"剛才 YouTube 推播了一個標題寫『幣圈大崩盤！快逃！』的影片，你看過了？"}, {choices:[{text:"那種釣魚標題我連點都不點。", aff:50, next:"正確。機構都在偷偷建倉，散戶卻被 FUD 嚇得交出籌碼。你的目標是 2030 年，拿緊冷錢包就好。"}, {text:"有點擔心，是不是該先獲利了結？", aff:-20, hpLoss: 20, next:"如果你連這點波動都承受不住，那就一輩子當領死薪水的一線三星吧。"}]}] },
+                { req: 800, cost: 20, lines: [{t:"市場又在洗盤了，某個 KOL 甚至喊出要歸零。很好笑對吧？記住，2030 年才是我們收割的季節。關閉那些報價軟體，去讀你的書，做你該做的事。"}] }
             ]
         },
         chen: { name: "陳局長", icon: "👴", color: "text-amber-200", desc: "老狐狸。教導官場求生與防禦型保命。", buffText: "失敗時 SAN 減免 30%", buffVal: 0, favGift: ["gift_tea_premium"],
@@ -659,6 +677,11 @@ const DB = {
               opt: [
                 { t: "依公務人員保障法第17條請求長官書面確認", align: "law", s: "完美防禦，擋下了違法命令的責任。", f: "長官震怒，將你列為黑名單。", dmg: 50 },
                 { t: "表面執行柔性勸導", align: "neutral", s: "明哲保身，防禦型公務員作風。", f: "被督察認定怠忽職守。", dmg: 30 }
+              ]},
+            { title: "分局長的專案督導", desc: "分局長突擊檢查派出所，要求你即刻背誦最新警械使用條例修正案重點。",
+              opt: [
+                { t: "精準背誦第四條之必要性與比例原則修正", align: "law", s: "分局長點頭讚賞，給予嘉獎。", f: "記憶模糊，被分局長大罵不夠用心。", dmg: 40 },
+                { t: "報告實務上遇到的難處以轉移焦點", align: "chaos", s: "成功將話題引導至裝備不足。", f: "被看穿是藉口，慘遭記申誡。", dmg: 60 }
               ]}
         ],
         court: [
@@ -687,13 +710,23 @@ const DB = {
               opt: [
                 { t: "穩扎穩打，從基本法理（比例原則、法治國原則）推導", align: "law", s: "邏輯嚴密，閱卷委員給予高分。距離上榜更近一步。", f: "推導方向錯誤，慘遭滑鐵盧。", dmg: 100 },
                 { t: "運用實務經驗硬解", align: "chaos", s: "切中實務痛點，獲得不錯的分數。", f: "見解不符學者期待，被大幅扣分。", dmg: 120 }
+              ]},
+            { title: "警佐班二類實務考題", desc: "題目要求詳述『偵查不公開作業辦法』的例外情形與長官裁量權限。",
+              opt: [
+                { t: "默寫法規要件，並舉出近期警署解釋令", align: "law", s: "完美命中得分要點，穩拿警佐班門票！", f: "引用了已被廢止的舊函釋，痛失分數。", dmg: 150 },
+                { t: "寫入實務常見的公關操作技巧", align: "neutral", s: "閱卷老師覺得有些創意，勉強給分。", f: "偏離法規精神，直接 0 分。", dmg: 100 }
               ]}
         ],
         wealth_2030: [
             { title: "2030 財富奇異點", desc: "距離 2030 目標年，市場面臨最後一次殘酷洗盤，帳面單日震幅高達 50%。",
               opt: [
                 { t: "堅定信仰，無視價格，專注於本業與警佐班準備", align: "law", s: "熬過寒冬，迎來 2030 的財務自由與階級跨越！", f: "依然在深夜偷看盤，理智徹底崩潰。", dmg: 200 },
-                { t: "開啟高倍槓桿試圖一次翻身", align: "chaos", s: "賭神降臨，一夜暴富！", f: "慘遭爆倉，失去了一切，回歸一線三星重新開始。", dmg: 999 }
+                { t: "開啟高倍槓桿試圖一次翻身", align: "chaos", s: "賭神降臨，一夜暴富！", f: "慘遭爆倉，失去了一切，回歸一線三星重新開始。", dmg: 500 } // 降為500，但有15%保護
+              ]},
+            { title: "機構砸盤測試", desc: "華爾街巨頭聯合製造利空新聞，試圖洗出散戶手中的比特幣。",
+              opt: [
+                { t: "防禦型無視：不看新聞，繼續去運動與讀書", align: "neutral", s: "完美避開情緒陷阱，幾週後機構發布利好消息拉升。", f: "不小心打開了社群軟體，被恐慌情緒感染導致失眠。", dmg: 150 },
+                { t: "反向觀察機構鏈上流入量", align: "law", s: "確認是假摔，信心大增，並趁機撿了便宜。", f: "解讀數據錯誤，提早打光了子彈。", dmg: 180 }
               ]}
         ]
     }
@@ -713,7 +746,7 @@ const STATE = {
     subjectTime: {}, subjectMastery: {},
     inventory: ["con_pet_food", "pet_cat"],
     activePartner: null, aff: {}, completedEvents: {},
-    estates: [], logs: [],
+    estates: [], logs: [], monthlyLogs: {}, lastBackup: Date.now(),
     pet: { active: 'pet_cat', hunger: 80, mood: 80 }
 };
 
@@ -721,14 +754,15 @@ const CORE = {
     init() {
         this.load(); this.migrateData(); this.calcMaxStats(); this.checkDates();
         UI.init();
-        setInterval(() => this.passiveTick(), 60000); 
+        // 移除自動掉血的 setInterval 以適應輪班作息，僅保留更新 UI 功能
+        setInterval(() => { UI.updateFocus(); }, 60000); 
     },
     migrateData() {
         for(let k in DB.chars) { 
             if(!STATE.completedEvents[k]) STATE.completedEvents[k] = []; 
             if(STATE.aff[k]===undefined) STATE.aff[k]=0; 
         }
-        if(!STATE.subjects) STATE.subjects = ["警察法規", "警察勤務", "刑法與刑訴", "行政法"];
+        if(!STATE.subjects) STATE.subjects = ["警察法規", "警察勤務", "刑法與刑訴", "行政法", "防禦型投資"];
         if(!STATE.subjectTime) STATE.subjectTime = {};
         if(!STATE.subjectMastery) STATE.subjectMastery = {};
         STATE.subjects.forEach(sub => { 
@@ -737,6 +771,8 @@ const CORE = {
         });
         if(!STATE.pet) STATE.pet = { active: 'pet_cat', hunger: 100, mood: 100 };
         if(!STATE.inventory.includes('pet_cat') && STATE.pet.active === 'pet_cat') { STATE.inventory.push('pet_cat'); }
+        if(!STATE.monthlyLogs) STATE.monthlyLogs = {};
+        if(!STATE.lastBackup) STATE.lastBackup = Date.now();
     },
     save() { STATE.lastLogin = Date.now(); localStorage.setItem(SAVE_KEY, btoa(encodeURIComponent(JSON.stringify(STATE)))); },
     load() { const d = localStorage.getItem(SAVE_KEY); if(d) { try { Object.assign(STATE, JSON.parse(decodeURIComponent(atob(d)))); } catch(e) {} } },
@@ -756,6 +792,15 @@ const CORE = {
             }
             this.save();
         }
+        this.checkBackupWarning();
+    },
+    checkBackupWarning() {
+        let daysSinceBackup = (Date.now() - STATE.lastBackup) / 86400000;
+        if(daysSinceBackup > 7) {
+            setTimeout(() => {
+                MODAL.showConfirm("防禦網安全警告", "距離上次備份已超過 7 天！\n本機資料隨時可能因瀏覽器清理而遺失。請盡快至 SYSTEM 頁面進行【記憶備份】。\n\n(防禦型策略的第一步：永遠確保核心資產不會歸零)", () => {});
+            }, 1000);
+        }
     },
     damageSan(amt) {
         if(STATE.activePartner === 'chen') { amt = Math.floor(amt * 0.7); Utils.toast("🛡️ 局長庇護：減傷 30%", "info"); }
@@ -764,8 +809,10 @@ const CORE = {
         
         if(STATE.san <= 0) {
             STATE.san = Math.floor(STATE.maxSan * 0.5); 
-            let penalty = Math.floor(STATE.gold * 0.5); STATE.gold -= penalty; 
-            MODAL.showConfirm("SYSTEM FAILURE", `理智崩潰！在夜城失去理智等同失去一切。\n支付了醫療與精神恢復費 ${penalty.toLocaleString()} Cr。請趕緊去啟動專注引擎重建防線。`, ()=>{});
+            // 防禦型停損機制：最大損失不超過總資產的 15%
+            let penalty = Math.floor(STATE.gold * 0.15); 
+            STATE.gold -= penalty; 
+            MODAL.showConfirm("SYSTEM FAILURE", `理智崩潰！在夜城失去理智等同失去一切。\n\n已啟動防禦型停損，支付了醫療與精神恢復費 ${penalty.toLocaleString()} Cr (最大不超過總資產 15%)。\n留得青山在，請趕緊去啟動專注引擎重建防線。`, ()=>{});
         }
     },
     addExp(amount) {
@@ -779,18 +826,13 @@ const CORE = {
             Utils.toast(`晉升至 Lv.${STATE.lv}！階級：${DB.getRankName(STATE.lv)}\n理智已完全恢復。`, "success");
         }
     },
-    passiveTick() {
-        if(STATE.pet.active) {
-            STATE.pet.hunger = Math.max(0, STATE.pet.hunger - 0.5);
-            if(STATE.pet.hunger < 50) STATE.pet.mood = Math.max(0, STATE.pet.mood - 1);
-            UI.updateFocus(); this.save();
-        }
-    },
     completeFocus(mins, subjName) {
         let expGain = mins * 15; let goldGain = mins * 10; let energyGain = mins; 
         
         if(STATE.inventory.includes("gear_diamond_hands")) { expGain = Math.floor(expGain*1.5); goldGain = Math.floor(goldGain*1.5); }
         if(STATE.inventory.includes("gear_invest_1")) goldGain = Math.floor(goldGain*1.15);
+        if(STATE.inventory.includes("gear_hodl_tracker")) goldGain = Math.floor(goldGain*1.2);
+        if(STATE.inventory.includes("gear_police_2028")) expGain = Math.floor(expGain*1.2);
 
         if(STATE.activePartner === 'rin') goldGain = Math.floor(goldGain*1.2);
         if(STATE.activePartner === 'k_corpo') goldGain = Math.floor(goldGain*1.1);
@@ -808,12 +850,20 @@ const CORE = {
             switch(STATE.pet.active) {
                 case 'pet_dog': sanRegen = Math.floor(sanRegen * 1.5); break;
                 case 'pet_owl': energyGain = Math.floor(energyGain * 1.5); break;
+                case 'pet_robo_cat': energyGain = Math.floor(energyGain * 1.8); break;
                 case 'pet_capybara': sanRegen = Math.floor(sanRegen * 2.0); break;
                 case 'merc_drone': expGain = Math.floor(expGain * 1.15); break;
                 case 'merc_netrunner': goldGain = Math.floor(goldGain * 1.25); break;
                 case 'merc_ai': expGain = Math.floor(expGain * 1.3); goldGain = Math.floor(goldGain * 1.3); break;
                 case 'merc_crypto_whale': goldGain = Math.floor(goldGain * 1.8); expGain = Math.floor(expGain * 1.5); break;
             }
+        }
+
+        // 過濾短線焦慮：寵物數值改為「行動消耗」而非「時間流失」
+        if (STATE.pet.active) {
+            let drain = STATE.pet.active === 'pet_robo_cat' ? 0 : Math.ceil(mins / 10);
+            STATE.pet.hunger = Math.max(0, STATE.pet.hunger - drain);
+            if (STATE.pet.hunger < 50) STATE.pet.mood = Math.max(0, STATE.pet.mood - Math.ceil(mins / 15));
         }
 
         this.addExp(expGain); STATE.gold += goldGain; STATE.energy += energyGain;
@@ -824,6 +874,10 @@ const CORE = {
 
         STATE.todayMins += mins; STATE.totalFocusTime += mins;
         
+        // 月度紀錄更新
+        let monthKey = new Date().toISOString().substring(0,7);
+        STATE.monthlyLogs[monthKey] = (STATE.monthlyLogs[monthKey] || 0) + mins;
+
         let todayStr = Utils.getIsoDateString();
         if (STATE.lastStudyDateStr !== todayStr) { 
             STATE.streak++; 
@@ -879,8 +933,8 @@ const UI = {
         let pct = Math.min(100, (STATE.todayMins / 180) * 100); let deg = (pct / 100) * 360;
         document.getElementById("daily-progress-ring").style.background = `conic-gradient(#0ea5e9 ${deg}deg, #0f172a 0deg)`;
         
-        let petNames = {"pet_cat": "流浪橘貓", "pet_dog": "退役警犬", "pet_owl": "仿生夜鷹", "pet_capybara": "禪意水豚", "merc_drone": "哨兵無人機", "merc_netrunner": "竄網使雛機", "merc_lawyer": "落魄企業律師", "merc_cyborg": "重裝傭兵", "merc_ai": "第零代 AI", "merc_crypto_whale": "退役巨鯨"};
-        let petIcons = {"pet_cat": "🐈", "pet_dog": "🐕‍🦺", "pet_owl": "🦉", "pet_capybara": "🦦", "merc_drone": "🛸", "merc_netrunner": "🤖", "merc_lawyer": "🕴️", "merc_cyborg": "🦾", "merc_ai": "👁️", "merc_crypto_whale": "🐳"};
+        let petNames = {"pet_cat": "流浪橘貓", "pet_dog": "退役警犬", "pet_owl": "仿生夜鷹", "pet_robo_cat": "仿生機械貓", "pet_capybara": "禪意水豚", "merc_drone": "哨兵無人機", "merc_netrunner": "竄網使雛機", "merc_lawyer": "落魄企業律師", "merc_cyborg": "重裝傭兵", "merc_ai": "第零代 AI", "merc_crypto_whale": "退役巨鯨"};
+        let petIcons = {"pet_cat": "🐈", "pet_dog": "🐕‍🦺", "pet_owl": "🦉", "pet_robo_cat": "🐱", "pet_capybara": "🦦", "merc_drone": "🛸", "merc_netrunner": "🤖", "merc_lawyer": "🕴️", "merc_cyborg": "🦾", "merc_ai": "👁️", "merc_crypto_whale": "🐳"};
         let activePet = STATE.pet.active || "pet_cat";
         
         document.getElementById("pet-name").innerHTML = `${petNames[activePet]} <button class="text-[8px] text-slate-400 hover:text-white" onclick="PET.switch()"><i class="fa-solid fa-rotate"></i></button>`;
@@ -921,7 +975,7 @@ const UI = {
             </div>`;
         });
     },
-    updateSystem() { SYSTEM_UI.updateGoalUI(); SYSTEM_UI.renderMastery(); },
+    updateSystem() { SYSTEM_UI.updateGoalUI(); SYSTEM_UI.renderMastery(); SYSTEM_UI.renderMonthlyLogs(); SYSTEM_UI.updateBackupDate(); },
     switchTab(tabId, btnEl) {
         document.querySelectorAll("main > section").forEach(el => el.classList.add("hidden"));
         document.querySelectorAll(".nav-btn").forEach(el => { el.classList.remove("text-emerald-400", "text-rose-400", "text-pink-400", "text-amber-400", "text-blue-300"); el.classList.add("text-slate-500"); });
@@ -931,7 +985,7 @@ const UI = {
             if(tabId === 'map') btnEl.classList.replace("text-slate-500", "text-rose-400");
             if(tabId === 'social') { btnEl.classList.replace("text-slate-500", "text-pink-400"); SOCIAL.renderMentors(); }
             if(tabId === 'market') { btnEl.classList.replace("text-slate-500", "text-amber-400"); MARKET.switchTab('shop'); }
-            if(tabId === 'system') btnEl.classList.replace("text-slate-500", "text-blue-300");
+            if(tabId === 'system') { btnEl.classList.replace("text-slate-500", "text-blue-300"); UI.updateSystem(); }
         }
     }
 };
@@ -1021,7 +1075,15 @@ const TRPG = {
     startZone(zoneId, cost) {
         if(STATE.energy < cost) return Utils.toast(`⚡ SP 不足！需要 ${cost} SP。請去啟動引擎讀書。`, "error");
         let pool = DB.trpgEvents[zoneId];
-        STATE.energy -= cost; UI.updateHUD();
+        STATE.energy -= cost; 
+        
+        // TRPG 行動消耗寵物狀態
+        if (STATE.pet.active && STATE.pet.active !== 'pet_robo_cat') {
+            STATE.pet.hunger = Math.max(0, STATE.pet.hunger - 3);
+            if(STATE.pet.hunger < 50) STATE.pet.mood = Math.max(0, STATE.pet.mood - 2);
+        }
+        
+        UI.updateHUD(); UI.updateFocus();
         let ev = pool[Math.floor(Math.random() * pool.length)];
         
         document.getElementById("ev-type").innerText = "NIGHT CITY INCIDENT";
@@ -1297,7 +1359,7 @@ const MARKET = {
         if(STATE.gold < cost) return Utils.toast("Cr. 資金不足。請去讀書！", "error");
         STATE.gold -= cost; STATE.estates.push(id); CORE.calcMaxStats(); STATE.san = STATE.maxSan;
         CORE.save(); UI.updateHUD(); this.renderInv();
-        MODAL.showConfirm("階級跨越", `收購成功！\n擁有實體資產，理智(SAN)上限大幅提升。你距離財富自由更近了一步。`, ()=>{});
+        MODAL.showConfirm("階級跨越", `收購成功！\n擁有實體資產，理智(SAN)上限大幅提升。你距離 2030 財富自由與上榜更近了一步。`, ()=>{});
     }
 };
 
@@ -1342,6 +1404,23 @@ const SYSTEM_UI = {
             `;
         });
     },
+    renderMonthlyLogs() {
+        const mList = document.getElementById("system-monthly-list"); mList.innerHTML = "";
+        let keys = Object.keys(STATE.monthlyLogs || {}).sort().reverse();
+        if(keys.length === 0) { mList.innerHTML = "<div class='text-slate-500 text-[10px] cyber-title'>暫無結算資料。</div>"; return; }
+        
+        keys.forEach(k => {
+            let mins = STATE.monthlyLogs[k];
+            let hrs = Math.floor(mins / 60);
+            let remMins = mins % 60;
+            mList.innerHTML += `
+                <div class="flex justify-between items-center border-b border-amber-900/40 pb-2 mb-2">
+                    <span class="text-amber-400 font-bold text-xs cyber-title">${k}</span>
+                    <span class="text-slate-200 text-sm font-black cyber-title tabular-nums">${hrs} <span class="text-[10px] text-slate-500 font-bold mr-1">HR</span>${remMins} <span class="text-[10px] text-slate-500 font-bold">MIN</span></span>
+                </div>
+            `;
+        });
+    },
     addSubject() {
         MODAL.showInput("新增專精科目", "請輸入新科目名稱：", (val) => {
             if(STATE.subjects.includes(val)) return Utils.toast("科目已存在！", "error");
@@ -1358,10 +1437,20 @@ const SYSTEM_UI = {
             }
         });
     },
+    updateBackupDate() {
+        let date = new Date(STATE.lastBackup);
+        document.getElementById("sys-last-backup").innerText = `最後備份：${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`;
+    },
     exportData() {
         const str = btoa(encodeURIComponent(JSON.stringify(STATE)));
-        navigator.clipboard.writeText(str).then(() => Utils.toast("備份代碼已複製到剪貼簿！", "success")).catch(() => {
-            MODAL.showInput("備份代碼 (請手動複製)", "", () => {}); document.getElementById("modal-input").value = str;
+        navigator.clipboard.writeText(str).then(() => {
+            STATE.lastBackup = Date.now(); CORE.save(); this.updateBackupDate();
+            Utils.toast("防禦型備份代碼已複製到剪貼簿！", "success");
+        }).catch(() => {
+            MODAL.showInput("備份代碼 (請手動複製)", "", () => {
+                STATE.lastBackup = Date.now(); CORE.save(); this.updateBackupDate();
+            }); 
+            document.getElementById("modal-input").value = str;
         });
     },
     importData() {
@@ -1376,4 +1465,3 @@ window.onload = () => CORE.init();
 </script>
 </body>
 </html>
-
