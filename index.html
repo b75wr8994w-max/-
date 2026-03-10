@@ -2693,6 +2693,130 @@ CORE.completeFocus = function(mins, subjName, logText = "") {
         MODAL.showConfirm("潛航結算", msg, ()=>{});
     }
 };
+// ============================================================================
+// 終極成癮更新檔：第三階段 (長線防禦：主線首領討伐戰)
+// ============================================================================
+
+// 1. 初始化 Boss 狀態 (血量等同於你需要專注的分鐘數)
+if (!STATE.boss) {
+    STATE.boss = { id: 'boss_2028', hp: 20000, maxHp: 20000, level: 1 };
+}
+
+// 2. 新增 Boss 資料庫與極度克制的專屬戰利品
+DB.bosses = {
+    'boss_2028': { name: "2028 警佐法規巨獸", icon: "🦖", maxHp: 20000, next: 'boss_fud', reward: 'trophy_2028' },
+    'boss_fud': { name: "市場 FUD 恐慌聚合體", icon: "📉", maxHp: 50000, next: 'boss_2030', reward: 'trophy_fud' },
+    'boss_2030': { name: "2030 財富奇異點", icon: "🌌", maxHp: 150000, next: null, reward: 'trophy_2030' }
+};
+
+Object.assign(DB.items, {
+    "trophy_2028": { name: "【紀念】2028 破關證明", cat: "gear", icon: "📜", desc: "長線戰役的第一座里程碑。被動：全收益 +1% (極度克制的數值，象徵意義大於實質)。", price: 0, css: "item-epic" },
+    "trophy_fud": { name: "【紀念】絕對鑽石手徽章", cat: "gear", icon: "💎", desc: "你戰勝了無數的恐慌。被動：全收益 +2%。", price: 0, css: "item-legendary" },
+    "trophy_2030": { name: "【神話】奇異點觀測者", cat: "gear", icon: "👁️", desc: "你抵達了終點。被動：無。你已經不需要任何數值了。", price: 0, css: "item-legendary" }
+});
+
+// 3. 攔截 Map 更新，在地圖最上方渲染 Boss UI
+const origUpdateMap_Boss = UI.updateMap;
+UI.updateMap = function() {
+    origUpdateMap_Boss.call(this); // 先執行原本的地圖渲染
+    
+    let mapSection = document.getElementById("view-map");
+    let bossDiv = document.getElementById("boss-container");
+    
+    if (!bossDiv) {
+        bossDiv = document.createElement("div");
+        bossDiv.id = "boss-container";
+        bossDiv.className = "mb-4 fade-in";
+        // 將 Boss 區塊插入到地圖頁面的最頂部
+        mapSection.insertBefore(bossDiv, mapSection.firstChild);
+    }
+
+    let currentBoss = STATE.boss && STATE.boss.id ? DB.bosses[STATE.boss.id] : null;
+    
+    // 如果全部破關的畫面
+    if (!currentBoss) {
+        bossDiv.innerHTML = `<div class="glass p-4 rounded-xl border border-amber-500/50 text-center"><div class="text-amber-400 font-black cyber-title">ALL THREATS ELIMINATED</div><div class="text-[10px] text-slate-400 mt-1 font-serif">你已擊敗所有長期心魔，抵達了 2030。</div></div>`;
+        return;
+    }
+
+    let hpPct = Math.max(0, (STATE.boss.hp / STATE.boss.maxHp) * 100);
+    
+    bossDiv.innerHTML = `
+    <div class="glass p-4 rounded-xl border border-rose-900/80 relative overflow-hidden shadow-[0_0_20px_rgba(225,29,72,0.15)]">
+        <div class="absolute -right-4 -top-4 text-7xl opacity-10 grayscale">${currentBoss.icon}</div>
+        <div class="flex justify-between items-end mb-2 relative z-10">
+            <div>
+                <div class="text-[9px] text-rose-500 font-black cyber-title tracking-widest bg-rose-950/50 px-2 py-0.5 rounded border border-rose-900 inline-block mb-1">MAIN THREAT (主線心魔)</div>
+                <h3 class="text-sm font-black text-white cyber-title tracking-widest drop-shadow">${currentBoss.name}</h3>
+            </div>
+            <div class="text-right">
+                <div class="text-[9px] font-bold text-slate-400 cyber-title mb-0.5">REMAINING HP</div>
+                <div class="text-lg font-black text-rose-400 cyber-title tabular-nums">${STATE.boss.hp.toLocaleString()}</div>
+            </div>
+        </div>
+        <div class="h-3 bg-slate-900 rounded-full overflow-hidden border border-slate-700 relative z-10 p-0.5 shadow-inner">
+            <div class="h-full bg-gradient-to-r from-rose-700 to-red-500 rounded-full transition-all duration-1000 relative overflow-hidden" style="width: ${hpPct}%">
+                <div class="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] w-full h-full animate-[scanHype_2s_infinite]"></div>
+            </div>
+        </div>
+        <div class="text-[9px] text-slate-400 font-serif mt-2 relative z-10 flex justify-between">
+            <span>物理打擊：讀書時間 1 分鐘 = 1 點傷害。</span>
+            <span>長線防禦，切勿急躁。</span>
+        </div>
+    </div>`;
+};
+
+// 4. 攔截結算彈出視窗，計算 Boss 傷害
+const origCompleteFocus_Boss = CORE.completeFocus;
+CORE.completeFocus = function(mins, subjName, logText = "") {
+    let bossMsg = "";
+    
+    if (mins > 0 && STATE.boss && STATE.boss.id && DB.bosses[STATE.boss.id]) {
+        let dmg = mins;
+        
+        // 防禦型爆擊：如果連勝 >= 3，有 20% 機率產生 1.5 倍爆擊傷害
+        let isCrit = STATE.streak >= 3 && Math.random() < 0.2;
+        if (isCrit) dmg = Math.floor(dmg * 1.5);
+        
+        STATE.boss.hp -= dmg;
+        let currentBossInfo = DB.bosses[STATE.boss.id];
+        
+        bossMsg = `\n\n⚔️ 對主線心魔【${currentBossInfo.name}】造成了 ${dmg} 點推進打擊！${isCrit ? ' (連勝爆發!)' : ''}`;
+
+        // 擊殺 Boss 判定
+        if (STATE.boss.hp <= 0) {
+            let rewardItem = currentBossInfo.reward;
+            STATE.inventory.push(rewardItem);
+            
+            bossMsg += `\n\n🏆 【首領討伐成功】！\n長達數百小時的堅持終於迎來突破。你獲得了專屬紀念物：${DB.items[rewardItem].name}！\n(請至背包查看)`;
+            
+            // 推進到下一個 Boss
+            let nextBossId = currentBossInfo.next;
+            if (nextBossId) {
+                STATE.boss = { 
+                    id: nextBossId, 
+                    hp: DB.bosses[nextBossId].maxHp, 
+                    maxHp: DB.bosses[nextBossId].maxHp, 
+                    level: STATE.boss.level + 1 
+                };
+                bossMsg += `\n\n⚠️ 警告：新的長期心魔【${DB.bosses[nextBossId].name}】已出現於防禦網雷達。`;
+            } else {
+                STATE.boss.id = null; // 全部破關
+            }
+        }
+    }
+
+    // 優雅地攔截 MODAL.showConfirm 以追加 Boss 訊息，避免重寫整個核心函數
+    let origShow = MODAL.showConfirm;
+    MODAL.showConfirm = function(title, msg, cb) {
+        msg += bossMsg; // 將 Boss 傷害訊息接在結算對話框的最下面
+        origShow.call(MODAL, title, msg, cb);
+        MODAL.showConfirm = origShow; // 執行完後立刻恢復原狀，避免干擾其他彈跳視窗
+    };
+    
+    // 呼叫上一階段的核心結算邏輯
+    origCompleteFocus_Boss.call(this, mins, subjName, logText);
+};
 
 window.onload = () => CORE.init();
 </script>
