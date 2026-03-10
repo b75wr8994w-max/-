@@ -15,8 +15,7 @@
         }
 
         html, body {
-            height: 100%;
-            height: 100dvh; 
+            height: 100%; height: 100dvh; 
             margin: 0; overflow: hidden; user-select: none; -webkit-touch-callout: none;
             font-family: 'Noto Sans TC', sans-serif; background-color: var(--bg-base); color: #cbd5e1;
             background-image: linear-gradient(rgba(2, 4, 10, 0.96), rgba(2, 4, 10, 0.99)), url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1080&auto=format&fit=crop');
@@ -29,8 +28,11 @@
         .cyber-title { font-family: 'Orbitron', 'Noto Sans TC', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
         .story-text { font-family: 'Noto Serif TC', serif; line-height: 1.9; }
         
-        .scrollable::-webkit-scrollbar { display: none; } .scrollable { -ms-overflow-style: none; scrollbar-width: none; }
-        .thin-scroll::-webkit-scrollbar { width: 4px; } .thin-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.4); border-radius: 4px; } .thin-scroll::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
+        .scrollable::-webkit-scrollbar { display: none; } 
+        .scrollable { -ms-overflow-style: none; scrollbar-width: none; }
+        .thin-scroll::-webkit-scrollbar { width: 4px; height: 4px; } 
+        .thin-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.4); border-radius: 4px; } 
+        .thin-scroll::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
 
         .glass { background: var(--panel-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid var(--cyber-border); box-shadow: 0 8px 32px rgba(0,0,0,0.8); }
         
@@ -109,6 +111,10 @@
             <input type="text" id="modal-input" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg p-3 text-sm text-white outline-none focus:border-blue-500 transition-colors shadow-inner" placeholder="請輸入...">
         </div>
 
+        <div id="modal-textarea-container" class="hidden w-full mb-6">
+            <textarea id="modal-textarea" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg p-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors shadow-inner h-24 resize-none thin-scroll" placeholder="記錄法條或心得（留空則無額外加成）..."></textarea>
+        </div>
+
         <div id="modal-select-container" class="hidden w-full mb-6">
             <label class="text-[10px] text-emerald-400 font-bold cyber-title mb-2 block">選擇當前研讀科目：</label>
             <select id="modal-select" class="w-full bg-slate-900/80 border border-slate-600 rounded-lg p-3 text-sm text-white outline-none focus:border-emerald-500 transition-colors shadow-inner appearance-none"></select>
@@ -127,9 +133,7 @@
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-pink-600 to-rose-600"></div>
         <h2 class="text-sm font-black text-pink-400 cyber-title mb-1 tracking-widest drop-shadow-md">SELECT GIFT</h2>
         <p class="text-[10px] text-slate-400 font-serif mb-4">選擇要贈送的物品。</p>
-        
         <div id="gift-modal-list" class="grid grid-cols-3 gap-3 mb-6 max-h-[40vh] overflow-y-auto thin-scroll p-1"></div>
-        
         <button class="w-full bg-slate-800 text-slate-300 py-3 rounded-lg text-xs font-bold border border-slate-600 btn-interact cyber-title mt-auto" onclick="SOCIAL.closeGiftModal()">取消 (CANCEL)</button>
     </div>
 </div>
@@ -144,15 +148,12 @@
         <div class="flex-1 flex items-center justify-center mb-10">
             <div class="text-[8rem] drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] pet-float" id="vn-sprite">👩‍💼</div>
         </div>
-        
         <div id="vn-name" class="font-black text-2xl mb-3 drop-shadow-md tracking-widest cyber-title text-pink-400 px-2">Name</div>
-        
         <div class="glass w-full rounded-2xl p-5 border border-slate-600 shadow-[0_0_30px_rgba(0,0,0,0.8)] relative min-h-[120px] mb-4 btn-interact cursor-pointer" onclick="VN.nextLine()">
             <div class="absolute -top-3 -left-3 text-4xl text-slate-600/50"><i class="fa-solid fa-quote-left"></i></div>
             <div id="vn-text" class="text-slate-200 font-serif leading-relaxed text-sm relative z-10">...</div>
             <div class="absolute bottom-2 right-3 text-slate-500 text-[10px] animate-pulse cyber-title"><i class="fa-solid fa-caret-down"></i> TAP</div>
         </div>
-
         <div id="vn-choices" class="w-full hidden flex-col gap-3"></div>
     </div>
 </div>
@@ -163,32 +164,17 @@
         <div class="text-[10px] text-rose-400 font-black tracking-widest cyber-title mb-1" id="ev-type">EVENT</div>
         <div class="text-2xl font-black text-white tracking-widest mb-4 cyber-title drop-shadow-md" id="ev-title">Title</div>
         <div class="text-sm text-slate-300 font-serif leading-relaxed mb-8 bg-slate-900/50 p-4 rounded-xl border border-slate-700 shadow-inner" id="ev-desc">Desc</div>
-
         <div id="ev-action-area" class="w-full flex flex-col"></div>
-
         <div id="ev-dice-area" class="w-full hidden flex-col items-center mt-4">
             <div class="text-[10px] text-slate-400 font-bold cyber-title mb-4 bg-slate-900 px-3 py-1 rounded-full border border-slate-700">動態檢定難度 (DC): <span class="text-white" id="dice-dc-txt">15</span></div>
-            
-            <div id="dice-container" class="mb-6">
-                <div id="the-dice" class="dice">20</div>
-            </div>
-
+            <div id="dice-container" class="mb-6"><div id="the-dice" class="dice">20</div></div>
             <div id="dice-math" class="hidden w-full bg-black/60 border border-slate-700 rounded-xl p-4 mb-6 shadow-inner text-center">
-                <div class="grid grid-cols-3 gap-2 text-[10px] font-bold text-slate-400 cyber-title mb-2">
-                    <div>D20 骰面</div><div>綜合加成</div><div>動態增幅</div>
-                </div>
-                <div class="grid grid-cols-3 gap-2 text-lg font-black text-white mb-2">
-                    <div id="math-roll">0</div><div class="text-blue-400" id="math-skill">+0</div><div class="text-pink-400" id="math-mentor">+0</div>
-                </div>
-                <div class="border-t border-slate-700 pt-2 mt-2">
-                    <span class="text-[10px] text-slate-400 font-bold cyber-title">最終判定結果 (TOTAL)</span>
-                    <div class="text-3xl font-black text-amber-400 cyber-title mt-1" id="math-total">0</div>
-                </div>
+                <div class="grid grid-cols-3 gap-2 text-[10px] font-bold text-slate-400 cyber-title mb-2"><div>D20 骰面</div><div>綜合加成</div><div>動態增幅</div></div>
+                <div class="grid grid-cols-3 gap-2 text-lg font-black text-white mb-2"><div id="math-roll">0</div><div class="text-blue-400" id="math-skill">+0</div><div class="text-pink-400" id="math-mentor">+0</div></div>
+                <div class="border-t border-slate-700 pt-2 mt-2"><span class="text-[10px] text-slate-400 font-bold cyber-title">最終判定結果 (TOTAL)</span><div class="text-3xl font-black text-amber-400 cyber-title mt-1" id="math-total">0</div></div>
             </div>
-
             <div id="dice-res" class="hidden text-center mb-6">RESULT</div>
             <div id="dice-lore" class="text-sm text-slate-300 font-serif leading-relaxed mb-8 text-center px-4"></div>
-
             <button id="dice-btn-roll" class="w-full bg-gradient-to-r from-rose-700 to-rose-900 hover:from-rose-600 hover:to-rose-800 text-white font-black py-4 rounded-xl btn-interact text-lg cyber-title tracking-widest shadow-[0_0_20px_rgba(225,29,72,0.4)] border border-rose-500/50" onclick="TRPG.rollDice()">擲骰檢定 (ROLL)</button>
             <button id="dice-btn-close" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-4 rounded-xl btn-interact hidden text-sm cyber-title tracking-widest border border-slate-600" onclick="TRPG.close()">確認結算 (CONFIRM)</button>
         </div>
@@ -214,12 +200,10 @@
             <div class="text-4xl pet-float mb-1 drop-shadow-[0_0_15px_rgba(16,185,129,0.3)]" id="focus-pet-icon">🐈</div>
             <div class="text-[9px] text-emerald-400 font-bold cyber-title" id="focus-pet-name">流浪橘貓陪伴中</div>
         </div>
-
         <div class="w-64 h-64 rounded-full flex items-center justify-center border-2 border-slate-700 mb-8 relative bg-slate-900/90 shadow-[0_0_50px_rgba(16,185,129,0.1)] shrink-0">
             <div class="pulse-ring" style="border-color: var(--neon-emerald); box-shadow: 0 0 30px var(--neon-emerald);"></div>
             <div id="focus-stopwatch" class="text-[4rem] font-black text-white cyber-title tracking-widest z-10 drop-shadow-[0_0_15px_rgba(255,255,255,0.6)] leading-none tabular-nums transition-colors duration-1000">00:00:00</div>
         </div>
-        
         <div class="w-full grid grid-cols-3 gap-3">
             <div class="bg-black/60 border border-slate-700 rounded-xl p-3 text-center shadow-inner">
                 <div class="text-[10px] text-slate-400 cyber-title mb-1 font-bold">獲得體力 (SP)</div>
@@ -237,6 +221,11 @@
     </div>
     
     <div class="relative z-10 w-full max-w-sm flex flex-col gap-3 shrink-0 pb-safe">
+        <div class="flex justify-center gap-2 mb-2">
+            <button id="audio-btn-rain" class="flex-1 bg-slate-900/80 text-slate-500 border border-slate-700 py-2 rounded-lg text-[9px] font-bold btn-interact transition-colors cyber-title" onclick="AUDIO.toggle('rain')"><i class="fa-solid fa-cloud-rain mr-1"></i>邊緣荒野</button>
+            <button id="audio-btn-server" class="flex-1 bg-slate-900/80 text-slate-500 border border-slate-700 py-2 rounded-lg text-[9px] font-bold btn-interact transition-colors cyber-title" onclick="AUDIO.toggle('server')"><i class="fa-solid fa-server mr-1"></i>機房深潛</button>
+        </div>
+
         <button class="w-full bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white py-4 rounded-xl btn-interact text-sm font-black cyber-title tracking-widest shadow-[0_0_25px_rgba(16,185,129,0.4)] border border-emerald-400/50" onclick="FOCUS.stop(false)">
             完成潛航並結算 (CLAIM)
         </button>
@@ -247,7 +236,6 @@
 </div>
 
 <div id="app" class="absolute inset-0 mx-auto w-full max-w-md flex flex-col bg-slate-950/90 shadow-2xl border-x border-slate-900 overflow-hidden">
-
     <header class="glass z-30 px-4 py-3 pt-safe shrink-0 flex flex-col gap-2 border-b border-blue-900/50 relative">
         <div class="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-transparent pointer-events-none"></div>
         <div class="flex justify-between items-start relative z-10">
@@ -278,30 +266,18 @@
         
         <div class="grid grid-cols-2 gap-3 mt-2 relative z-10 cursor-help" onclick="Utils.toast('SAN 理智：深潛超過60分鐘將消耗 SAN，防爆肝機制。\nEXP 歷練：讀書與事件獲得，升級獲得技能點。', 'info')">
             <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-[9px] font-bold tracking-wider">
-                    <span class="text-rose-400">理智 (SAN)</span>
-                    <span class="text-rose-200"><span id="ui-san">100</span>/<span id="ui-max-san">100</span></span>
-                </div>
-                <div class="h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-700">
-                    <div id="bar-san" class="h-full bg-gradient-to-r from-rose-700 to-rose-500 transition-all duration-500" style="width: 100%"></div>
-                </div>
+                <div class="flex justify-between text-[9px] font-bold tracking-wider"><span class="text-rose-400">理智 (SAN)</span><span class="text-rose-200"><span id="ui-san">100</span>/<span id="ui-max-san">100</span></span></div>
+                <div class="h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-700"><div id="bar-san" class="h-full bg-gradient-to-r from-rose-700 to-rose-500 transition-all duration-500" style="width: 100%"></div></div>
             </div>
             <div class="flex flex-col gap-1">
-                <div class="flex justify-between text-[9px] font-bold tracking-wider">
-                    <span class="text-emerald-400">歷練 (EXP)</span>
-                    <span class="text-emerald-200"><span id="ui-exp-pct">0</span>%</span>
-                </div>
-                <div class="h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-700">
-                    <div id="bar-exp" class="h-full bg-gradient-to-r from-emerald-700 to-emerald-400 transition-all duration-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" style="width: 0%"></div>
-                </div>
+                <div class="flex justify-between text-[9px] font-bold tracking-wider"><span class="text-emerald-400">歷練 (EXP)</span><span class="text-emerald-200"><span id="ui-exp-pct">0</span>%</span></div>
+                <div class="h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-700"><div id="bar-exp" class="h-full bg-gradient-to-r from-emerald-700 to-emerald-400 transition-all duration-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]" style="width: 0%"></div></div>
             </div>
         </div>
     </header>
 
     <main class="flex-1 relative z-10 overflow-hidden bg-transparent" id="main-content">
-    
         <section id="view-focus" class="h-full scrollable overflow-y-auto p-4 space-y-4 fade-in pb-4">
-            
             <div class="grid grid-cols-2 gap-3 mb-2">
                 <div class="glass p-3 rounded-xl border border-emerald-900/50 relative shadow-lg overflow-hidden flex flex-col items-center justify-center">
                     <div class="absolute right-0 top-0 w-20 h-20 bg-emerald-500/5 blur-xl rounded-full pointer-events-none"></div>
@@ -341,11 +317,8 @@
             <div class="glass p-5 rounded-xl border border-slate-700 hover:border-emerald-500 transition-colors relative overflow-hidden shadow-[0_0_20px_rgba(16,185,129,0.05)] group">
                 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity"><i class="fa-solid fa-stopwatch text-8xl text-white"></i></div>
                 <h2 class="text-xs font-black text-emerald-400 cyber-title mb-2 tracking-widest flex items-center gap-2 relative z-10"><i class="fa-solid fa-power-off text-white"></i> NEURAL ENGINE</h2>
-                
                 <p class="text-[10px] text-slate-400 font-serif mb-3 leading-relaxed relative z-10 border-l-2 border-slate-700 pl-2">裝備戰術武器，切換不同番茄鐘節奏。<br>25分/60分/120分將掉落專屬武器組件碎片與觸發動態事件。</p>
-                
                 <div class="text-[10px] text-amber-400 font-bold mb-4 text-center cyber-title tracking-widest bg-amber-900/20 py-1.5 rounded border border-amber-900/50 shadow-inner" id="pity-counter-display">距離 120 分鐘保底大爆發：<span id="pity-count">0</span> / 3</div>
-
                 <button class="w-full bg-gradient-to-r from-emerald-800 to-teal-900 hover:from-emerald-600 hover:to-teal-800 text-white py-5 rounded-xl btn-interact shadow-[0_0_15px_rgba(16,185,129,0.4)] border border-emerald-500 hover:border-emerald-300 flex justify-center items-center gap-3 relative z-10 transition-all" onclick="FOCUS.prepare()">
                     <i class="fa-solid fa-infinity text-2xl drop-shadow"></i>
                     <span class="font-black text-lg tracking-widest cyber-title">戰術潛航 (START)</span>
@@ -354,12 +327,11 @@
             
             <div class="glass p-4 rounded-xl border border-slate-800">
                 <h3 class="font-bold text-slate-400 text-[10px] cyber-title tracking-widest border-b border-slate-800 pb-2 mb-2"><i class="fa-solid fa-clock-rotate-left mr-1"></i>RECENT LOGS</h3>
-                <div id="focus-logs" class="space-y-2 max-h-[120px] overflow-y-auto thin-scroll"></div>
+                <div id="focus-logs" class="space-y-2 max-h-[150px] overflow-y-auto thin-scroll"></div>
             </div>
         </section>
 
         <section id="view-map" class="h-full scrollable overflow-y-auto p-4 space-y-4 hidden fade-in pb-4">
-            
             <div class="glass p-4 rounded-xl border border-slate-700/80 mb-2 cursor-help" onclick="Utils.toast('【勢力拉鋸戰】\n每次專注都會提升 NCPD 執法網控制率。若低於 30%，物價上漲並隨時遭遇事件損失理智。', 'info')">
                 <div class="flex justify-between items-end mb-2">
                     <div>
@@ -374,16 +346,12 @@
                 <div class="h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-700 relative">
                     <div id="terr-bar" class="h-full transition-all duration-1000" style="width: 50%; background: linear-gradient(90deg, #f43f5e 0%, #a855f7 50%, #0ea5e9 100%);"></div>
                 </div>
-                <div class="text-[9px] text-slate-300 font-serif mt-3 bg-slate-900/50 p-2 rounded border border-slate-700/50 leading-relaxed" id="terr-effect-text">
-                    標準狀態，無額外增減益。持續讀書推進防線。
-                </div>
+                <div class="text-[9px] text-slate-300 font-serif mt-3 bg-slate-900/50 p-2 rounded border border-slate-700/50 leading-relaxed" id="terr-effect-text">標準狀態，無額外增減益。持續讀書推進防線。</div>
             </div>
-
             <div class="text-center mt-2 mb-3">
                 <h2 class="text-lg font-black text-rose-400 tracking-widest cyber-title">NIGHT CITY INCIDENTS</h2>
                 <p class="text-[10px] text-slate-400 mt-1 font-serif">長線的防禦，在於面對任何考驗都不會崩潰。</p>
             </div>
-            
             <div class="grid grid-cols-1 gap-3" id="map-zones"></div>
         </section>
 
@@ -399,7 +367,7 @@
             <div class="flex gap-2 border-b border-slate-800 pb-2 px-1">
                 <button class="flex-1 text-[11px] font-bold cyber-title tracking-widest text-amber-400 border-b-2 border-amber-400 py-1 btn-interact" id="tab-shop-btn" onclick="MARKET.switchTab('shop')">黑市補給</button>
                 <button class="flex-1 text-[11px] font-bold cyber-title tracking-widest text-slate-500 py-1 btn-interact" id="tab-craft-btn" onclick="MARKET.switchTab('craft')">碎片合成</button>
-                <button class="flex-1 text-[11px] font-bold cyber-title tracking-widest text-slate-500 py-1 btn-interact" id="tab-inv-btn" onclick="MARKET.switchTab('inv')">系統背包</button>
+                <button class="flex-1 text-[11px] font-bold cyber-title tracking-widest text-slate-500 py-1 btn-interact" id="tab-inv-btn" onclick="MARKET.switchTab('inv')">系統資產</button>
             </div>
 
             <div id="tab-content-shop" class="space-y-4">
@@ -434,17 +402,25 @@
                     <p class="text-[9px] text-slate-400 font-serif mb-3">購入資產大幅提高 SAN 上限。請注意每日將結算維持費。</p>
                     <div id="estate-list" class="space-y-2"></div>
                 </div>
+
+                <div class="mt-6 pt-4 border-t border-amber-900/50">
+                    <h3 class="text-[11px] font-bold text-amber-500 cyber-title tracking-widest mb-2"><i class="fa-solid fa-crown mr-1"></i>NCPD 撫卹基金會 (傳奇威望)</h3>
+                    <p class="text-[9px] text-slate-400 font-serif mb-3">資金溢出時的終極防禦。每捐獻 10 萬 Cr 獲得 1 點傳奇威望，解鎖專屬頭銜與 EXP 永久加成。</p>
+                    <div class="glass p-3 rounded-xl border border-amber-900/40 flex justify-between items-center shadow-[0_0_15px_rgba(245,158,11,0.1)]">
+                        <div>
+                            <div class="text-[10px] text-amber-400 font-bold mb-0.5 cyber-title tracking-wider">傳奇威望等級：<span id="ui-prestige-lv" class="text-white text-sm">0</span></div>
+                            <div class="text-[9px] text-slate-400">累計捐獻：<span id="ui-donated-cr">0</span> Cr</div>
+                        </div>
+                        <button class="bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-500 hover:to-amber-700 text-white px-3 py-2 rounded-lg text-[10px] font-bold shadow-lg cyber-title transition-all" onclick="MARKET.donateCr()">捐獻 10 萬 Cr</button>
+                    </div>
+                </div>
             </div>
         </section>
 
         <section id="view-system" class="h-full scrollable overflow-y-auto p-4 space-y-4 hidden fade-in pb-4">
-            
             <div class="glass p-4 rounded-xl border border-blue-900/50 shadow-lg">
                 <h3 class="font-bold text-blue-400 text-[11px] cyber-title tracking-widest border-b border-blue-900/50 pb-2 mb-3"><i class="fa-solid fa-crosshairs mr-1"></i>MAIN QUEST (主線戰役)</h3>
-                <p class="text-[9px] text-slate-400 font-serif mb-3 leading-relaxed">
-                    第一部曲大結局：2028 警察人員升官等與警佐 2 類考試。<br>
-                    第二部曲大結局：2030 比特幣與財富奇異點。
-                </p>
+                <p class="text-[9px] text-slate-400 font-serif mb-3 leading-relaxed">第一部曲大結局：2028 警察人員升官等與警佐 2 類考試。<br>第二部曲大結局：2030 比特幣與財富奇異點。</p>
                 <div class="space-y-3">
                     <div>
                         <label class="text-[9px] text-slate-400 font-bold cyber-title mb-1 block">目前焦點戰役目標</label>
@@ -476,18 +452,16 @@
                 <div id="system-mastery-list" class="space-y-3"></div>
             </div>
 
-            <div class="glass p-4 rounded-xl border border-amber-900/40 mt-4">
-                <h3 class="font-bold text-amber-400 text-[11px] cyber-title tracking-widest border-b border-amber-900/50 pb-2 mb-3"><i class="fa-solid fa-calendar-check mr-1"></i>MONTHLY SUMMARY (防禦型復盤)</h3>
-                <div id="system-monthly-list" class="space-y-2 max-h-[150px] overflow-y-auto thin-scroll"></div>
-            </div>
+            <div class="glass p-4 rounded-xl border border-amber-900/40 mt-4" id="system-monthly-section">
+                </div>
 
             <div class="glass p-4 rounded-xl border border-slate-700 mt-4 mb-8">
-                <h3 class="text-[11px] font-bold text-slate-300 cyber-title tracking-widest mb-3 border-b border-slate-800 pb-2"><i class="fa-solid fa-cloud-arrow-down mr-1"></i>MAINTENANCE</h3>
-                <p class="text-[9px] text-rose-400 font-serif mb-3">防禦型策略的第一步：定期備份資產。若系統快取被清除，未備份的心血將歸零。</p>
+                <h3 class="text-[11px] font-bold text-slate-300 cyber-title tracking-widest mb-3 border-b border-slate-800 pb-2"><i class="fa-solid fa-cloud-arrow-down mr-1"></i>MAINTENANCE (本地實體防禦)</h3>
+                <p class="text-[9px] text-rose-400 font-serif mb-3">防禦型策略的絕對核心：本地備份。將資料下載為實體檔案，確保心血不會因瀏覽器清理而歸零。</p>
                 <div class="text-[10px] text-slate-400 cyber-title mb-2" id="sys-last-backup">最後備份：---</div>
                 <div class="flex gap-2 mb-3">
-                    <button class="flex-1 bg-gradient-to-r from-blue-900 to-indigo-900 text-blue-200 py-2.5 rounded text-[10px] font-bold btn-interact border border-blue-700" onclick="SYSTEM_UI.exportData()">記憶備份 (匯出代碼)</button>
-                    <button class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded text-[10px] font-bold btn-interact border border-slate-600" onclick="SYSTEM_UI.importData()">備份還原 (匯入)</button>
+                    <button class="flex-1 bg-gradient-to-r from-blue-900 to-indigo-900 text-blue-200 py-2.5 rounded text-[10px] font-bold btn-interact border border-blue-700" onclick="SYSTEM_UI.exportData()">檔案備份 (下載 .json)</button>
+                    <button class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded text-[10px] font-bold btn-interact border border-slate-600" onclick="SYSTEM_UI.importData()">備份還原 (上傳 .json)</button>
                 </div>
                 <button class="w-full bg-rose-950/30 text-rose-500 py-2.5 rounded text-[10px] font-bold border border-rose-900/50 btn-interact hover:bg-rose-900/50" onclick="MODAL.showConfirm('系統重置', '將清除所有時數、等級與資產，且無法復原。確定？', (res)=>{if(res){localStorage.removeItem('study_addiction_ultimate');location.reload();}})">重置系統 (WIPE DATA)</button>
             </div>
@@ -495,32 +469,17 @@
     </main>
 
     <nav class="glass w-full flex justify-around items-center z-30 border-t border-slate-800/80 shrink-0 pb-safe pt-2 bg-slate-950/95 min-h-[80px]">
-        <button class="flex flex-col items-center justify-center w-full text-emerald-400 nav-btn btn-interact transition-colors" onclick="UI.switchTab('focus', this)">
-            <i class="fa-solid fa-stopwatch text-2xl mb-1 drop-shadow-[0_0_5px_rgba(16,185,129,0.8)]"></i>
-            <span class="text-[9px] font-bold cyber-title">ENGINE</span>
-        </button>
-        <button class="flex flex-col items-center justify-center w-full text-slate-500 hover:text-rose-400 nav-btn btn-interact transition-colors" onclick="UI.switchTab('map', this)">
-            <i class="fa-solid fa-map-location-dot text-2xl mb-1"></i>
-            <span class="text-[9px] font-bold cyber-title">EXPLORE</span>
-        </button>
-        <button class="flex flex-col items-center justify-center w-full text-slate-500 hover:text-pink-400 nav-btn btn-interact transition-colors" onclick="UI.switchTab('social', this)">
-            <i class="fa-solid fa-user-group text-2xl mb-1"></i>
-            <span class="text-[9px] font-bold cyber-title">SOCIAL</span>
-        </button>
-        <button class="flex flex-col items-center justify-center w-full text-slate-500 hover:text-amber-400 nav-btn btn-interact transition-colors" onclick="UI.switchTab('market', this)">
-            <i class="fa-solid fa-building-columns text-2xl mb-1"></i>
-            <span class="text-[9px] font-bold cyber-title">MARKET</span>
-        </button>
-        <button class="flex flex-col items-center justify-center w-full text-slate-500 hover:text-blue-300 nav-btn btn-interact transition-colors" onclick="UI.switchTab('system', this)">
-            <i class="fa-solid fa-sliders text-2xl mb-1"></i>
-            <span class="text-[9px] font-bold cyber-title">SYSTEM</span>
-        </button>
+        <button class="flex flex-col items-center justify-center w-full text-emerald-400 nav-btn btn-interact transition-colors" onclick="UI.switchTab('focus', this)"><i class="fa-solid fa-stopwatch text-2xl mb-1 drop-shadow-[0_0_5px_rgba(16,185,129,0.8)]"></i><span class="text-[9px] font-bold cyber-title">ENGINE</span></button>
+        <button class="flex flex-col items-center justify-center w-full text-slate-500 hover:text-rose-400 nav-btn btn-interact transition-colors" onclick="UI.switchTab('map', this)"><i class="fa-solid fa-map-location-dot text-2xl mb-1"></i><span class="text-[9px] font-bold cyber-title">EXPLORE</span></button>
+        <button class="flex flex-col items-center justify-center w-full text-slate-500 hover:text-pink-400 nav-btn btn-interact transition-colors" onclick="UI.switchTab('social', this)"><i class="fa-solid fa-user-group text-2xl mb-1"></i><span class="text-[9px] font-bold cyber-title">SOCIAL</span></button>
+        <button class="flex flex-col items-center justify-center w-full text-slate-500 hover:text-amber-400 nav-btn btn-interact transition-colors" onclick="UI.switchTab('market', this)"><i class="fa-solid fa-building-columns text-2xl mb-1"></i><span class="text-[9px] font-bold cyber-title">MARKET</span></button>
+        <button class="flex flex-col items-center justify-center w-full text-slate-500 hover:text-blue-300 nav-btn btn-interact transition-colors" onclick="UI.switchTab('system', this)"><i class="fa-solid fa-sliders text-2xl mb-1"></i><span class="text-[9px] font-bold cyber-title">SYSTEM</span></button>
     </nav>
 </div>
 
 <script>
 // ============================================================================
-// MODAL & UTILS
+// MODAL & UTILS & AUDIO
 // ============================================================================
 const Utils = {
     toast(msg, type = 'info') {
@@ -532,11 +491,53 @@ const Utils = {
         if(type === 'purple') t.style.borderLeftColor = "var(--neon-purple)";
         t.innerHTML = msg; c.appendChild(t); setTimeout(() => t.remove(), 3400);
     },
-    getAdjustedDate(d = new Date()) { return new Date(d.getTime() - 8 * 60 * 60 * 1000);
-    },
+    getAdjustedDate(d = new Date()) { return new Date(d.getTime() - 8 * 60 * 60 * 1000); },
     getIsoDateString(d = new Date()) { 
         let adj = this.getAdjustedDate(d);
         return `${adj.getFullYear()}-${(adj.getMonth()+1).toString().padStart(2,'0')}-${adj.getDate().toString().padStart(2,'0')}`; 
+    }
+};
+
+const AUDIO = {
+    ctx: null, source: null, filter: null, active: null,
+    init() { if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+    toggle(type) {
+        if(this.active === type) { this.stop(); return; }
+        this.play(type);
+    },
+    play(type) {
+        try {
+            this.init(); this.stop(); this.active = type;
+            let bufferSize = 2 * this.ctx.sampleRate;
+            let noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+            let output = noiseBuffer.getChannelData(0);
+            let lastOut = 0;
+            // 產生布朗噪聲 (低頻白噪音) 模擬環境音
+            for (let i = 0; i < bufferSize; i++) {
+                let white = Math.random() * 2 - 1;
+                output[i] = (lastOut + (0.02 * white)) / 1.02;
+                lastOut = output[i];
+                output[i] *= 3.5;
+            }
+            this.source = this.ctx.createBufferSource();
+            this.source.buffer = noiseBuffer;
+            this.source.loop = true;
+            this.filter = this.ctx.createBiquadFilter();
+            if(type === 'rain') { this.filter.type = 'lowpass'; this.filter.frequency.value = 800; }
+            if(type === 'server') { this.filter.type = 'lowpass'; this.filter.frequency.value = 150; }
+            this.source.connect(this.filter);
+            this.filter.connect(this.ctx.destination);
+            this.source.start(0);
+            Utils.toast(type === 'rain' ? "🌧️ 邊緣荒野環境音已啟動" : "🖥️ 機房深潛低鳴已啟動", "info");
+            document.getElementById("audio-btn-rain").classList.toggle("text-emerald-400", type === 'rain');
+            document.getElementById("audio-btn-server").classList.toggle("text-blue-400", type === 'server');
+        } catch(e) { console.log("Audio API Error:", e); }
+    },
+    stop() {
+        if(this.source) { this.source.stop(); this.source.disconnect(); this.source = null; }
+        this.active = null;
+        let rBtn = document.getElementById("audio-btn-rain"); if(rBtn) rBtn.classList.remove("text-emerald-400");
+        let sBtn = document.getElementById("audio-btn-server"); if(sBtn) sBtn.classList.remove("text-blue-400");
     }
 };
 
@@ -545,7 +546,10 @@ const MODAL = {
     showConfirm(title, msg, onConfirm) {
         this.cb = onConfirm;
         document.getElementById("modal-title").innerText = title; document.getElementById("modal-msg").innerText = msg;
-        document.getElementById("modal-input-container").classList.add("hidden"); document.getElementById("modal-select-container").classList.add("hidden");
+        document.getElementById("modal-msg").classList.remove("hidden");
+        document.getElementById("modal-input-container").classList.add("hidden"); 
+        document.getElementById("modal-textarea-container").classList.add("hidden");
+        document.getElementById("modal-select-container").classList.add("hidden");
         document.getElementById("modal-btn-cancel").classList.remove("hidden");
         document.getElementById("custom-modal").classList.remove("hidden"); document.getElementById("custom-modal").classList.add("flex");
         document.getElementById("modal-btn-cancel").onclick = () => { this.close(); };
@@ -554,10 +558,11 @@ const MODAL = {
     showInput(title, placeholder, onConfirm) {
         this.cb = onConfirm;
         document.getElementById("modal-title").innerText = title; document.getElementById("modal-msg").innerText = "";
+        document.getElementById("modal-msg").classList.add("hidden");
         document.getElementById("modal-select-container").classList.add("hidden");
+        document.getElementById("modal-textarea-container").classList.add("hidden");
         const inpCont = document.getElementById("modal-input-container"); const inp = document.getElementById("modal-input");
-        inpCont.classList.remove("hidden"); inp.placeholder = placeholder;
-        inp.value = "";
+        inpCont.classList.remove("hidden"); inp.placeholder = placeholder; inp.value = "";
         document.getElementById("modal-btn-cancel").classList.remove("hidden");
         document.getElementById("custom-modal").classList.remove("hidden"); document.getElementById("custom-modal").classList.add("flex");
         setTimeout(() => inp.focus(), 50);
@@ -568,10 +573,28 @@ const MODAL = {
             this.close(); if(this.cb) this.cb(val); 
         };
     },
+    showFocusLog(title, msg, onConfirm) {
+        this.cb = onConfirm;
+        document.getElementById("modal-title").innerText = title; document.getElementById("modal-msg").innerText = msg;
+        document.getElementById("modal-msg").classList.remove("hidden");
+        document.getElementById("modal-input-container").classList.add("hidden");
+        document.getElementById("modal-select-container").classList.add("hidden");
+        const txtCont = document.getElementById("modal-textarea-container"); const txt = document.getElementById("modal-textarea");
+        txtCont.classList.remove("hidden"); txt.value = "";
+        document.getElementById("modal-btn-cancel").classList.add("hidden"); // 強制確認(可留白)
+        document.getElementById("custom-modal").classList.remove("hidden"); document.getElementById("custom-modal").classList.add("flex");
+        setTimeout(() => txt.focus(), 50);
+        document.getElementById("modal-btn-confirm").onclick = () => { 
+            let val = txt.value.trim();
+            this.close(); if(this.cb) this.cb(val); 
+        };
+    },
     showSelect(title, msg, optionsArr, onConfirm) {
         this.cb = onConfirm;
         document.getElementById("modal-title").innerText = title; document.getElementById("modal-msg").innerText = msg;
+        document.getElementById("modal-msg").classList.remove("hidden");
         document.getElementById("modal-input-container").classList.add("hidden");
+        document.getElementById("modal-textarea-container").classList.add("hidden");
         const selCont = document.getElementById("modal-select-container"); const sel = document.getElementById("modal-select");
         sel.innerHTML = "";
         optionsArr.forEach(opt => { sel.innerHTML += `<option value="${opt}">${opt}</option>`; });
@@ -583,41 +606,41 @@ const MODAL = {
     },
     close() { document.getElementById("custom-modal").classList.add("hidden"); document.getElementById("custom-modal").classList.remove("flex"); }
 };
+
 // ============================================================================
 // DATABASE & LORE 
 // ============================================================================
 const DB = {
-    getExpNeed(lv) { 
-        return Math.floor(300 * Math.pow(1.05, lv - 1));
-    },
+    getExpNeed(lv) { return Math.floor(300 * Math.pow(1.05, lv - 1)); },
     getRealRank(mins) {
         let h = Math.floor(mins / 60);
-        if(h >= 10000) return "[破關] 署長";
-        if(h >= 7500) return "[三線三星] 局長";
-        if(h >= 5800) return "[三線二星] 督察長";
-        if(h >= 4500) return "[三線一星] 分局長";
-        if(h >= 3500) return "[二線四星] 督察";
-        if(h >= 2700) return "[二線三星] 主任";
-        if(h >= 2100) return "[二線三星] 組長";
-        if(h >= 1600) return "[二線二星] 專員";
-        if(h >= 1200) return "[二線二星] 隊長";
-        if(h >= 900) return "[二線一星] 分隊長";
-        if(h >= 600) return "[二線一星] 警務員";
-        if(h >= 350) return "[一線四星] 巡官 (2028主線目標)";
-        if(h >= 150) return "[一線四星] 巡佐";
-        return "[一線三星] 警員";
+        let title = "[一線三星] 警員";
+        if(h >= 10000) title = "[破關] 署長";
+        else if(h >= 7500) title = "[三線三星] 局長";
+        else if(h >= 5800) title = "[三線二星] 督察長";
+        else if(h >= 4500) title = "[三線一星] 分局長";
+        else if(h >= 3500) title = "[二線四星] 督察";
+        else if(h >= 2700) title = "[二線三星] 主任";
+        else if(h >= 2100) title = "[二線三星] 組長";
+        else if(h >= 1600) title = "[二線二星] 專員";
+        else if(h >= 1200) title = "[二線二星] 隊長";
+        else if(h >= 900) title = "[二線一星] 分隊長";
+        else if(h >= 600) title = "[二線一星] 警務員";
+        else if(h >= 350) title = "[一線四星] 巡官 (2028主線目標)";
+        else if(h >= 150) title = "[一線四星] 巡佐";
+        
+        let p = STATE.prestige || 0;
+        if (p > 0) {
+            let stars = "✦".repeat(Math.min(p, 5)) + (p > 5 ? `x${p}` : '');
+            title = `<span class="text-amber-400">${stars}</span> ` + title;
+        }
+        return title;
     },
     getSubjectLv(mins) {
-        let lv = 0;
-        let cost = 60; let currentMins = mins;
+        let lv = 0; let cost = 60; let currentMins = mins;
         while(currentMins >= cost) {
-            currentMins -= cost;
-            lv++;
-            if (lv < 20) { cost = 60; }
-            else if (lv < 50) { cost = 60 + (lv - 19) * 30;
-            } 
-            else { cost = 600 + (lv - 49) * 60;
-            } 
+            currentMins -= cost; lv++;
+            if (lv < 20) { cost = 60; } else if (lv < 50) { cost = 60 + (lv - 19) * 30; } else { cost = 600 + (lv - 49) * 60; } 
         }
         return { lv: lv, remain: currentMins, nextCost: cost };
     },
@@ -711,7 +734,8 @@ const DB = {
         { id: "est_btc_wallet_3", name: "3.0 枚實體比特幣冷錢包", icon: "₿", desc: "最大 SAN +3000。現實與虛擬交錯的終極護城河。2030 的奇異點通行證。絕對防禦(無維持費)。", price: 3000000, sanBuff: 3000, maint: 0 }
     ],
     chars: {
-        satoshi: { name: "Satoshi (中本聰)", icon: "👤", color: "text-amber-500", desc: "網路的幽靈。只談論信仰、紀律與長期的自由。", buffText: "專注 Cr +15%, EXP +10%", buffVal: 0, favGift: ["gift_bitcoin_physical", "gift_holo_bonsai", "gift_hardware_wallet"],
+        satoshi: { name: "Satoshi (中本聰)", icon: "👤", color: "text-amber-500", desc: "網路的幽靈。只談論信仰、紀律與長期的自由。", 
+            buffText: "專注 Cr +15%, EXP +10%", buffVal: 0, favGift: ["gift_bitcoin_physical", "gift_holo_bonsai", "gift_hardware_wallet"],
             events: [
                 { req: 0, cost: 20, lines: [{t:"你選擇了最難走的一條路。無論是 2028 的考試，還是 2030 的奇異點，都需要極致的防禦。繼續積累你的算力吧。"}] },
                 { req: 500, cost: 20, lines: [{t:"市場的雜音與考場的壓力，本質上是一樣的。他們都在試圖擊潰你的理智。"}, {choices:[{text:"我只看基本面，不理會短線波動。", aff:50, next:"這就是鑽石手的心智。啟動你的引擎，將那些噪音永遠隔絕在外。"}, {text:"最近實在有點焦慮...", aff:-10, hpLoss: 20, next:"去看看那些曾經在底部拋售的人。深呼吸，找回你的紀律。"}]}] },
@@ -814,16 +838,36 @@ const DB = {
                 { t: "開啟高倍槓桿試圖一次翻身", align: "chaos", s: "賭神降臨，一夜暴富！", f: "慘遭爆倉，失去了一切，回歸一線三星重新開始。", dmg: 500 }
               ]}
         ]
+    },
+    
+    dynamicMatrix: {
+        env: [
+            "在霓虹燈閃爍的下層區雨夜，全息廣告牌發出刺耳的雜訊...",
+            "當你的意識下潛至虛擬深潛網 (Deep Net) 的最底層，冰冷的數據流像瀑布一樣沖刷著你的神經...",
+            "凌晨三點的 NCPD 總部伺服器冷卻室，低頻的運轉聲突然停擺，四周陷入令人窒息的死寂...",
+            "在遠離文明的邊緣荒野 (Badlands)，致命的沙塵暴遮蔽了星空，你的戰術通訊訊號降到了零...",
+            "走在巨型企業的無菌走廊上，刺眼的白光與你逐漸狂跳的心跳聲交織在一起...",
+            "空氣中瀰漫著機油與血水的鐵鏽味，後巷的地下密醫診所外...",
+            "在深埋地底的廢棄捷運站，遠處的黑暗中傳來了非人類的機械嘶吼聲..."
+        ],
+        crisis: [
+            "一名義體過載的『神機錯亂者』突然從暗處躍出，高頻武士刀的紅光鎖定了你的核心處理器。",
+            "一個未知的高階 IP 強行駭入你的神經鏈結，試圖在你的大腦中植入名為『絕對貪婪』的木馬演算法。",
+            "一名穿著高級訂製西裝的企業特務攔下你，遞出一個裝滿高額信用籌碼 (Cr) 的無痕磁片，要求你對某個非法節點『睜一隻眼閉一隻眼』。",
+            "視覺面板突然遭到劫持，數以萬計的『防禦網即將崩潰』、『末日來臨』等恐慌性幻象 (FUD) 湧入，試圖燒毀你的理智保險絲。",
+            "系統雷達偵測到一處舊時代的軍規伺服器節點，裡面散發出『傳說級戰術武裝』的訊號，但周圍佈滿了致命的 ICE (防冰) 攻擊程式。",
+            "曾經的戰友、如今已墮落為非法傭兵的故人現身。他嘲笑你死守紀律的愚蠢，並邀請你加入一場極高風險、但報酬驚人的劫鏢行動。",
+            "一群街頭幫派份子正在圍毆一名流浪駭客，而那名駭客手裡緊緊抱著裝有稀有系統升級組件的軍用盲盒。"
+        ]
     }
 };
+
 const CRAFT_RECIPES = [
     { id: "con_def_coffee", req: [{id: "frag_willpower", count: 5}], type: "item" },
-    // 2028 科技樹：破舊 -> 進階 -> 史詩
     { id: "gear_law_0", req: [{id: "frag_law", count: 10}], type: "item" },
     { id: "gear_law_1_adv", req: [{id: "gear_law_0", count: 1}, {id: "frag_law", count: 30}], type: "item" },
     { id: "gear_police_2028", req: [{id: "gear_law_1_adv", count: 1}, {id: "frag_law", count: 100}, {id: "con_legal_redbull", count: 2}], type: "item" },
     
-    // 戰術武裝合成
     { id: "wp_jinzhongwan", req: [{id: "frag_wp_rare", count: 30}], type: "item" },
     { id: "wp_xinxuan", req: [{id: "frag_wp_rare", count: 30}], type: "item" },
     { id: "wp_dalishan", req: [{id: "frag_wp_epic", count: 50}], type: "item" },
@@ -836,6 +880,7 @@ const CRAFT_RECIPES = [
     { id: "merc_crypto_whale", req: [{id: "frag_whale", count: 100}], type: "item" },
     { id: "est_btc_node", req: [{id: "frag_node", count: 200}], type: "estate" }
 ];
+
 // ============================================================================
 // STATE & CORE 
 // ============================================================================
@@ -851,18 +896,19 @@ const STATE = {
     inventory: ["con_pet_food", "pet_cat"],
     equippedWeapons: [], sp: 0, skills: { biotech: 0, overclock: 0, social: 0 },
     activePartner: null, aff: {}, completedEvents: {},
-    estates: [], disabledEstates: [], logs: [], monthlyLogs: {}, lastBackup: Date.now(),
+    estates: [], disabledEstates: [], logs: [], monthlyLogs: {}, dailyFocus: {}, lastBackup: Date.now(),
     pet: { active: 'pet_cat', hunger: 80, mood: 80 },
-    territory: 50, terrShieldTs: 0, lastTerrCheck: Date.now()
+    territory: 50, terrShieldTs: 0, lastTerrCheck: Date.now(),
+    prestige: 0, donatedCr: 0
 };
+
 const CORE = {
-init() {
+    init() {
         this.load(); this.migrateData(); this.calcMaxStats(); this.updateTerritory(0);
         this.checkDates();
         UI.init();
         setInterval(() => { UI.updateFocus(); }, 60000); 
 
-        // 【新增防禦】iOS 防呆：如果網頁被殺掉重整，自動接續上次的計時器
         let activeSession = localStorage.getItem("focus_active_session");
         if(activeSession) {
             let s = JSON.parse(activeSession);
@@ -870,14 +916,11 @@ init() {
             FOCUS.currentSubject = s.subj;
             FOCUS.hyperMode = false;
             
-            // 恢復 UI 狀態
             document.getElementById("focus-subj-display").innerText = FOCUS.currentSubject;
             document.getElementById("overlay-focus").classList.remove("hidden");
             document.getElementById("overlay-focus").classList.add("flex");
             
-            // 重新啟動計時器
             FOCUS.interval = setInterval(() => FOCUS.tick(), 1000);
-            // 延遲彈出提示，讓使用者知道系統幫他防禦了損失
             setTimeout(() => Utils.toast("🔄 偵測到神經連線曾被中斷，已自動為您恢復潛航狀態！", "success"), 1000);
         }
     },
@@ -894,27 +937,25 @@ init() {
             if(!STATE.subjectMastery[sub]) STATE.subjectMastery[sub] = 0; 
         });
         if(!STATE.pet) STATE.pet = { active: 'pet_cat', hunger: 100, mood: 100 };
-        if(!STATE.inventory.includes('pet_cat') && STATE.pet.active === 'pet_cat') { STATE.inventory.push('pet_cat');
-        }
+        if(!STATE.inventory.includes('pet_cat') && STATE.pet.active === 'pet_cat') { STATE.inventory.push('pet_cat'); }
         if(!STATE.monthlyLogs) STATE.monthlyLogs = {};
+        if(!STATE.dailyFocus) STATE.dailyFocus = {};
         if(!STATE.lastBackup) STATE.lastBackup = Date.now();
         if(!STATE.disabledEstates) STATE.disabledEstates = [];
-        if(STATE.territory === undefined) { STATE.territory = 50; STATE.terrShieldTs = 0; STATE.lastTerrCheck = Date.now();
-        }
+        if(STATE.territory === undefined) { STATE.territory = 50; STATE.terrShieldTs = 0; STATE.lastTerrCheck = Date.now(); }
         if(STATE.lastFocusTimestamp === undefined) STATE.lastFocusTimestamp = Date.now();
         if(STATE.pityCounter120 === undefined) STATE.pityCounter120 = 0;
         if(STATE.equippedWeapons === undefined) STATE.equippedWeapons = [];
         if(STATE.skills === undefined) STATE.skills = { biotech: 0, overclock: 0, social: 0 };
         if(STATE.sp === undefined) STATE.sp = 0;
+        if(STATE.prestige === undefined) STATE.prestige = 0;
+        if(STATE.donatedCr === undefined) STATE.donatedCr = 0;
         
-        // Retroactive SP calculation
         let spent = STATE.skills.biotech + STATE.skills.overclock + STATE.skills.social;
         STATE.sp = Math.max(0, STATE.lv - 1 - spent);
     },
-    save() { STATE.lastLogin = Date.now(); localStorage.setItem(SAVE_KEY, btoa(encodeURIComponent(JSON.stringify(STATE))));
-    },
-    load() { const d = localStorage.getItem(SAVE_KEY); if(d) { try { Object.assign(STATE, JSON.parse(decodeURIComponent(atob(d))));
-    } catch(e) {} } },
+    save() { STATE.lastLogin = Date.now(); localStorage.setItem(SAVE_KEY, btoa(encodeURIComponent(JSON.stringify(STATE)))); },
+    load() { const d = localStorage.getItem(SAVE_KEY); if(d) { try { Object.assign(STATE, JSON.parse(decodeURIComponent(atob(d)))); } catch(e) {} } },
     calcMaxStats() {
         let baseSan = 100 + (STATE.lv - 1) * 20;
         STATE.estates.forEach(id => { 
@@ -952,21 +993,18 @@ init() {
         const now = Date.now();
         const nowAdj = Utils.getAdjustedDate(new Date(now)); 
         const lastLoginAdj = Utils.getAdjustedDate(new Date(STATE.lastLogin));
-        // 跨日結算 (維護費等)
         if (nowAdj.getDate() !== lastLoginAdj.getDate() || nowAdj.getMonth() !== lastLoginAdj.getMonth()) {
             STATE.todayMins = 0;
             this.processDailyMaintenance();
             this.save();
         }
 
-        // 72小時戰術寬容檢查
         if (STATE.lastFocusTimestamp && (now - STATE.lastFocusTimestamp) > 72 * 60 * 60 * 1000) {
             if (STATE.streak > 0) {
                 STATE.streak = 0;
                 this.save();
             }
         }
-
         this.checkBackupWarning();
     },
     processDailyMaintenance() {
@@ -991,15 +1029,13 @@ init() {
         let daysSinceBackup = (Date.now() - STATE.lastBackup) / 86400000;
         if(daysSinceBackup > 7) {
             setTimeout(() => {
-                MODAL.showConfirm("防禦網安全警告", "距離上次備份已超過 7 天！\n本機資料隨時可能因瀏覽器清理而遺失。請盡快至 SYSTEM 頁面進行【記憶備份】。\n\n(防禦型策略的第一步：永遠確保核心資產不會歸零)", () => {});
+                MODAL.showConfirm("防禦網安全警告", "距離上次備份已超過 7 天！\n本機資料隨時可能因瀏覽器清理而遺失。請盡快至 SYSTEM 頁面進行【檔案備份】。\n\n(防禦型策略的第一步：永遠確保核心資產不會歸零)", () => {});
             }, 1000);
         }
     },
     damageSan(amt) {
-        if(STATE.activePartner === 'chen') { amt = Math.floor(amt * 0.7);
-        Utils.toast("🛡️ 局長庇護：減傷 30%", "info"); }
-        if(STATE.pet.active === 'merc_guan_yu' && STATE.pet.hunger > 50) { amt = Math.floor(amt * 0.8);
-        Utils.toast("🐉 武聖護體：減傷 20%", "info"); }
+        if(STATE.activePartner === 'chen') { amt = Math.floor(amt * 0.7); Utils.toast("🛡️ 局長庇護：減傷 30%", "info"); }
+        if(STATE.pet.active === 'merc_guan_yu' && STATE.pet.hunger > 50) { amt = Math.floor(amt * 0.8); Utils.toast("🐉 武聖護體：減傷 20%", "info"); }
         
         STATE.san -= amt;
         document.getElementById("app").style.filter = "sepia(0.8) hue-rotate(-50deg) saturate(2)"; setTimeout(() => document.getElementById("app").style.filter = "none", 500);
@@ -1017,91 +1053,70 @@ init() {
         while(STATE.exp >= need) {
             STATE.exp -= need;
             STATE.lv++; 
-            STATE.sp++; // 新增技能點
+            STATE.sp++;
             this.calcMaxStats(); 
             STATE.san = STATE.maxSan;
             need = DB.getExpNeed(STATE.lv);
             leveledUp = true;
             
-            // 戰術武裝解鎖提示 (每20級解鎖一格，或150小時解鎖)
-            if (STATE.lv % 20 === 0) {
-                Utils.toast(`解鎖全新戰術裝備欄位！`, "purple");
-            }
-            // 事件機率提示
-            if (STATE.lv % 10 === 0) {
-                Utils.toast(`長期積累產生質變：動態事件觸發率 +0.5%！`, "purple");
-            }
+            if (STATE.lv % 20 === 0) { Utils.toast(`解鎖全新戰術裝備欄位！`, "purple"); }
+            if (STATE.lv % 10 === 0) { Utils.toast(`長期積累產生質變：動態事件觸發率 +0.5%！`, "purple"); }
         }
         if(leveledUp) {
             Utils.toast(`晉升至 Lv.${STATE.lv}！階級：${DB.getRealRank(STATE.totalFocusTime)}\n獲得 1 SP 神經點數，理智已完全恢復。`, "success");
         }
     },
-    completeFocus(mins, subjName) {
+    completeFocus(mins, subjName, logText = "") {
         let expGain = mins * 15;
         let goldGain = mins * 10; let energyGain = mins;
-        // 防爆肝機制：專注時間短(番茄鐘)恢復SAN，過長(大於60m)開始消耗SAN
+        
         let sanCost = 0;
         if (mins >= 120) sanCost = Math.floor(mins / 2); 
         else if (mins >= 60) sanCost = Math.floor((mins - 60) / 2);
-        // 生化改造技能：減少 SAN 消耗
         sanCost = Math.floor(sanCost * (1 - ((STATE.skills?.biotech || 0) * 0.02)));
-        let sanRegen = mins - sanCost; // 短期番茄鐘會是正的，長期深潛會造成極大消耗
+        let sanRegen = mins - sanCost;
         if (STATE.equippedWeapons.includes('wp_duohun') && mins >= 30) sanRegen += 5;
-        // 奪魂特效
 
         let now = Date.now();
         let currentTerr = STATE.territory;
         let isUtopia = currentTerr >= 80;
 
-        // --- 神經升級 (超頻運算) 被動 ---
         expGain = Math.floor(expGain * (1 + ((STATE.skills?.overclock || 0) * 0.01)));
-        // 動態地盤加成
-        if (isUtopia) {
-            expGain = Math.floor(expGain * 1.2);
-            goldGain = Math.floor(goldGain * 1.2);
-        } else if (currentTerr < 30) {
-            expGain = Math.floor(expGain * 0.8);
-            goldGain = Math.floor(goldGain * 0.8);
-        }
+        if (isUtopia) { expGain = Math.floor(expGain * 1.2); goldGain = Math.floor(goldGain * 1.2); } 
+        else if (currentTerr < 30) { expGain = Math.floor(expGain * 0.8); goldGain = Math.floor(goldGain * 0.8); }
 
-        // --- 戰術武裝加成 ---
         if(STATE.equippedWeapons.includes('wp_dalishan')) expGain = Math.floor(expGain * 1.05);
-        if(STATE.equippedWeapons.includes('wp_malorian')) { expGain = Math.floor(expGain * 1.02); goldGain = Math.floor(goldGain * 1.02);
-        }
-        if(mins >= 120 && STATE.equippedWeapons.includes('wp_luosha')) { 
-            expGain += Math.floor(30 * 15 * 0.2);
-            sanRegen -= Math.floor(sanCost * 0.15); // 增加SAN消耗
-        }
+        if(STATE.equippedWeapons.includes('wp_malorian')) { expGain = Math.floor(expGain * 1.02); goldGain = Math.floor(goldGain * 1.02); }
+        if(mins >= 120 && STATE.equippedWeapons.includes('wp_luosha')) { expGain += Math.floor(30 * 15 * 0.2); sanRegen -= Math.floor(sanCost * 0.15); }
 
-        // 神經裝備被動加成
         if(STATE.inventory.includes("gear_rhythm_stabilizer")) energyGain = Math.floor(energyGain * 1.2);
         if(STATE.inventory.includes("gear_mental_firewall")) sanRegen = sanRegen > 0 ? Math.floor(sanRegen * 1.3) : sanRegen;
-        if(STATE.inventory.includes("gear_akashic_record")) { expGain = Math.floor(expGain*1.15); goldGain = Math.floor(goldGain*1.25);
-        }
-        if(STATE.inventory.includes("gear_lonewolf_jacket")) { expGain = Math.floor(expGain*1.3);
-        }
-        if(STATE.inventory.includes("gear_diamond_hands")) { expGain = Math.floor(expGain*1.5); goldGain = Math.floor(goldGain*1.5);
-        }
+        if(STATE.inventory.includes("gear_akashic_record")) { expGain = Math.floor(expGain*1.15); goldGain = Math.floor(goldGain*1.25); }
+        if(STATE.inventory.includes("gear_lonewolf_jacket")) { expGain = Math.floor(expGain*1.3); }
+        if(STATE.inventory.includes("gear_diamond_hands")) { expGain = Math.floor(expGain*1.5); goldGain = Math.floor(goldGain*1.5); }
         if(STATE.inventory.includes("gear_invest_1")) goldGain = Math.floor(goldGain*1.15);
         if(STATE.inventory.includes("gear_hodl_tracker")) goldGain = Math.floor(goldGain*1.2);
         if(STATE.inventory.includes("gear_law_1_adv")) expGain = Math.floor(expGain*1.1);
         if(STATE.inventory.includes("gear_police_2028")) expGain = Math.floor(expGain*1.2);
 
-        // 搭檔加成
         if(STATE.activePartner === 'rin') goldGain = Math.floor(goldGain*1.2);
-        if(STATE.activePartner === 'k_corpo') goldGain = Math.floor(goldGain*1.1);
         if(STATE.activePartner === 'kaelen') goldGain += (mins * 2);
-        if(STATE.activePartner === 'satoshi') { goldGain = Math.floor(goldGain*1.15); expGain = Math.floor(expGain*1.1);
-        }
+        if(STATE.activePartner === 'satoshi') { goldGain = Math.floor(goldGain*1.15); expGain = Math.floor(expGain*1.1); }
 
         let streakMult = 1.0;
         if(STATE.streak >= 7) streakMult = 1.2;
         else if(STATE.streak >= 3) streakMult = 1.1;
         expGain = Math.floor(expGain * streakMult);
-        // --- 動態出勤費邏輯 ---
+        
+        // 防禦型復盤加成 (如果有寫心得)
+        if(logText && logText.trim() !== "") {
+            let recallBonus = Math.floor(expGain * 0.1);
+            expGain += recallBonus;
+            Utils.toast(`🧠 防禦型復盤成功！深度記憶加成 EXP +${recallBonus}`, "success");
+        }
+
         let petActiveId = STATE.pet.active;
-        let petData = petActiveId ?
-        DB.items[petActiveId] : null;
+        let petData = petActiveId ? DB.items[petActiveId] : null;
         let petWorking = true;
         let petFeeMsg = "";
         if (petData && petData.maintFee && mins > 0) {
@@ -1118,26 +1133,22 @@ init() {
         let petHappy = (STATE.pet.hunger > 50 && STATE.pet.mood > 50) && petWorking;
         if(petHappy && petData) {
             switch(petActiveId) {
-                case 'pet_dog': sanRegen = sanRegen > 0 ?
-                Math.floor(sanRegen * 1.5) : sanRegen; break;
+                case 'pet_dog': sanRegen = sanRegen > 0 ? Math.floor(sanRegen * 1.5) : sanRegen; break;
                 case 'pet_owl': energyGain = Math.floor(energyGain * 1.5); break;
                 case 'pet_robo_cat': energyGain = Math.floor(energyGain * 1.8); break;
-                case 'pet_capybara': sanRegen = sanRegen > 0 ?
-                Math.floor(sanRegen * 2.0) : sanRegen; break;
+                case 'pet_capybara': sanRegen = sanRegen > 0 ? Math.floor(sanRegen * 2.0) : sanRegen; break;
                 case 'merc_rookie_cop': expGain = Math.floor(expGain * 1.05); break;
                 case 'merc_street_doc': sanRegen = sanRegen > 0 ? Math.floor(sanRegen * 1.2) : sanRegen; break;
                 case 'merc_hacker_kid': goldGain = Math.floor(goldGain * 1.1); break;
                 case 'merc_mech_zero': energyGain = Math.floor(energyGain * 1.3); break;
                 case 'merc_netrunner': goldGain = Math.floor(goldGain * 1.25); break;
-                case 'merc_ai': expGain = Math.floor(expGain * 1.3); goldGain = Math.floor(goldGain * 1.3);
-                break;
+                case 'merc_ai': expGain = Math.floor(expGain * 1.3); goldGain = Math.floor(goldGain * 1.3); break;
                 case 'merc_crypto_whale': goldGain = Math.floor(goldGain * 1.8); expGain = Math.floor(expGain * 1.5); break;
-        }
+            }
         }
 
         if (petData) {
-            let drain = (petActiveId === 'pet_robo_cat' || petActiveId === 'merc_mech_zero') ?
-            0 : Math.ceil(mins / 10);
+            let drain = (petActiveId === 'pet_robo_cat' || petActiveId === 'merc_mech_zero') ? 0 : Math.ceil(mins / 10);
             STATE.pet.hunger = Math.max(0, STATE.pet.hunger - drain);
             if (STATE.pet.hunger < 50) STATE.pet.mood = Math.max(0, STATE.pet.mood - Math.ceil(mins / 15));
         }
@@ -1149,13 +1160,15 @@ init() {
         STATE.subjectMastery[subjName] = DB.getSubjectLv(STATE.subjectTime[subjName]).lv;
 
         STATE.todayMins += mins; STATE.totalFocusTime += mins;
-        let monthKey = Utils.getIsoDateString().substring(0,7);
+        
+        let todayStr = Utils.getIsoDateString();
+        let monthKey = todayStr.substring(0,7);
         STATE.monthlyLogs[monthKey] = (STATE.monthlyLogs[monthKey] || 0) + mins;
-        // 72小時連勝寬容邏輯
+        STATE.dailyFocus[todayStr] = (STATE.dailyFocus[todayStr] || 0) + mins;
+
         let hoursSinceLastFocus = (now - (STATE.lastFocusTimestamp || now)) / (1000 * 60 * 60);
         if (mins >= 10) { 
             if (hoursSinceLastFocus <= 72) {
-                let todayStr = Utils.getIsoDateString();
                 if (STATE.lastStudyDateStr !== todayStr) { 
                     STATE.streak++;
                     STATE.lastStudyDateStr = todayStr; 
@@ -1163,7 +1176,7 @@ init() {
                 }
             } else {
                 STATE.streak = 1;
-                STATE.lastStudyDateStr = Utils.getIsoDateString();
+                STATE.lastStudyDateStr = todayStr;
                 Utils.toast(`⚠️ 距離上次潛航超過 72 小時，連勝防線重置。`, "warning");
             }
             STATE.lastFocusTimestamp = now;
@@ -1171,49 +1184,28 @@ init() {
 
         this.updateTerritory(mins);
         currentTerr = STATE.territory;
-        // --- 動態掉落與保底爆發機制 ---
+        
         let drops = [];
         let bonusRate = (isUtopia ? 0.1 : 0) + ((STATE.skills?.overclock || 0) * 0.005); 
-        let isLegendary = false;
-        let legendaryData = null;
+        let isLegendary = false; let legendaryData = null;
 
         if (mins >= 10) {
-            if(Math.random() < 0.8 + bonusRate) {
-                STATE.inventory.push("frag_willpower");
-                drops.push(`✨ 意志力碎片`);
-            }
+            if(Math.random() < 0.8 + bonusRate) { STATE.inventory.push("frag_willpower"); drops.push(`✨ 意志力碎片`); }
         }
 
-        // 戰術武裝碎片掉落
         if (mins >= 25) {
-            if (Math.random() < 0.3 + bonusRate) { STATE.inventory.push("frag_wp_rare");
-                drops.push("🔩 制式武器組件"); }
-            if (mins <= 30 && STATE.equippedWeapons.includes('wp_xinxuan')) { STATE.inventory.push("frag_wp_rare");
-                drops.push("🔩 額外武器組件(信玄)"); }
+            if (Math.random() < 0.3 + bonusRate) { STATE.inventory.push("frag_wp_rare"); drops.push("🔩 制式武器組件"); }
+            if (mins <= 30 && STATE.equippedWeapons.includes('wp_xinxuan')) { STATE.inventory.push("frag_wp_rare"); drops.push("🔩 額外武器組件(信玄)"); }
         }
-        if (mins >= 60 && Math.random() < 0.2 + bonusRate) { STATE.inventory.push("frag_wp_epic");
-            drops.push("⚙️ 軍規武器組件"); }
-        if (mins >= 120 && Math.random() < 0.1 + bonusRate) { STATE.inventory.push("frag_wp_leg");
-            drops.push("🔥 原型武器組件"); }
+        if (mins >= 60 && Math.random() < 0.2 + bonusRate) { STATE.inventory.push("frag_wp_epic"); drops.push("⚙️ 軍規武器組件"); }
+        if (mins >= 120 && Math.random() < 0.1 + bonusRate) { STATE.inventory.push("frag_wp_leg"); drops.push("🔥 原型武器組件"); }
 
         if(mins >= 30) {
-            if(Math.random() < 0.6 + bonusRate) {
-                let items = ["con_pet_food", "con_pet_toy"];
-                let g = items[Math.floor(Math.random() * items.length)];
-                STATE.inventory.push(g); drops.push(`補給品`);
-            }
-            if(Math.random() < 0.4 + bonusRate) {
-                let frags = ["frag_mech_zero", "frag_guan_yu"];
-                let f = frags[Math.floor(Math.random() * frags.length)];
-                STATE.inventory.push(f); drops.push(`🧩 ${DB.items[f].name}`);
-            }
+            if(Math.random() < 0.6 + bonusRate) { let items = ["con_pet_food", "con_pet_toy"]; let g = items[Math.floor(Math.random() * items.length)]; STATE.inventory.push(g); drops.push(`補給品`); }
+            if(Math.random() < 0.4 + bonusRate) { let frags = ["frag_mech_zero", "frag_guan_yu"]; let f = frags[Math.floor(Math.random() * frags.length)]; STATE.inventory.push(f); drops.push(`🧩 ${DB.items[f].name}`); }
         }
         if(mins >= 60) {
-            if(Math.random() < 0.4 + bonusRate) {
-                let gifts = ["gift_gun_oil", "gift_tea_premium", "gift_keyboard_quantum", "gift_cigar", "gift_vintage_lawbook", "gift_hardware_wallet", "gift_holo_bonsai", "gift_vinyl_record"];
-                let g = gifts[Math.floor(Math.random() * gifts.length)];
-                STATE.inventory.push(g); drops.push(`🎁 ${DB.items[g].name}`);
-            }
+            if(Math.random() < 0.4 + bonusRate) { let gifts = ["gift_gun_oil", "gift_tea_premium", "gift_keyboard_quantum", "gift_cigar", "gift_vintage_lawbook", "gift_hardware_wallet", "gift_holo_bonsai", "gift_vinyl_record"]; let g = gifts[Math.floor(Math.random() * gifts.length)]; STATE.inventory.push(g); drops.push(`🎁 ${DB.items[g].name}`); }
         }
         if(mins >= 120) {
             STATE.pityCounter120 = (STATE.pityCounter120 || 0) + 1;
@@ -1228,12 +1220,10 @@ init() {
 
                 isLegendary = true;
                 legendaryData = { item: DB.items[f], count: count, isPity: triggerPity };
-
                 if (triggerPity) STATE.pityCounter120 = 0;
-        }
+            }
         }
 
-        // --- 輪班動態事件 ---
         let eventBaseChance = 0.05 + ((STATE.skills?.social || 0) * 0.005) + (Math.floor(STATE.lv / 10) * 0.005);
         if (STATE.equippedWeapons.includes("wp_jinzhongwan")) eventBaseChance += 0.05;
         let eventMsg = "";
@@ -1246,12 +1236,14 @@ init() {
             let tr = triggers[Math.floor(Math.random()*triggers.length)];
             let em = emotions[Math.floor(Math.random()*emotions.length)];
             let bonusExp = Math.floor(Math.random() * 41) + 10;
-            // 10~50
             this.addExp(bonusExp);
             eventMsg = `\n\n【動態事件】${t}，${tr}，你${em}。\n成功轉化情緒，額外獲得 ${bonusExp} EXP！`;
         }
 
-        STATE.logs.unshift({ ts: Date.now(), m: mins, s: subjName }); if(STATE.logs.length > 50) STATE.logs.pop();
+        let logObj = { ts: Date.now(), m: mins, s: subjName };
+        if(logText) logObj.t = logText;
+        STATE.logs.unshift(logObj); if(STATE.logs.length > 50) STATE.logs.pop();
+        
         this.save(); UI.updateHUD(); UI.updateFocus(); UI.updateSystem(); MARKET.filterShop('all', document.querySelector('.shop-filter'));
         
         let sanText = sanRegen >= 0 ? `防禦恢復 +${sanRegen}` : `深度過勞消耗 ${sanRegen}`;
@@ -1260,8 +1252,7 @@ init() {
         msg += eventMsg;
 
         if (currentTerr < 30 && Math.random() < 0.15) {
-            let dmg = 15;
-            this.damageSan(dmg);
+            let dmg = 15; this.damageSan(dmg);
             msg += `\n\n🚨 遭遇街頭幫派襲擊 (治安惡化)，理智 -${dmg}`;
         }
 
@@ -1285,7 +1276,7 @@ const UI = {
     },
     updateHUD() {
         document.getElementById("ui-lv").innerText = STATE.lv;
-        document.getElementById("ui-rank").innerText = DB.getRealRank(STATE.totalFocusTime);
+        document.getElementById("ui-rank").innerHTML = DB.getRealRank(STATE.totalFocusTime);
         document.getElementById("ui-streak").innerText = STATE.streak; document.getElementById("ui-gold").innerText = Math.floor(STATE.gold).toLocaleString();
         document.getElementById("ui-energy").innerText = Math.floor(STATE.energy);
         document.getElementById("ui-san").innerText = Math.floor(STATE.san); document.getElementById("ui-max-san").innerText = STATE.maxSan;
@@ -1295,11 +1286,13 @@ const UI = {
         document.getElementById("ui-exp-pct").innerText = Math.floor(pct); document.getElementById("bar-exp").style.width = `${pct}%`;
 
         const pIcon = document.getElementById("ui-partner-icon");
-        if(STATE.activePartner && DB.chars[STATE.activePartner]) { pIcon.innerText = DB.chars[STATE.activePartner].icon; pIcon.classList.remove("hidden");
-        } 
+        if(STATE.activePartner && DB.chars[STATE.activePartner]) { pIcon.innerText = DB.chars[STATE.activePartner].icon; pIcon.classList.remove("hidden"); } 
         else pIcon.classList.add("hidden");
         
         document.getElementById("ui-inv-count").innerText = `${STATE.inventory.length}/150`;
+        
+        let prestigeEl = document.getElementById("ui-prestige-lv"); if(prestigeEl) prestigeEl.innerText = STATE.prestige || 0;
+        let donatedEl = document.getElementById("ui-donated-cr"); if(donatedEl) donatedEl.innerText = (STATE.donatedCr || 0).toLocaleString();
     },
     updateFocus() {
         let totalH = Math.floor(STATE.totalFocusTime / 60);
@@ -1321,14 +1314,14 @@ const UI = {
         let fCount = 0, tCount = 0;
         STATE.inventory.forEach(i => { if(i==='con_pet_food') fCount++; if(i==='con_pet_toy') tCount++; });
         document.getElementById("inv-food").innerText = fCount; document.getElementById("inv-toy").innerText = tCount;
-        // Pity Counter UI
         document.getElementById("pity-count").innerText = STATE.pityCounter120 || 0;
 
         const logBox = document.getElementById("focus-logs");
         logBox.innerHTML = "";
         STATE.logs.slice(0, 5).forEach(l => {
             let d = new Date(l.ts); let timeStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
-            logBox.innerHTML += `<div class="flex justify-between items-center text-[10px] border-b border-slate-800/50 pb-1.5 pt-1.5"><div class="text-slate-400 font-serif">${timeStr} [${l.s}]</div><div class="text-emerald-400 font-bold cyber-title">${l.m>0?'+':''}${l.m} MIN</div></div>`;
+            let logNotes = l.t ? `<div class="text-[9px] text-slate-300 mt-0.5 ml-2 border-l-2 border-blue-500/50 pl-1.5 line-clamp-2">${l.t}</div>` : '';
+            logBox.innerHTML += `<div class="text-[10px] border-b border-slate-800/50 pb-1.5 pt-1.5"><div class="flex justify-between items-center"><div class="text-slate-400 font-serif">${timeStr} [${l.s}]</div><div class="text-emerald-400 font-bold cyber-title">${l.m>0?'+':''}${l.m} MIN</div></div>${logNotes}</div>`;
         });
     },
     updateMap() {
@@ -1339,20 +1332,15 @@ const UI = {
         let badge = document.getElementById("terr-status-badge");
         let txt = document.getElementById("terr-effect-text");
         if(terr >= 80) {
-            badge.innerText = "治安優良";
-            badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded border mt-1 shadow border-amber-500 text-amber-400 bg-amber-900/30";
+            badge.innerText = "治安優良"; badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded border mt-1 shadow border-amber-500 text-amber-400 bg-amber-900/30";
             txt.innerText = "解鎖【黃金時代】：此狀態下啟動專注引擎，結算時獲得的 Cr 與 EXP 提升 20%，且所有掉落機率額外提升 10%。不勞無獲，持續研讀才能享受加成。"; txt.className = "text-[9px] font-serif mt-3 p-2 rounded border leading-relaxed text-amber-300 border-amber-700/50 bg-amber-950/20";
         } else if (terr < 30) {
-            badge.innerText = "全面失控";
-            badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded border mt-1 shadow border-rose-500 text-rose-400 bg-rose-900/30";
-            txt.innerText = "危險區域：黑市物價全面上漲 20%，每次潛航結算時有機率遭遇襲擊扣除理智。請趕緊啟動引擎推進防線！";
-            txt.className = "text-[9px] font-serif mt-3 p-2 rounded border leading-relaxed text-rose-300 border-rose-700/50 bg-rose-950/20";
+            badge.innerText = "全面失控"; badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded border mt-1 shadow border-rose-500 text-rose-400 bg-rose-900/30";
+            txt.innerText = "危險區域：黑市物價全面上漲 20%，每次潛航結算時有機率遭遇襲擊扣除理智。請趕緊啟動引擎推進防線！"; txt.className = "text-[9px] font-serif mt-3 p-2 rounded border leading-relaxed text-rose-300 border-rose-700/50 bg-rose-950/20";
             if(document.getElementById("shop-penalty-msg")) document.getElementById("shop-penalty-msg").classList.remove("hidden");
         } else {
-            badge.innerText = "勢均力敵";
-            badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded border mt-1 shadow border-blue-500 text-blue-400 bg-blue-900/30";
-            txt.innerText = "標準狀態，無額外增減益。持續讀書推進防線。";
-            txt.className = "text-[9px] font-serif mt-3 p-2 rounded border leading-relaxed text-slate-300 border-slate-700/50 bg-slate-900/50";
+            badge.innerText = "勢均力敵"; badge.className = "text-[9px] font-bold px-1.5 py-0.5 rounded border mt-1 shadow border-blue-500 text-blue-400 bg-blue-900/30";
+            txt.innerText = "標準狀態，無額外增減益。持續讀書推進防線。"; txt.className = "text-[9px] font-serif mt-3 p-2 rounded border leading-relaxed text-slate-300 border-slate-700/50 bg-slate-900/50";
             if(document.getElementById("shop-penalty-msg")) document.getElementById("shop-penalty-msg").classList.add("hidden");
         }
 
@@ -1375,8 +1363,7 @@ const UI = {
             </div>`;
         });
     },
-    updateSystem() { SYSTEM_UI.updateGoalUI(); SYSTEM_UI.renderMastery(); SYSTEM_UI.renderMonthlyLogs(); SYSTEM_UI.updateBackupDate(); SYSTEM_UI.renderSkills();
-    },
+    updateSystem() { SYSTEM_UI.updateGoalUI(); SYSTEM_UI.renderMastery(); SYSTEM_UI.renderMonthlyLogs(); SYSTEM_UI.updateBackupDate(); SYSTEM_UI.renderSkills(); },
     switchTab(tabId, btnEl) {
         document.querySelectorAll("main > section").forEach(el => el.classList.add("hidden"));
         document.querySelectorAll(".nav-btn").forEach(el => { el.classList.remove("text-emerald-400", "text-rose-400", "text-pink-400", "text-amber-400", "text-blue-300"); el.classList.add("text-slate-500"); });
@@ -1384,12 +1371,9 @@ const UI = {
         if(btnEl) {
             if(tabId === 'focus') btnEl.classList.replace("text-slate-500", "text-emerald-400");
             if(tabId === 'map') { btnEl.classList.replace("text-slate-500", "text-rose-400"); CORE.updateTerritory(0); }
-            if(tabId === 'social') { btnEl.classList.replace("text-slate-500", "text-pink-400");
-            SOCIAL.renderMentors(); }
-            if(tabId === 'market') { btnEl.classList.replace("text-slate-500", "text-amber-400"); MARKET.switchTab('shop');
-            }
-            if(tabId === 'system') { btnEl.classList.replace("text-slate-500", "text-blue-300"); UI.updateSystem();
-            }
+            if(tabId === 'social') { btnEl.classList.replace("text-slate-500", "text-pink-400"); SOCIAL.renderMentors(); }
+            if(tabId === 'market') { btnEl.classList.replace("text-slate-500", "text-amber-400"); MARKET.switchTab('shop'); }
+            if(tabId === 'system') { btnEl.classList.replace("text-slate-500", "text-blue-300"); UI.updateSystem(); }
         }
     },
     showLegendaryDrop(data, callback) {
@@ -1397,22 +1381,15 @@ const UI = {
         document.getElementById("legendary-icon").innerText = data.item.icon;
         document.getElementById("legendary-name").innerText = `${data.item.name} x${data.count}`;
         document.getElementById("legendary-desc").innerText = data.isPity ? "【保底爆發】長期的堅持終將獲得極致的回報！大腦的多巴胺在燃燒！" : "【極限深潛掉落】你在無盡的深潛中捕獲了高階資產！";
-
-        overlay.classList.remove("hidden");
-        overlay.classList.add("flex");
-        document.getElementById("btn-legendary-claim").onclick = () => {
-            overlay.classList.add("hidden");
-            overlay.classList.remove("flex");
-            if(callback) callback();
-        };
+        overlay.classList.remove("hidden"); overlay.classList.add("flex");
+        document.getElementById("btn-legendary-claim").onclick = () => { overlay.classList.add("hidden"); overlay.classList.remove("flex"); if(callback) callback(); };
     }
 };
 
 const PET = {
     switch() {
         let available = [];
-        for(let id in DB.items) { if(DB.items[id].type === 'pet' && STATE.inventory.includes(id)) { available.push(id);
-        } }
+        for(let id in DB.items) { if(DB.items[id].type === 'pet' && STATE.inventory.includes(id)) { available.push(id); } }
         if(available.length <= 1) return Utils.toast("你目前只有一個伴隨單位，請努力讀書至黑市僱傭新單位。", "warning");
         
         let idx = available.indexOf(STATE.pet.active);
@@ -1446,14 +1423,12 @@ const FOCUS = {
             this.currentSubject = selectedSubj; this.start();
         });
     },
-start() {
+    start() {
         if(this.interval) clearInterval(this.interval);
         this.startTime = Date.now();
         this.hyperMode = false;
         document.getElementById("overlay-focus").classList.remove("hyper-mode");
-        // 【新增防禦】將當前潛航狀態寫入本機暫存，防止 iOS 殺後台
         localStorage.setItem("focus_active_session", JSON.stringify({time: this.startTime, subj: this.currentSubject}));
-        
         document.getElementById("focus-subj-display").innerText = this.currentSubject;
         
         this.tick();
@@ -1462,10 +1437,7 @@ start() {
     },
     tick() {
         let elapsedSec = Math.floor((Date.now() - this.startTime) / 1000);
-        if (elapsedSec >= 240 * 60) {
-            this.stop(true);
-            return;
-        }
+        if (elapsedSec >= 240 * 60) { this.stop(true); return; }
 
         if (elapsedSec >= 3600 && !this.hyperMode) {
             this.hyperMode = true;
@@ -1479,7 +1451,6 @@ start() {
         document.getElementById("focus-stopwatch").innerText = `${h}:${m}:${s}`;
         let mins = Math.floor(elapsedSec / 60);
         
-        // Dynamic SAN drain projection
         let sanCost = 0;
         if (mins >= 120) sanCost = Math.floor(mins / 2); 
         else if (mins >= 60) sanCost = Math.floor((mins - 60) / 2);
@@ -1491,40 +1462,54 @@ start() {
         document.getElementById("focus-est-exp").innerText = `+${mins*15}`;
         let sanEl = document.getElementById("focus-est-san");
         sanEl.innerText = (sanChange >= 0 ? `+${sanChange}` : sanChange);
-        sanEl.className = `text-xl font-black tabular-nums ${sanChange >= 0 ?
-        'text-emerald-400' : 'text-rose-500'}`;
+        sanEl.className = `text-xl font-black tabular-nums ${sanChange >= 0 ? 'text-emerald-400' : 'text-rose-500'}`;
     },
     stop(isAuto = false) {
         let mins = Math.floor((Date.now() - this.startTime) / 60000);
         if (mins < 1 && !isAuto) { 
             MODAL.showConfirm("強行中斷", "時間不到 1 分鐘，中斷將無任何收益。確定？", (res) => { if(res) this.cancel(); });
-        return; 
+            return; 
         }
         this.cleanup();
         if(isAuto) {
             Utils.toast("大腦保護機制啟動：單次極限深潛達到 4 小時上限，系統已自動為您結算以防數值異常。", "warning");
+            CORE.completeFocus(mins, this.currentSubject);
+        } else {
+            // 觸發防禦型復盤
+            MODAL.showFocusLog("防禦型復盤 (主動回想)", `結束了 ${mins} 分鐘的潛航，大腦需要冷卻。\n你可以記錄下剛剛讀到的重要法條或關鍵字，這將額外增加 10% 的歷練 (EXP)。`, (logText) => {
+                CORE.completeFocus(mins, this.currentSubject, logText);
+            });
         }
-        CORE.completeFocus(mins, this.currentSubject);
     },
-    cancel() { this.cleanup(); Utils.toast("⚠️ 潛航中斷。沒有付出時間，就沒有收穫。", "error");
-    },
-cleanup() {
+    cancel() { this.cleanup(); Utils.toast("⚠️ 潛航中斷。沒有付出時間，就沒有收穫。", "error"); },
+    cleanup() {
         clearInterval(this.interval); this.interval = null;
-        // 【新增防禦】正常結束或強行中斷時，清除暫存記憶
         localStorage.removeItem("focus_active_session");
-        
+        AUDIO.stop(); // 停止環境音
         document.getElementById("overlay-focus").classList.add("hidden"); document.getElementById("overlay-focus").classList.remove("flex");
         document.getElementById("overlay-focus").classList.remove("hyper-mode");
     }
 };
+
 // ============================================================================
 // TRPG & DICE
 // ============================================================================
 const TRPG = {
     currentSubj: null, currentOpt: null, dynamicDC: 15,
+    generateDynamicEvent() {
+        let a = DB.dynamicMatrix.env[Math.floor(Math.random() * DB.dynamicMatrix.env.length)];
+        let b = DB.dynamicMatrix.crisis[Math.floor(Math.random() * DB.dynamicMatrix.crisis.length)];
+        return {
+            title: "夜城動態威脅 (DYNAMIC EVENT)", desc: `${a}<br><br>${b}`,
+            opt: [
+                { t: "【絕對防禦】啟動心智防火牆，拔出制式武器。堅守防禦型紀律，以標準作業程序正面迎擊！", align: "law", s: "完美鎮壓威脅！你的意志力堅若磐石，防禦網經驗值大幅提升。", f: "防線遭到無情撕裂，你承受了嚴重的神經反噬。", dmg: 40, type: "dynamic_law" },
+                { t: "【混亂掠奪】解除安全限制，啟動超頻模式！試圖在混亂中黑吃黑，掠奪最大利益！", align: "chaos", s: "險中求勝！你像個瘋子一樣從危機中榨取了驚人的財富。", f: "操之過急暴露了破綻，你帶著傷痕狼狽逃離。", dmg: 50, type: "dynamic_chaos" },
+                { t: "【戰術撤退】冷靜評估風險，切斷實體連線並呼叫隱匿協定，保存實力為上策。", align: "neutral", s: "成功融入背景雜訊中，毫髮無傷地脫離險境。", f: "撤退不及，被爆炸的餘波波及系統邊緣。", dmg: 20, type: "dynamic_neutral" }
+            ]
+        };
+    },
     startZone(zoneId, cost) {
-        if(STATE.energy < cost) return Utils.toast(`⚡ SP 不足！需要 ${cost} SP。請去啟 कटोच engines。`, "error");
-        let pool = DB.trpgEvents[zoneId];
+        if(STATE.energy < cost) return Utils.toast(`⚡ SP 不足！需要 ${cost} SP。請去啟動 engines。`, "error");
         STATE.energy -= cost; 
         
         if (STATE.pet.active && STATE.pet.active !== 'pet_robo_cat' && STATE.pet.active !== 'merc_mech_zero') {
@@ -1532,39 +1517,34 @@ const TRPG = {
             if(STATE.pet.hunger < 50) STATE.pet.mood = Math.max(0, STATE.pet.mood - 2);
         }
         
-        UI.updateHUD();
-        UI.updateFocus();
-        let ev = pool[Math.floor(Math.random() * pool.length)];
+        UI.updateHUD(); UI.updateFocus();
+
+        let pool = DB.trpgEvents[zoneId];
+        let ev = (pool && Math.random() > 0.5) ? pool[Math.floor(Math.random() * pool.length)] : this.generateDynamicEvent();
         
         document.getElementById("ev-type").innerText = "NIGHT CITY INCIDENT";
-        document.getElementById("ev-title").innerText = ev.title; document.getElementById("ev-desc").innerHTML = ev.desc;
-        const actionArea = document.getElementById("ev-action-area"); actionArea.innerHTML = ""; actionArea.classList.remove("hidden");
+        document.getElementById("ev-title").innerText = ev.title; 
+        document.getElementById("ev-desc").innerHTML = ev.desc;
+        const actionArea = document.getElementById("ev-action-area"); 
+        actionArea.innerHTML = ""; actionArea.classList.remove("hidden");
         document.getElementById("ev-dice-area").classList.add("hidden"); document.getElementById("ev-dice-area").classList.remove("flex");
+        
         ev.opt.forEach((o) => {
             let btn = document.createElement("button"); btn.className = "w-full text-left p-5 glass rounded-xl border border-slate-700 hover:border-neon-blue transition-colors btn-interact mb-3 shadow-lg";
             let alignColor = o.align === 'law' ? 'text-blue-400' : (o.align === 'chaos' ? 'text-rose-500' : 'text-slate-400');
             btn.innerHTML = `<div class="font-black text-white mb-2 text-sm leading-relaxed">${o.t}</div><div class="flex gap-2"><span class="text-[10px] ${alignColor} bg-black/50 px-2 py-1 rounded border border-slate-700 cyber-title font-bold">[${o.align.toUpperCase()}]</span></div>`;
-           
-            btn.onclick = () => {
-                MODAL.showSelect("選擇對應專精科目", "請選擇你想用來檢定此選項的實力基礎：", STATE.subjects, (selSubj) => {
-                    this.prepDice(o, selSubj);
-                });
-            };
+            btn.onclick = () => { MODAL.showSelect("選擇對應專精科目", "請選擇你想用來檢定此選項的實力基礎：", STATE.subjects, (selSubj) => { this.prepDice(o, selSubj); }); };
             actionArea.appendChild(btn);
         });
         document.getElementById("overlay-event").classList.remove("hidden"); document.getElementById("overlay-event").classList.add("flex");
     },
     prepDice(opt, subjName) {
-        this.currentOpt = opt;
-        this.currentSubj = subjName;
+        this.currentOpt = opt; this.currentSubj = subjName;
         document.getElementById("ev-action-area").classList.add("hidden"); document.getElementById("ev-dice-area").classList.remove("hidden"); document.getElementById("ev-dice-area").classList.add("flex");
-        
         this.dynamicDC = 10 + Math.floor(STATE.lv / 10);
         document.getElementById("dice-dc-txt").innerText = this.dynamicDC; 
         
-        const diceEl = document.getElementById("the-dice");
-        diceEl.innerText = "20"; diceEl.className = "dice";
-        
+        const diceEl = document.getElementById("the-dice"); diceEl.innerText = "20"; diceEl.className = "dice";
         document.getElementById("dice-math").classList.add("hidden"); document.getElementById("dice-res").classList.add("hidden"); document.getElementById("dice-lore").innerText = "";
         document.getElementById("dice-btn-roll").classList.remove("hidden"); document.getElementById("dice-btn-close").classList.add("hidden");
     },
@@ -1579,7 +1559,6 @@ const TRPG = {
             if(baseRoll === 20) { diceEl.classList.add("crit-success"); }
             if(baseRoll === 1) { diceEl.classList.add("crit-fail"); }
             
-           
             let skillBuff = STATE.subjectMastery[this.currentSubj] || 0;
             let mentorBuff = 0;
             if(STATE.activePartner && DB.chars[STATE.activePartner].buffVal) mentorBuff += DB.chars[STATE.activePartner].buffVal;
@@ -1588,7 +1567,6 @@ const TRPG = {
             if(STATE.inventory.includes('gear_police_2028')) mentorBuff += 3;
             if(STATE.inventory.includes('gear_lonewolf_jacket')) mentorBuff += 3;
   
-          
             let petHappy = (STATE.pet.hunger > 50 && STATE.pet.mood > 50);
             if(petHappy) {
                 if(STATE.pet.active === 'merc_cyborg') mentorBuff += 4;
@@ -1609,26 +1587,45 @@ const TRPG = {
             const loreEl = document.getElementById("dice-lore");
             
             if(isSuccess) {
-                resEl.innerText = baseRoll === 20 ?
-                "CRITICAL!" : "SUCCESS"; resEl.className = "text-2xl font-black uppercase tracking-widest text-emerald-400 mb-3 cyber-title block drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]";
+                resEl.innerText = baseRoll === 20 ? "CRITICAL!" : "SUCCESS"; 
+                resEl.className = "text-2xl font-black uppercase tracking-widest text-emerald-400 mb-3 cyber-title block drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]";
                 
-                let winGold = 0;
-                let winExp = 0;
-                if(STATE.activePartner === 'zero') winGold += 500;
-                if(this.currentOpt.dmg >= 100) { winExp += 500; winGold += 2000;
+                let winGold = 0; let winExp = 0; let bonusLore = "";
+                if (this.currentOpt.type === "dynamic_law") {
+                    winExp += baseRoll === 20 ? 800 : 400; 
+                    STATE.san = Math.min(STATE.maxSan, STATE.san + 15);
+                    let drop = baseRoll === 20 ? "frag_wp_epic" : "frag_willpower";
+                    STATE.inventory.push(drop);
+                    bonusLore = `<br><span class="text-blue-400">防線穩固：恢復 15 SAN</span><br><span class="text-purple-400">掉落：${DB.items[drop].name}</span>`;
+                } else if (this.currentOpt.type === "dynamic_chaos") {
+                    winGold += baseRoll === 20 ? 4000 : 2000; 
+                    let dropOptions = ["gift_gun_oil", "gift_tea_premium", "gift_keyboard_quantum", "gift_cigar", "gift_vintage_lawbook", "gift_hardware_wallet", "gift_holo_bonsai", "gift_vinyl_record"];
+                    let drop = baseRoll === 20 ? "frag_wp_leg" : dropOptions[Math.floor(Math.random() * dropOptions.length)];
+                    STATE.inventory.push(drop);
+                    bonusLore = `<br><span class="text-amber-400">掠奪掉落：${DB.items[drop].name}</span>`;
+                } else if (this.currentOpt.type === "dynamic_neutral") {
+                    STATE.energy += 10;
+                    bonusLore = `<br><span class="text-blue-400">戰術撤退：保留實力 +10 SP</span>`;
+                } else {
+                    if(STATE.activePartner === 'zero') winGold += 500;
+                    if(this.currentOpt.dmg >= 100) { winExp += 500; winGold += 2000; }
+                    else { winExp += 200; winGold += 800; } 
                 }
-                else { winExp += 200;
-                winGold += 800; } 
 
-                STATE.gold += winGold;
-                CORE.addExp(winExp);
-                loreEl.innerHTML = `${this.currentOpt.s}<br><br><span class="text-amber-400 font-black">+${winGold} Cr</span> <span class="text-emerald-400 font-black">+${winExp} EXP</span>`;
+                STATE.gold += winGold; CORE.addExp(winExp);
+                loreEl.innerHTML = `${this.currentOpt.s}<br><br><span class="text-amber-400 font-black">+${winGold} Cr</span> <span class="text-emerald-400 font-black">+${winExp} EXP</span>${bonusLore}`;
             } else {
-                resEl.innerText = baseRoll === 1 ?
-                "FUMBLE!" : "FAILURE"; resEl.className = "text-2xl font-black uppercase tracking-widest text-rose-500 mb-3 cyber-title block drop-shadow-[0_0_10px_rgba(225,29,72,0.5)]";
-                let dmg = this.currentOpt.dmg * (baseRoll===1?1.5:1);
-                CORE.damageSan(dmg); 
-                loreEl.innerHTML = `${this.currentOpt.f}<br><br><span class="text-rose-400 font-bold">遭受反噬 -${Math.floor(dmg)} SAN</span>`;
+                resEl.innerText = baseRoll === 1 ? "FUMBLE!" : "FAILURE"; 
+                resEl.className = "text-2xl font-black uppercase tracking-widest text-rose-500 mb-3 cyber-title block drop-shadow-[0_0_10px_rgba(225,29,72,0.5)]";
+                let dmg = this.currentOpt.dmg * (baseRoll===1 ? 1.5 : 1);
+                let penaltyLore = "";
+                if (this.currentOpt.type === "dynamic_chaos" && baseRoll === 1) {
+                    let goldPenalty = Math.floor(STATE.gold * 0.1);
+                    STATE.gold -= goldPenalty; dmg = 50; 
+                    penaltyLore = `<br><br><span class="text-rose-500 font-black">貪婪反噬：損失 ${goldPenalty.toLocaleString()} Cr (總資產10%)</span>`;
+                }
+                CORE.damageSan(dmg);
+                loreEl.innerHTML = `${this.currentOpt.f}<br><br><span class="text-rose-400 font-bold">遭受反噬 -${Math.floor(dmg)} SAN</span>${penaltyLore}`;
             }
             CORE.save();
             UI.updateHUD(); document.getElementById("dice-btn-close").classList.remove("hidden");
@@ -1636,16 +1633,15 @@ const TRPG = {
     },
     close() { document.getElementById("overlay-event").classList.add("hidden"); document.getElementById("overlay-event").classList.remove("flex"); }
 };
+
 // ============================================================================
 // SOCIAL, VN, MARKET
 // ============================================================================
 const SOCIAL = {
     renderMentors() {
-        const mList = document.getElementById("mentor-list");
-        mList.innerHTML = "";
+        const mList = document.getElementById("mentor-list"); mList.innerHTML = "";
         for(let id in DB.chars) {
-            let m = DB.chars[id];
-            let aff = STATE.aff[id] || 0;
+            let m = DB.chars[id]; let aff = STATE.aff[id] || 0;
             let btnActive = STATE.activePartner === id ?
                 `<button class="bg-blue-900/50 text-blue-300 px-3 py-1.5 rounded-lg text-[9px] font-bold border border-blue-500 btn-interact shadow-[0_0_10px_rgba(14,165,233,0.3)]" onclick="SOCIAL.setPartner(null)">解除</button>` :
                 `<button class="bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg text-[9px] font-bold border border-slate-600 btn-interact hover:bg-slate-700" onclick="SOCIAL.setPartner('${id}')">設為搭檔</button>`;
@@ -1654,21 +1650,17 @@ const SOCIAL = {
                 <div class="text-3xl relative shrink-0 w-12 text-center">${m.icon}</div>
                 <div class="flex-1">
                     <div class="flex justify-between items-center mb-0.5"><div class="font-black text-sm ${m.color} cyber-title tracking-wide">${m.name}</div>${btnActive}</div>
-       
                     <div class="text-[9px] text-amber-400 bg-amber-900/20 inline-block px-1 rounded border border-amber-900/50 mb-1">${m.buffText}</div>
                     <div class="flex items-center gap-2"><i class="fa-solid fa-heart text-pink-500 text-[10px]"></i><div class="h-1 flex-1 bg-slate-800 rounded overflow-hidden"><div class="h-full bg-pink-500" style="width:${Math.min(100, (aff/1000)*100)}%"></div></div><span class="text-[9px] text-pink-300 cyber-title">${aff}</span></div>
                 </div>
                 <div class="flex flex-col gap-1 shrink-0">
-   
                  <button class="bg-pink-900/40 hover:bg-pink-800 text-pink-300 px-2 py-1.5 rounded text-[9px] font-bold border border-pink-700/50 btn-interact flex items-center gap-1 transition-colors" onclick="SOCIAL.openGiftModal('${id}')"><i class="fa-solid fa-gift"></i>送禮</button>
                     <button class="bg-slate-800 hover:bg-slate-700 text-blue-300 px-2 py-1.5 rounded text-[9px] font-bold border border-blue-900/50 btn-interact flex items-center gap-1 transition-colors" onclick="VN.start('${id}')"><i class="fa-solid fa-comments"></i>交流</button>
                 </div>
-           
             </div>`;
         }
     },
-    setPartner(id) { STATE.activePartner = id; CORE.save(); UI.updateHUD(); this.renderMentors();
-    if(id) Utils.toast(`🤝 搭檔已設定。`, "info"); },
+    setPartner(id) { STATE.activePartner = id; CORE.save(); UI.updateHUD(); this.renderMentors(); if(id) Utils.toast(`🤝 搭檔已設定。`, "info"); },
     targetChar: null,
     openGiftModal(id) {
         this.targetChar = id;
@@ -1686,15 +1678,12 @@ const SOCIAL = {
         if(!hasGifts) gList.innerHTML = `<div class="col-span-3 text-center text-slate-500 text-xs py-6 cyber-title tracking-widest">背包無禮物，請先讀書至深度潛航以上機率獲取。</div>`;
         document.getElementById("modal-gift").classList.remove("hidden"); document.getElementById("modal-gift").classList.add("flex");
     },
-    closeGiftModal() { document.getElementById("modal-gift").classList.add("hidden"); document.getElementById("modal-gift").classList.remove("flex");
-    },
+    closeGiftModal() { document.getElementById("modal-gift").classList.add("hidden"); document.getElementById("modal-gift").classList.remove("flex"); },
     giveGift(itemId) {
-        let char = DB.chars[this.targetChar];
-        let item = DB.items[itemId];
+        let char = DB.chars[this.targetChar]; let item = DB.items[itemId];
         STATE.inventory.splice(STATE.inventory.indexOf(itemId), 1);
         let affGain = item.aff; 
         if(char.favGift.includes(itemId)) affGain *= 3;
-        // 社交晶片與裝備加成
         affGain = Math.floor(affGain * (1 + ((STATE.skills?.social || 0) * 0.02)));
         if (STATE.equippedWeapons.includes('wp_malorian')) affGain = Math.floor(affGain * 1.05);
 
@@ -1716,7 +1705,6 @@ const VN = {
                 if(res) {
                     STATE.energy -= 20; STATE.aff[id] += 10; UI.updateHUD(); CORE.save(); this.initOverlay(c, aff);
                     if(id === 'xiaoya' && !this.xiaoyaHealed) { STATE.san = Math.min(STATE.maxSan, STATE.san + 10); this.xiaoyaHealed = true; Utils.toast("獲得小雅的精神支援！恢復 10 SAN。", "success"); }
-        
                     this.event = { lines: [{t: "長線的戰役很枯燥，去啟動專注引擎吧，我會看著你的。"}, {t: "（消耗 20 SP，好感度微幅上升）"}] };
                     this.lineIdx = 0; this.nextLine();
                 }
@@ -1732,19 +1720,16 @@ const VN = {
         this.lineIdx = 0; this.nextLine();
     },
     initOverlay(c, aff) {
-        document.getElementById("overlay-vn").classList.remove("hidden");
-        document.getElementById("overlay-vn").classList.add("flex");
+        document.getElementById("overlay-vn").classList.remove("hidden"); document.getElementById("overlay-vn").classList.add("flex");
         document.getElementById("vn-sprite").innerText = c.icon; document.getElementById("vn-aff").innerText = aff;
         document.getElementById("vn-name").innerText = c.name; document.getElementById("vn-name").className = `font-black text-2xl mb-3 drop-shadow-md tracking-widest cyber-title ${c.color}`;
     },
     nextLine() {
-        if(this.isTyping) { clearInterval(this.typingTimer);
-        document.getElementById("vn-text").innerHTML = this.event.lines[this.lineIdx - 1].t; this.isTyping = false; return; }
+        if(this.isTyping) { clearInterval(this.typingTimer); document.getElementById("vn-text").innerHTML = this.event.lines[this.lineIdx - 1].t; this.isTyping = false; return; }
         if(this.lineIdx >= this.event.lines.length) return this.exit();
         let line = this.event.lines[this.lineIdx];
         if(line.choices) this.showChoices(line.choices);
-        else { document.getElementById("vn-choices").classList.add("hidden"); document.getElementById("vn-name").innerText = DB.chars[this.charId].name; this.typewriter(line.t); this.lineIdx++;
-        }
+        else { document.getElementById("vn-choices").classList.add("hidden"); document.getElementById("vn-name").innerText = DB.chars[this.charId].name; this.typewriter(line.t); this.lineIdx++; }
     },
     typewriter(text) {
         let el = document.getElementById("vn-text");
@@ -1770,9 +1755,7 @@ const VN = {
 };
 
 const MARKET = {
-    getMaxEquipSlots() {
-        return 1 + Math.floor(STATE.lv / 20) + (STATE.totalFocusTime / 60 >= 150 ? 1 : 0);
-    },
+    getMaxEquipSlots() { return 1 + Math.floor(STATE.lv / 20) + (STATE.totalFocusTime / 60 >= 150 ? 1 : 0); },
     switchTab(t) {
         document.getElementById('tab-content-shop').classList.add('hidden'); document.getElementById('tab-content-inv').classList.add('hidden'); document.getElementById('tab-content-craft').classList.add('hidden');
         document.querySelectorAll('#view-market > div.flex > button').forEach(el => { el.classList.remove('border-b-2', 'border-amber-400', 'text-amber-400'); el.classList.add('text-slate-500'); });
@@ -1785,8 +1768,7 @@ const MARKET = {
         if(t==='craft') this.renderCraft();
     },
     filterShop(cat, btnEl) {
-        if(btnEl) { document.querySelectorAll(".shop-filter").forEach(el => el.classList.remove('active-filter', 'text-amber-400', 'border-b', 'border-amber-400'));
-        btnEl.classList.add('active-filter', 'text-amber-400', 'border-b', 'border-amber-400'); }
+        if(btnEl) { document.querySelectorAll(".shop-filter").forEach(el => el.classList.remove('active-filter', 'text-amber-400', 'border-b', 'border-amber-400')); btnEl.classList.add('active-filter', 'text-amber-400', 'border-b', 'border-amber-400'); }
         const grid = document.getElementById("shop-list"); grid.innerHTML = "";
         let priceMult = STATE.territory < 30 ? 1.2 : 1;
         for(let id in DB.items) {
@@ -1799,14 +1781,12 @@ const MARKET = {
             let priceStr = isOwned ? "已擁有" : `<i class="fa-brands fa-bitcoin mr-1"></i>${finalPrice.toLocaleString()}`;
             if(priceMult > 1 && !isOwned) priceStr = `<span class="text-rose-400 line-through mr-1 text-[9px]">${item.price}</span> ` + priceStr;
 
-            let nameFmt = item.name.includes("【傳奇】") ?
-            `<span class="text-amber-400">${item.name}</span>` : item.name.includes("【史詩】") || item.name.includes("【典藏】") ? `<span class="text-purple-400">${item.name}</span>` : item.name;
+            let nameFmt = item.name.includes("【傳奇】") ? `<span class="text-amber-400">${item.name}</span>` : item.name.includes("【史詩】") || item.name.includes("【典藏】") ? `<span class="text-purple-400">${item.name}</span>` : item.name;
             grid.innerHTML += `
             <button class="${btnClass} border rounded-xl p-4 flex flex-col items-center relative shadow-lg transition-colors" onclick="${isOwned?'':`MARKET.buyShop('${id}', ${finalPrice})`}">
                 <div class="text-4xl mb-2 drop-shadow-md">${item.icon}</div>
                 <div class="text-[11px] text-white font-black whitespace-nowrap overflow-hidden text-ellipsis w-full text-center cyber-title tracking-wide">${nameFmt}</div>
                 <div class="text-[9px] text-slate-400 mt-1 line-clamp-2 h-7 font-serif leading-tight">${item.desc}</div>
-      
                 <div class="text-[11px] text-amber-400 font-black mt-3 bg-black/60 w-full rounded py-1 border border-amber-900/50 shadow-inner">${priceStr}</div>
             </button>`;
         }
@@ -1851,9 +1831,7 @@ const MARKET = {
             `<div class="text-[10px] text-emerald-500 font-bold bg-emerald-900/30 px-3 py-1.5 rounded border border-emerald-900/50">已解鎖</div>` :
                 (canCraft ? `<button class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded text-[10px] font-bold border border-amber-400 btn-interact shadow-[0_0_10px_rgba(245,158,11,0.5)]" onclick="MARKET.doCraft('${r.id}')">進行合成</button>` : 
                 `<div class="text-[10px] text-slate-500 font-bold bg-slate-800 px-3 py-1.5 rounded border border-slate-700">材料不足</div>`);
-
             let reqHtml = r.req.map(reqItem => {
-               
                 let fragInfo = DB.items[reqItem.id];
                 let count = STATE.inventory.filter(i=>i===reqItem.id).length;
                 let isEnough = count >= reqItem.count;
@@ -1864,12 +1842,10 @@ const MARKET = {
                 <div class="flex items-center gap-3">
                     <div class="text-3xl">${target.icon}</div>
                     <div class="flex-1">
-                 
                         <div class="font-black text-[11px] text-white cyber-title tracking-widest">${target.name}</div>
                         <div class="text-[9px] text-slate-400 mt-0.5 mb-1">${target.desc}</div>
                         ${reqHtml}
                     </div>
-                
                     <div class="shrink-0">${btn}</div>
                 </div>
             </div>`;
@@ -1882,14 +1858,12 @@ const MARKET = {
                 recipe.req.forEach(reqItem => {
                     let removed = 0;
                     STATE.inventory = STATE.inventory.filter(i => { 
-                 
                         if(i === reqItem.id && removed < reqItem.count) { removed++; return false; } 
                         return true; 
                     });
                 });
 
-                if(recipe.type === 'item') 
-                STATE.inventory.push(targetId); else STATE.estates.push(targetId);
+                if(recipe.type === 'item') STATE.inventory.push(targetId); else STATE.estates.push(targetId);
                 CORE.calcMaxStats(); CORE.save(); UI.updateHUD(); this.renderCraft();
                 MODAL.showConfirm("SYNTHESIS COMPLETE", `你成功合成了物品！\n長線的努力終於迎來了防禦型回報。`, ()=>{});
             }
@@ -1919,7 +1893,6 @@ const MARKET = {
             iList.innerHTML += `<div class="bg-slate-800 border rounded-lg p-2 text-center btn-interact cursor-pointer relative shadow-inner transition-all ${extraCss}" onclick="MARKET.useItem('${id}')">
                 ${equipBadge}
                 <div class="absolute -top-2 -right-2 bg-blue-600 text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-bold text-white shadow">${counts[id]}</div>
-                
                 <div class="text-3xl mb-1">${item.icon}</div>
                 <div class="text-[9px] text-white font-bold leading-tight line-clamp-1">${item.name}</div>
             </div>`;
@@ -1935,12 +1908,10 @@ const MARKET = {
             let isDisabled = STATE.disabledEstates.includes(e.id);
             
             let btn = isOwned ? 
-          
                 (isDisabled ? `<button class="bg-rose-900 hover:bg-rose-800 text-white px-2 py-1.5 rounded text-[9px] font-bold border border-rose-500 btn-interact shadow animate-pulse" onclick="MARKET.payMaint()">欠繳失效(補繳)</button>` : `<span class="text-emerald-500 text-[9px] font-bold">已入主<br>(${e.maint === 0 ? '無維持費' : '日扣 ' + e.maint + 'Cr'})</span>`) 
                 : `<button class="bg-slate-800 text-amber-400 px-3 py-2 rounded-lg text-[10px] font-bold border border-slate-600 btn-interact cyber-title shadow-md" onclick="MARKET.buyEstate('${e.id}', ${e.price})">${e.price.toLocaleString()} Cr</button>`;
             
-            let statusCss = isDisabled ? 
-            "border-rose-900/50 bg-rose-950/20 grayscale" : (e.id === 'est_btc_wallet_3' && !isOwned ? "border-amber-500/80 bg-amber-900/20" : "border-slate-700 bg-black/40");
+             let statusCss = isDisabled ? "border-rose-900/50 bg-rose-950/20 grayscale" : (e.id === 'est_btc_wallet_3' && !isOwned ? "border-amber-500/80 bg-amber-900/20" : "border-slate-700 bg-black/40");
             eList.innerHTML += `<div class="${statusCss} p-3 rounded-xl flex items-center justify-between gap-3 border"><div class="text-2xl">${e.icon}</div><div class="flex-1"><div class="font-black text-xs text-slate-200 tracking-widest">${e.name}</div><div class="text-[9px] text-rose-400 mt-0.5">${e.desc}</div></div><div class="text-center shrink-0">${btn}</div></div>`;
         });
     },
@@ -1966,14 +1937,13 @@ const MARKET = {
                 if(item.effect.hp) STATE.san = Math.min(STATE.maxSan, STATE.san + item.effect.hp);
                 if(item.effect.sp) STATE.energy += item.effect.sp; 
                 if(item.effect.shield) {
-                    STATE.terrShieldTs = Math.max(Date.now(), STATE.terrShieldTs) 
-                    + (item.effect.shield * 60 * 60 * 1000);
+                    STATE.terrShieldTs = Math.max(Date.now(), STATE.terrShieldTs) + (item.effect.shield * 60 * 60 * 1000);
                     STATE.lastTerrCheck = Date.now();
                 }
                 STATE.inventory.splice(STATE.inventory.indexOf(id), 1);
-                CORE.save(); UI.updateHUD(); UI.updateFocus(); UI.updateMap(); this.renderInv(); Utils.toast(`狀態恢復！`, "success");
+                CORE.save(); UI.updateHUD(); 
+                UI.updateFocus(); UI.updateMap(); this.renderInv(); Utils.toast(`狀態恢復！`, "success");
             }
-    
         });
     },
     buyEstate(id, cost) {
@@ -1987,8 +1957,19 @@ const MARKET = {
         STATE.disabledEstates.forEach(id => { let e = DB.estates.find(x => x.id === id); if(e && e.maint) totalMaint += e.maint; });
         if(STATE.gold < totalMaint) return Utils.toast(`資金不足！需繳納 ${totalMaint} Cr 以恢復所有資產。`, "error");
         STATE.gold -= totalMaint; STATE.disabledEstates = []; CORE.calcMaxStats(); STATE.san = STATE.maxSan;
-        CORE.save();
-        UI.updateHUD(); this.renderInv(); Utils.toast("維護費已補繳，防禦宅加成全面恢復！", "success");
+        CORE.save(); UI.updateHUD(); this.renderInv(); Utils.toast("維護費已補繳，防禦宅加成全面恢復！", "success");
+    },
+    donateCr() {
+        if(STATE.gold < 100000) return Utils.toast("資金不足！最低捐獻額度為 100,000 Cr", "error");
+        MODAL.showConfirm("基金會捐獻", "捐出 100,000 Cr 給 NCPD 撫卹基金會？\n這將轉化為 1 點『傳奇威望』，象徵你在夜城的無上榮耀與防禦成就。", (res) => {
+            if(res) {
+                STATE.gold -= 100000;
+                STATE.donatedCr += 100000;
+                STATE.prestige = Math.floor(STATE.donatedCr / 100000);
+                CORE.save(); UI.updateHUD();
+                Utils.toast("🌟 捐獻成功！你的威望在夜城流傳。", "purple");
+            }
+        });
     }
 };
 
@@ -2024,12 +2005,10 @@ const SYSTEM_UI = {
             list.innerHTML += `
                 <div class="bg-black/40 border border-rose-900/50 p-3 rounded-lg flex justify-between items-center relative shadow-inner">
                     <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-rose-500 to-purple-500 rounded-l-lg"></div>
-            
                     <div class="pl-2">
                         <div class="text-[11px] font-bold text-rose-300 cyber-title mb-0.5">${sk.name} <span class="text-white">Lv.${sk.val}</span></div>
                         <div class="text-[9px] text-slate-400 font-serif">當前加成：${sk.desc}</div>
                     </div>
-             
                     <button class="bg-rose-900/50 hover:bg-rose-800 text-rose-200 px-3 py-1.5 rounded text-[10px] font-bold border border-rose-700 btn-interact shadow ${canUp?'':'opacity-50 grayscale pointer-events-none'}" onclick="SYSTEM_UI.upgradeSkill('${sk.id}')">升級</button>
                 </div>
             `;
@@ -2037,26 +2016,19 @@ const SYSTEM_UI = {
     },
     upgradeSkill(id) {
         if(STATE.sp <= 0) return;
-        STATE.sp--;
-        STATE.skills[id]++;
-        CORE.save(); this.renderSkills();
-        Utils.toast("神經迴路升級完成！", "success");
+        STATE.sp--; STATE.skills[id]++; CORE.save(); this.renderSkills(); Utils.toast("神經迴路升級完成！", "success");
     },
     renderMastery() {
-        const list = document.getElementById("system-mastery-list");
-        list.innerHTML = "";
+        const list = document.getElementById("system-mastery-list"); list.innerHTML = "";
         STATE.subjects.forEach(sub => {
             let mins = STATE.subjectTime[sub] || 0;
             let lvData = DB.getSubjectLv(mins);
             let pct = (lvData.remain / lvData.nextCost) * 100;
-
             list.innerHTML += `
                 <div class="border-b border-slate-700/50 pb-3 pt-2">
-          
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-slate-200 font-bold text-xs flex items-center gap-2">
                             <button class="text-rose-500 hover:text-rose-400" onclick="SYSTEM_UI.deleteSubject('${sub}')"><i class="fa-solid fa-trash-can"></i></button>
-                       
                             ${sub}
                         </span>
                         <span class="text-emerald-400 font-black cyber-title text-sm">Lv.${lvData.lv}</span>
@@ -2064,29 +2036,38 @@ const SYSTEM_UI = {
                     <div class="flex items-center gap-3">
                         <div class="h-1.5 flex-1 bg-slate-800 rounded overflow-hidden border border-slate-700"><div class="h-full bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.8)]" style="width:${pct}%"></div></div>
                         <span class="text-[9px] text-slate-400 w-16 text-right tabular-nums">${lvData.remain}/${lvData.nextCost}m</span>
-                    </div>
-                
+                 </div>
                 </div>
             `;
         });
     },
     renderMonthlyLogs() {
-        const mList = document.getElementById("system-monthly-list"); mList.innerHTML = "";
-        let keys = Object.keys(STATE.monthlyLogs || {}).sort().reverse();
-        if(keys.length === 0) { mList.innerHTML = "<div class='text-slate-500 text-[10px] cyber-title'>暫無結算資料。</div>"; return;
-        }
+        const sect = document.getElementById("system-monthly-section"); sect.innerHTML = "";
         
-        keys.forEach(k => {
-            let mins = STATE.monthlyLogs[k];
-            let hrs = Math.floor(mins / 60);
-            let remMins = mins % 60;
-            mList.innerHTML += `
-                <div class="flex justify-between items-center border-b border-amber-900/40 pb-2 mb-2">
-                    <span class="text-amber-400 font-bold text-xs cyber-title">${k}</span>
-                    <span class="text-slate-200 text-sm font-black cyber-title tabular-nums">${hrs} <span class="text-[10px] text-slate-500 font-bold mr-1">HR</span>${remMins} <span class="text-[10px] text-slate-500 font-bold">MIN</span></span>
-                </div>
-            `;
-        });
+        // 渲染熱力圖 (近 14 天)
+        let heatmapHtml = '<div class="mb-4"><h3 class="font-bold text-emerald-400 text-[11px] cyber-title tracking-widest border-b border-emerald-900/50 pb-2 mb-3"><i class="fa-solid fa-chart-simple mr-1"></i>RECENT FOCUS (熱力防線)</h3><div class="flex gap-1 overflow-x-auto thin-scroll pb-2">';
+        for(let i=13; i>=0; i--) {
+            let d = new Date(Date.now() - i * 86400000);
+            let ds = Utils.getIsoDateString(d);
+            let mins = STATE.dailyFocus[ds] || 0;
+            let color = mins >= 120 ? 'bg-emerald-400' : mins >= 60 ? 'bg-emerald-600' : mins > 0 ? 'bg-emerald-800' : 'bg-slate-800/80';
+            heatmapHtml += `<div class="w-5 h-5 rounded flex items-center justify-center text-[7px] font-black text-black ${color} shrink-0 border border-slate-700 shadow-inner" title="${ds}: ${mins}m"></div>`;
+        }
+        heatmapHtml += '</div><p class="text-[9px] text-slate-500 mt-1 font-serif text-right">保持方塊常綠，護城河便堅不可摧。</p></div>';
+
+        // 渲染月結算
+        let monthHtml = '<h3 class="font-bold text-amber-400 text-[11px] cyber-title tracking-widest border-b border-amber-900/50 pb-2 mb-3"><i class="fa-solid fa-calendar-check mr-1"></i>MONTHLY SUMMARY (月度結算)</h3><div class="space-y-2 max-h-[150px] overflow-y-auto thin-scroll">';
+        let keys = Object.keys(STATE.monthlyLogs || {}).sort().reverse();
+        if(keys.length === 0) { 
+            monthHtml += "<div class='text-slate-500 text-[10px] cyber-title'>暫無結算資料。</div></div>"; 
+        } else {
+            keys.forEach(k => {
+                let mins = STATE.monthlyLogs[k]; let hrs = Math.floor(mins / 60); let remMins = mins % 60;
+                monthHtml += `<div class="flex justify-between items-center border-b border-amber-900/40 pb-2 mb-2"><span class="text-amber-400 font-bold text-xs cyber-title">${k}</span><span class="text-slate-200 text-sm font-black cyber-title tabular-nums">${hrs} <span class="text-[10px] text-slate-500 font-bold mr-1">HR</span>${remMins} <span class="text-[10px] text-slate-500 font-bold">MIN</span></span></div>`;
+            });
+            monthHtml += '</div>';
+        }
+        sect.innerHTML = heatmapHtml + monthHtml;
     },
     addSubject() {
         MODAL.showInput("新增專精科目", "請輸入新科目名稱：", (val) => {
@@ -2106,26 +2087,43 @@ const SYSTEM_UI = {
     },
     updateBackupDate() {
         let date = new Date(STATE.lastBackup);
-        document.getElementById("sys-last-backup").innerText = `最後備份：${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`;
+        document.getElementById("sys-last-backup").innerText = `最後備份：${date.getFullYear()}/${(date.getMonth()+1).toString().padStart(2,'0')}/${date.getDate().toString().padStart(2,'0')}`;
     },
     exportData() {
-        const str = btoa(encodeURIComponent(JSON.stringify(STATE)));
-        navigator.clipboard.writeText(str).then(() => {
-            STATE.lastBackup = Date.now(); CORE.save(); this.updateBackupDate();
-            Utils.toast("防禦型備份代碼已複製到剪貼簿！", "success");
-        }).catch(() => {
-            MODAL.showInput("備份代碼 (請手動複製)", "", () => {
-                STATE.lastBackup = Date.now(); CORE.save(); this.updateBackupDate();
-            }); 
-         
-            document.getElementById("modal-input").value = str;
-        });
+        const dataStr = encodeURIComponent(JSON.stringify(STATE));
+        const blob = new Blob([JSON.stringify(STATE)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `NightCity_Defense_Backup_${Utils.getIsoDateString()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        STATE.lastBackup = Date.now(); CORE.save(); this.updateBackupDate();
+        Utils.toast("防禦型備份實體檔案已下載！", "success");
     },
     importData() {
-        MODAL.showInput("匯入記憶", "請貼上備份代碼：", (str) => {
-            try { let parsed = JSON.parse(decodeURIComponent(atob(str))); Object.assign(STATE, parsed); CORE.save(); location.reload(); } 
-            catch(e) { Utils.toast("代碼無效或損毀！", "error"); } 
-        });
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = event => {
+                try { 
+                    Object.assign(STATE, JSON.parse(event.target.result)); 
+                    CORE.save(); 
+                    location.reload(); 
+                } catch(err) { 
+                    Utils.toast("檔案無效或損毀！請確保為正確的 JSON 備份檔。", "error"); 
+                }
+            };
+            reader.readAsText(file);
+        };
+        input.click();
     }
 };
 
