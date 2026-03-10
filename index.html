@@ -2382,6 +2382,317 @@ CORE.completeFocus = function(mins, subjName, logText = "") {
         MODAL.showConfirm("潛航結算", msg, ()=>{});
     }
 };
+// ============================================================================
+// 終極成癮更新檔：第二階段 (多重寵物進化樹與 UI 進度條)
+// ============================================================================
+
+// 1. 確保寵物經驗值狀態存在
+if (!STATE.petExp) STATE.petExp = {};
+
+// 2. 注入高階進化型態至資料庫
+Object.assign(DB.items, {
+    "pet_cat_2": { name: "街頭巡邏貓", cat: "unit", icon: "🐈⬛", desc: "被動：專注 EXP +5%。(Lv.2 階段)", price: 0, type: "pet", css: "item-epic" },
+    "pet_cat_3": { name: "【傳奇】賽博橘貓老大", cat: "unit", icon: "🦁", desc: "被動：專注 EXP +15%，深潛時額外恢復 10 SAN。(Lv.3 終極型態)", price: 0, type: "pet", css: "item-legendary" },
+    
+    "pet_dog_2": { name: "K-9 防暴犬", cat: "unit", icon: "🐕", desc: "被動：專注時 SAN 恢復效率 x 1.8。(Lv.2 階段)", price: 0, type: "pet", css: "item-epic" },
+    "pet_dog_3": { name: "【傳奇】2030 太空探勘犬", cat: "unit", icon: "🚀", desc: "被動：極致護城河，SAN恢復 x 2.5，Cr 獲取 +20%。見證奇異點的夥伴！", price: 0, type: "pet", css: "item-legendary" },
+    
+    "pet_owl_2": { name: "戰術偵察鷹", cat: "unit", icon: "🦅", desc: "被動：行動體力(SP) 獲取效率 x 1.8。(Lv.2 階段)", price: 0, type: "pet", css: "item-epic" },
+    "pet_owl_3": { name: "【傳奇】量子監控者", cat: "unit", icon: "🛰️", desc: "被動：SP 獲取 x 2.5，並增加動態事件觸發率 5%。(Lv.3 終極型態)", price: 0, type: "pet", css: "item-legendary" }
+});
+
+// 3. 定義進化樹路線與所需時間 (分鐘)
+const PET_EVO_TREE = {
+    "pet_cat": { next: "pet_cat_2", reqMins: 300 },   // 5 小時進化
+    "pet_cat_2": { next: "pet_cat_3", reqMins: 1200 },// 累積滿 25 小時終極進化
+    "pet_dog": { next: "pet_dog_2", reqMins: 420 },   // 7 小時進化
+    "pet_dog_2": { next: "pet_dog_3", reqMins: 1800 },// 累積滿 37 小時終極進化
+    "pet_owl": { next: "pet_owl_2", reqMins: 420 },
+    "pet_owl_2": { next: "pet_owl_3", reqMins: 1800 }
+};
+
+// 4. 無縫覆蓋 UI，注入寵物專屬進度條
+const origUpdateFocus_Evo = UI.updateFocus;
+UI.updateFocus = function() {
+    origUpdateFocus_Evo.call(this);
+
+    let activePet = STATE.pet.active;
+    let evoData = PET_EVO_TREE[activePet];
+    let container = document.getElementById("focus-pet-name").parentElement;
+
+    // 如果進度條 DOM 不存在，則動態生成
+    if (!document.getElementById("pet-evo-bar-container")) {
+        let barHtml = `<div id="pet-evo-bar-container" class="w-24 mt-2 transition-all">
+            <div class="flex justify-between text-[8px] text-slate-400 mb-0.5 cyber-title"><span class="font-bold text-blue-400">EVO. XP</span><span id="pet-evo-txt">0/0</span></div>
+            <div class="h-1 bg-slate-800 rounded overflow-hidden border border-slate-700"><div id="pet-evo-bar" class="h-full bg-blue-500 shadow-[0_0_5px_rgba(59,130,246,0.8)] transition-all duration-1000" style="width:0%"></div></div>
+        </div>`;
+        container.insertAdjacentHTML('beforeend', barHtml);
+    }
+
+    // 更新進度條數值
+    let currentExp = STATE.petExp[activePet] || 0;
+    if (evoData) {
+        document.getElementById("pet-evo-txt").innerText = `${currentExp}/${evoData.reqMins}`;
+        document.getElementById("pet-evo-bar").style.width = `${Math.min(100, (currentExp / evoData.reqMins) * 100)}%`;
+        document.getElementById("pet-evo-bar-container").classList.remove("hidden");
+    } else {
+        document.getElementById("pet-evo-bar-container").classList.add("hidden"); // 已達最終型態或無進化樹則隱藏
+    }
+};
+
+// 5. 終極結算核心覆蓋 (融合第一階段與進化系統)
+CORE.completeFocus = function(mins, subjName, logText = "") {
+    let expGain = mins * 15;
+    let goldGain = mins * 10;
+    let energyGain = mins;
+    
+    let sanCost = 0;
+    if (mins >= 120) sanCost = Math.floor(mins / 2); 
+    else if (mins >= 60) sanCost = Math.floor((mins - 60) / 2);
+    sanCost = Math.floor(sanCost * (1 - ((STATE.skills?.biotech || 0) * 0.02)));
+    let sanRegen = mins - sanCost;
+    if (STATE.equippedWeapons.includes('wp_duohun') && mins >= 30) sanRegen += 5;
+
+    let now = Date.now();
+    let currentTerr = STATE.territory;
+    let isUtopia = currentTerr >= 80;
+
+    expGain = Math.floor(expGain * (1 + ((STATE.skills?.overclock || 0) * 0.01)));
+    if (isUtopia) { expGain = Math.floor(expGain * 1.2); goldGain = Math.floor(goldGain * 1.2); } 
+    else if (currentTerr < 30) { expGain = Math.floor(expGain * 0.8); goldGain = Math.floor(goldGain * 0.8); }
+
+    // --- 第一階段：套裝加成判定 ---
+    let hasScholarSet = STATE.equippedWeapons.includes('gear_scholar_ring') && STATE.equippedWeapons.includes('gear_scholar_amulet');
+    if (hasScholarSet) {
+        expGain = Math.floor(expGain * 1.15);
+        goldGain = Math.floor(goldGain * 1.15);
+    }
+
+    if(STATE.equippedWeapons.includes('wp_dalishan')) expGain = Math.floor(expGain * 1.05);
+    if(STATE.equippedWeapons.includes('wp_malorian')) { expGain = Math.floor(expGain * 1.02); goldGain = Math.floor(goldGain * 1.02); }
+    if(mins >= 120 && STATE.equippedWeapons.includes('wp_luosha')) { expGain += Math.floor(30 * 15 * 0.2); sanRegen -= Math.floor(sanCost * 0.15); }
+
+    if(STATE.inventory.includes("gear_rhythm_stabilizer")) energyGain = Math.floor(energyGain * 1.2);
+    if(STATE.inventory.includes("gear_mental_firewall")) sanRegen = sanRegen > 0 ? Math.floor(sanRegen * 1.3) : sanRegen;
+    if(STATE.inventory.includes("gear_akashic_record")) { expGain = Math.floor(expGain*1.15); goldGain = Math.floor(goldGain*1.25); }
+    if(STATE.inventory.includes("gear_lonewolf_jacket")) { expGain = Math.floor(expGain*1.3); }
+    if(STATE.inventory.includes("gear_diamond_hands")) { expGain = Math.floor(expGain*1.5); goldGain = Math.floor(goldGain*1.5); }
+    if(STATE.inventory.includes("gear_invest_1")) goldGain = Math.floor(goldGain*1.15);
+    if(STATE.inventory.includes("gear_hodl_tracker")) goldGain = Math.floor(goldGain*1.2);
+    if(STATE.inventory.includes("gear_law_1_adv")) expGain = Math.floor(expGain*1.1);
+    if(STATE.inventory.includes("gear_police_2028")) expGain = Math.floor(expGain*1.2);
+
+    if(STATE.activePartner === 'rin') goldGain = Math.floor(goldGain*1.2);
+    if(STATE.activePartner === 'kaelen') goldGain += (mins * 2);
+    if(STATE.activePartner === 'satoshi') { goldGain = Math.floor(goldGain*1.15); expGain = Math.floor(expGain*1.1); }
+
+    let streakMult = 1.0;
+    if(STATE.streak >= 7) streakMult = 1.2;
+    else if(STATE.streak >= 3) streakMult = 1.1;
+    expGain = Math.floor(expGain * streakMult);
+
+    if(logText && logText.trim() !== "") {
+        let recallBonus = Math.floor(expGain * 0.1);
+        expGain += recallBonus;
+        Utils.toast(`🧠 防禦型復盤成功！深度記憶加成 EXP +${recallBonus}`, "success");
+    }
+
+    let petActiveId = STATE.pet.active;
+    let petData = petActiveId ? DB.items[petActiveId] : null;
+    let petWorking = true;
+    let petFeeMsg = "";
+    if (petData && petData.maintFee && mins > 0) {
+        let requiredFee = Math.ceil((mins / 60) * petData.maintFee);
+        if (STATE.gold >= requiredFee) {
+            STATE.gold -= requiredFee;
+            petFeeMsg = `\n💰 支付 ${petData.name} 出勤費：-${requiredFee} Cr`;
+        } else {
+            petWorking = false;
+            petFeeMsg = `\n⚠️ 資金不足以支付出勤費 (${requiredFee} Cr)，${petData.name} 拒絕提供被動加成！`;
+        }
+    }
+
+    let petHappy = (STATE.pet.hunger > 50 && STATE.pet.mood > 50) && petWorking;
+    
+    // --- 擴充：包含進化寵物的增益計算 ---
+    if(petHappy && petData) {
+        switch(petActiveId) {
+            case 'pet_dog': sanRegen = sanRegen > 0 ? Math.floor(sanRegen * 1.5) : sanRegen; break;
+            case 'pet_dog_2': sanRegen = sanRegen > 0 ? Math.floor(sanRegen * 1.8) : sanRegen; break;
+            case 'pet_dog_3': sanRegen = sanRegen > 0 ? Math.floor(sanRegen * 2.5) : sanRegen; goldGain = Math.floor(goldGain * 1.2); break;
+            case 'pet_owl': energyGain = Math.floor(energyGain * 1.5); break;
+            case 'pet_owl_2': energyGain = Math.floor(energyGain * 1.8); break;
+            case 'pet_owl_3': energyGain = Math.floor(energyGain * 2.5); break;
+            case 'pet_cat_2': expGain = Math.floor(expGain * 1.05); break;
+            case 'pet_cat_3': expGain = Math.floor(expGain * 1.15); sanRegen += 10; break;
+            case 'pet_robo_cat': energyGain = Math.floor(energyGain * 1.8); break;
+            case 'pet_capybara': sanRegen = sanRegen > 0 ? Math.floor(sanRegen * 2.0) : sanRegen; break;
+            case 'merc_rookie_cop': expGain = Math.floor(expGain * 1.05); break;
+            case 'merc_street_doc': sanRegen = sanRegen > 0 ? Math.floor(sanRegen * 1.2) : sanRegen; break;
+            case 'merc_hacker_kid': goldGain = Math.floor(goldGain * 1.1); break;
+            case 'merc_mech_zero': energyGain = Math.floor(energyGain * 1.3); break;
+            case 'merc_netrunner': goldGain = Math.floor(goldGain * 1.25); break;
+            case 'merc_ai': expGain = Math.floor(expGain * 1.3); goldGain = Math.floor(goldGain * 1.3); break;
+            case 'merc_crypto_whale': goldGain = Math.floor(goldGain * 1.8); expGain = Math.floor(expGain * 1.5); break;
+        }
+    }
+
+    if (petData) {
+        let drain = (petActiveId === 'pet_robo_cat' || petActiveId === 'merc_mech_zero') ? 0 : Math.ceil(mins / 10);
+        STATE.pet.hunger = Math.max(0, STATE.pet.hunger - drain);
+        if (STATE.pet.hunger < 50) STATE.pet.mood = Math.max(0, STATE.pet.mood - Math.ceil(mins / 15));
+    }
+
+    this.addExp(expGain); 
+    STATE.gold += goldGain; 
+    STATE.energy += energyGain;
+    STATE.san = Math.min(STATE.maxSan, STATE.san + sanRegen);
+
+    STATE.subjectTime[subjName] += mins;
+    STATE.subjectMastery[subjName] = DB.getSubjectLv(STATE.subjectTime[subjName]).lv;
+
+    STATE.todayMins += mins; 
+    STATE.totalFocusTime += mins;
+    let todayStr = Utils.getIsoDateString();
+    let monthKey = todayStr.substring(0,7);
+    STATE.monthlyLogs[monthKey] = (STATE.monthlyLogs[monthKey] || 0) + mins;
+    STATE.dailyFocus[todayStr] = (STATE.dailyFocus[todayStr] || 0) + mins;
+
+    let hoursSinceLastFocus = (now - (STATE.lastFocusTimestamp || now)) / (1000 * 60 * 60);
+    if (mins >= 10) { 
+        if (hoursSinceLastFocus <= 72) {
+            if (STATE.lastStudyDateStr !== todayStr) { 
+                STATE.streak++;
+                STATE.lastStudyDateStr = todayStr; 
+                if(STATE.streak === 3 || STATE.streak === 7) Utils.toast(`🔥 達成 ${STATE.streak} 天防禦連勝！EXP 獲取倍率提升！`, "purple");
+            }
+        } else {
+            STATE.streak = 1;
+            STATE.lastStudyDateStr = todayStr;
+            Utils.toast(`⚠️ 距離上次潛航超過 72 小時，連勝防線重置。`, "warning");
+        }
+        STATE.lastFocusTimestamp = now;
+    }
+
+    this.updateTerritory(mins);
+    currentTerr = STATE.territory;
+    
+    let drops = [];
+    let bonusRate = (isUtopia ? 0.1 : 0) + ((STATE.skills?.overclock || 0) * 0.005); 
+    let isLegendary = false;
+    let legendaryData = null;
+
+    // --- 第一階段：5 分鐘微型掉落 ---
+    if (mins >= 5) {
+        if (Math.random() < 0.30 + bonusRate) { STATE.inventory.push("frag_focus_dust"); drops.push(`✨ 專注微塵`); }
+        if (Math.random() < 0.10 + bonusRate) { let smallCr = Math.floor(Math.random() * 50) + 20; STATE.gold += smallCr; drops.push(`🪙 零星籌碼 (+${smallCr} Cr)`); }
+        if (Math.random() < 0.05 + bonusRate) { STATE.inventory.push("frag_focus_dust", "frag_focus_dust", "frag_focus_dust"); drops.push(`🎁 星塵大禮包 (微塵 x3)`); }
+    }
+
+    if (mins >= 10) {
+        if(Math.random() < 0.8 + bonusRate) { STATE.inventory.push("frag_willpower"); drops.push(`✨ 意志力碎片`); }
+    }
+
+    if (mins >= 25) {
+        if (Math.random() < 0.3 + bonusRate) { STATE.inventory.push("frag_wp_rare"); drops.push("🔩 制式武器組件"); }
+        if (mins <= 30 && STATE.equippedWeapons.includes('wp_xinxuan')) { STATE.inventory.push("frag_wp_rare"); drops.push("🔩 額外武器組件(信玄)"); }
+    }
+    if (mins >= 60 && Math.random() < 0.2 + bonusRate) { STATE.inventory.push("frag_wp_epic"); drops.push("⚙️ 軍規武器組件"); }
+    if (mins >= 120 && Math.random() < 0.1 + bonusRate) { STATE.inventory.push("frag_wp_leg"); drops.push("🔥 原型武器組件"); }
+
+    if(mins >= 30) {
+        if(Math.random() < 0.6 + bonusRate) { let items = ["con_pet_food", "con_pet_toy"]; let g = items[Math.floor(Math.random() * items.length)]; STATE.inventory.push(g); drops.push(`補給品`); }
+        if(Math.random() < 0.4 + bonusRate) { let frags = ["frag_mech_zero", "frag_guan_yu"]; let f = frags[Math.floor(Math.random() * frags.length)]; STATE.inventory.push(f); drops.push(`🧩 ${DB.items[f].name}`); }
+    }
+    if(mins >= 60) {
+        if(Math.random() < 0.4 + bonusRate) { let gifts = ["gift_gun_oil", "gift_tea_premium", "gift_keyboard_quantum", "gift_cigar", "gift_vintage_lawbook", "gift_hardware_wallet", "gift_holo_bonsai", "gift_vinyl_record"]; let g = gifts[Math.floor(Math.random() * gifts.length)]; STATE.inventory.push(g); drops.push(`🎁 ${DB.items[g].name}`); }
+    }
+    if(mins >= 120) {
+        STATE.pityCounter120 = (STATE.pityCounter120 || 0) + 1;
+        let triggerPity = STATE.pityCounter120 >= 3;
+
+        if(triggerPity || Math.random() < 0.3 + bonusRate) { 
+            let frags = ["frag_law", "frag_whale", "frag_node"];
+            let f = frags[Math.floor(Math.random() * frags.length)];
+            let count = triggerPity ? 3 : (Math.floor(Math.random() * 3) + 1);
+            for(let i=0; i<count; i++) STATE.inventory.push(f);
+            drops.push(`💎 ${DB.items[f].name} x${count} ${triggerPity ? '(保底爆發!)' : ''}`);
+
+            isLegendary = true;
+            legendaryData = { item: DB.items[f], count: count, isPity: triggerPity };
+            if (triggerPity) STATE.pityCounter120 = 0;
+        }
+    }
+
+    let eventBaseChance = 0.05 + ((STATE.skills?.social || 0) * 0.005) + (Math.floor(STATE.lv / 10) * 0.005);
+    if (STATE.equippedWeapons.includes("wp_jinzhongwan")) eventBaseChance += 0.05;
+    if (petActiveId === 'pet_owl_3' && petHappy) eventBaseChance += 0.05; // 量子監控者特效
+    
+    let eventMsg = "";
+    if (mins >= 120 && Math.random() < eventBaseChance) {
+        const times = ["凌晨兩點", "交接班前", "休假日的午後", "大夜班結束的清晨"];
+        const triggers = ["IG 演算法推播了朋友出國的限動", "加密貨幣市場突然劇烈波動", "看著厚厚的法條本", "窗外傳來警笛聲", "看到新聞又在散播 FUD"];
+        const emotions = ["一陣焦慮襲來", "感到異常平靜", "燃起了一股不服輸的鬥志", "覺得大腦快要熔毀了"];
+        let t = times[Math.floor(Math.random()*times.length)];
+        let tr = triggers[Math.floor(Math.random()*triggers.length)];
+        let em = emotions[Math.floor(Math.random()*emotions.length)];
+        let bonusExp = Math.floor(Math.random() * 41) + 10;
+        this.addExp(bonusExp);
+        eventMsg = `\n\n【動態事件】${t}，${tr}，你${em}。\n成功轉化情緒，額外獲得 ${bonusExp} EXP！`;
+    }
+
+    // --- 第二階段：寵物 EXP 結算與進化判定 ---
+    let petEvoMsg = "";
+    if (petHappy && mins > 0 && petActiveId) {
+        STATE.petExp[petActiveId] = (STATE.petExp[petActiveId] || 0) + mins;
+        
+        let evoData = PET_EVO_TREE[petActiveId];
+        if (evoData) {
+            petEvoMsg = `\n🐾 ${petData.name} 獲得了 ${mins} 點陪伴經驗。`;
+            if (STATE.petExp[petActiveId] >= evoData.reqMins) {
+                let newPetId = evoData.next;
+                let newPetInfo = DB.items[newPetId];
+
+                // 替換系統與裝備欄內的寵物
+                let invIdx = STATE.inventory.indexOf(petActiveId);
+                if (invIdx !== -1) STATE.inventory.splice(invIdx, 1, newPetId);
+                else STATE.inventory.push(newPetId);
+                STATE.pet.active = newPetId;
+
+                petEvoMsg += `\n\n🌟 【突破極限】長期的羈絆產生了質變！\n你的伴隨單位進化為：【${newPetInfo.name}】！獲得更強大的防禦被動！`;
+            }
+        }
+    }
+    // ------------------------------------------
+
+    let logObj = { ts: Date.now(), m: mins, s: subjName };
+    if(logText) logObj.t = logText;
+    STATE.logs.unshift(logObj); if(STATE.logs.length > 50) STATE.logs.pop();
+    
+    this.save(); UI.updateHUD(); UI.updateFocus(); UI.updateSystem(); MARKET.filterShop('all', document.querySelector('.shop-filter'));
+    
+    let sanText = sanRegen >= 0 ? `防禦恢復 +${sanRegen}` : `深度過勞消耗 ${sanRegen}`;
+    let msg = `累積研讀【${subjName}】：${mins} 分鐘\n\n獲得報酬：\n歷練 EXP +${expGain} ${streakMult>1?`(連勝加成 ${Math.round((streakMult-1)*100)}%)`:''}\n資金 Cr +${goldGain}\n行動體力 SP +${energyGain}\n${sanText}\n防線推進 +${((mins/10)*0.5).toFixed(1)}%\n\n獲得戰利品：${drops.length>0?drops.join(", "):"無"}`;
+    
+    if (hasScholarSet) msg += `\n\n🌟 【學者套裝】效果發動：EXP 與 資金額外提升 15%！`;
+    msg += petFeeMsg;
+    msg += petEvoMsg; // 插入寵物進化與經驗訊息
+    msg += eventMsg;
+
+    if (currentTerr < 30 && Math.random() < 0.15) {
+        let dmg = 15;
+        this.damageSan(dmg);
+        msg += `\n\n🚨 遭遇街頭幫派襲擊 (治安惡化)，理智 -${dmg}`;
+    }
+
+    if(petActiveId === 'pet_cat' && petHappy) msg += `\n\n流浪橘貓在你腿上打呼嚕，你感覺心靈平靜。`;
+    
+    if (isLegendary) {
+        UI.showLegendaryDrop(legendaryData, () => { MODAL.showConfirm("潛航結算", msg, ()=>{}); });
+    } else {
+        MODAL.showConfirm("潛航結算", msg, ()=>{});
+    }
+};
 
 window.onload = () => CORE.init();
 </script>
