@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>夜城防禦網：終極成癮版 13.0 (Study Addiction - Ultimate)</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#02040a">
+    <title>夜城防禦網 13.0 (Study Addiction - Ultimate)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -181,7 +185,7 @@
     </div>
 </div>
 
-<div id="overlay-focus" class="fixed inset-0 z-[80] bg-slate-950 hidden flex-col items-center justify-between py-10 px-5 backdrop-blur-xl overflow-y-auto transition-all duration-1000">
+<div id="overlay-focus" class="fixed inset-0 z-[80] bg-slate-950 hidden flex-col items-center justify-between pt-32 pb-10 px-5 backdrop-blur-xl overflow-y-auto transition-all duration-1000">
     <div class="scanlines"></div>
     <div id="hyper-bg"></div>
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(16,185,129,0.1)_0%,_rgba(2,4,10,1)_70%)] pointer-events-none" id="normal-bg"></div>
@@ -236,7 +240,7 @@
 </div>
 
 <div id="app" class="absolute inset-0 mx-auto w-full max-w-md flex flex-col bg-slate-950/90 shadow-2xl border-x border-slate-900 overflow-hidden">
-    <header class="glass z-30 px-4 py-3 pt-safe shrink-0 flex flex-col gap-2 border-b border-blue-900/50 relative">
+    <header class="glass z-[100] px-4 py-3 pt-safe shrink-0 flex flex-col gap-2 border-b border-blue-900/50 relative">
         <div class="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-transparent pointer-events-none"></div>
         <div class="flex justify-between items-start relative z-10">
             <div class="flex items-center gap-3">
@@ -780,10 +784,10 @@ const DB = {
     },
     trpgEvents: {
         slums: [
-            { title: "違法盤查的抗議", desc: "在街頭隨機盤查，對方拒絕出示證件並大聲抗議。",
+            { title: "休假日的致命誘惑", desc: "大夜班剛下班，你感到極度疲憊。這時，電腦桌上剛買的 3A 大作圖示正散發著致命的吸引力，大腦瘋狂索求多巴胺。",
               opt: [
-                { t: "敘明警察職權行使法第6條發動要件", align: "law", s: "程序合法，對方無話可說。", f: "要件不足，遭民眾錄影放上網公審。", dmg: 40 },
-                { t: "直接強制帶回查證", align: "chaos", s: "強勢執法震懾對方。", f: "法官認定盤查不合法，構成妨害自由。", dmg: 60 }
+                { t: "【防禦啟動】只允許自己玩 30 分鐘作為放鬆，隨後強制關機去睡覺", align: "law", s: "你成功駕馭了欲望，而不是被欲望駕馭。SAN 值穩定恢復。", f: "「再一回合就好...」你回過神來已經天黑了，作息徹底崩潰。", dmg: 80 },
+                { t: "【混沌轉移】戴上抗噪耳機，無視電腦，直接啟動專注引擎念書 25 分鐘", align: "chaos", s: "極限操作！疲憊感被狂熱取代，防禦網經驗值暴增！", f: "大腦超載當機，你看著書本上的字變成了一堆亂碼，帶著罪惡感昏睡過去。", dmg: 50 }
               ]}
         ],
         precinct: [
@@ -825,10 +829,10 @@ const DB = {
               ]}
         ],
         badlands: [
-            { title: "深夜的疲憊感", desc: "剛下大夜班，看著密密麻麻的法條與毫無起色的帳戶，強烈的無力與孤獨感襲來。",
+            { title: "深夜的空虛與 FOMO", desc: "凌晨三點的值班台，寂靜無聲。手機跳出某個加密貨幣群組的通知：「這個土狗幣十分鐘翻倍了，快上車！」",
               opt: [
-                { t: "深呼吸，告訴自己這一切都是為了 2028 的躍升。翻開下一頁。", align: "law", s: "意志力重塑。你的護城河更加堅固，內心無比平靜。", f: "疲憊感暫時佔了上風，但你沒有放棄。", dmg: 10 },
-                { t: "關掉系統，走到陽台看著夜城的霓虹燈，放空大腦十分鐘。", align: "neutral", s: "適當的防禦型放鬆讓你找回了初衷，SAN 值大幅恢復。", f: "冷風讓你打了個噴嚏，稍微分心。", dmg: 10 }
+                { t: "【鑽石手防禦】滑掉通知，打開專精科目或啟動引擎。2030 的目標不差這點零頭。", align: "law", s: "你的心智護城河更加堅固，無視了市場的噪音。", f: "你還是忍不住點開了 K 線圖，盯了半小時才發現自己浪費了寶貴的體力。", dmg: 40 },
+                { t: "【情緒釋放】走到警局外吹冷風，告訴自己這都是狗莊的陷阱，深呼吸十分鐘。", align: "neutral", s: "冷風吹散了 FOMO 情緒，你找回了長線投資者的平靜。", f: "外面剛好遇到難纏的醉漢，反而搞得一肚子火。", dmg: 20 }
               ]}
         ],
         wealth_2030: [
@@ -1041,9 +1045,9 @@ const CORE = {
         document.getElementById("app").style.filter = "sepia(0.8) hue-rotate(-50deg) saturate(2)"; setTimeout(() => document.getElementById("app").style.filter = "none", 500);
         if(STATE.san <= 0) {
             STATE.san = Math.floor(STATE.maxSan * 0.5);
-            let penalty = Math.floor(STATE.gold * 0.15); 
-            STATE.gold -= penalty; 
-            MODAL.showConfirm("SYSTEM FAILURE", `理智崩潰！在夜城失去理智等同失去一切。\n\n已啟動防禦型停損，支付了精神恢復費 ${penalty.toLocaleString()} Cr (最大不超過總資產 15%)。\n請趕緊去啟動專注引擎重建防線。`, ()=>{});
+            // 移除扣錢邏輯，改為疊加 120 分鐘的「防線受損」狀態
+            STATE.debuffMins = (STATE.debuffMins || 0) + 120;
+            MODAL.showConfirm("SYSTEM FAILURE", `理智崩潰！防禦網遭到撕裂。\n\n已啟動防禦型保護：接下來的 120 分鐘潛航，歷練 (EXP) 與資金 (Cr) 收益將全面【減半】。\n請用時間去彌補這道裂痕，慢慢重建防線。`, ()=>{});
         }
     },
     addExp(amount) {
@@ -1620,9 +1624,9 @@ const TRPG = {
                 let dmg = this.currentOpt.dmg * (baseRoll===1 ? 1.5 : 1);
                 let penaltyLore = "";
                 if (this.currentOpt.type === "dynamic_chaos" && baseRoll === 1) {
-                    let goldPenalty = Math.floor(STATE.gold * 0.1);
-                    STATE.gold -= goldPenalty; dmg = 50; 
-                    penaltyLore = `<br><br><span class="text-rose-500 font-black">貪婪反噬：損失 ${goldPenalty.toLocaleString()} Cr (總資產10%)</span>`;
+                    STATE.debuffMins = (STATE.debuffMins || 0) + 60; // 疊加 60 分鐘減半
+                    dmg = 50; 
+                    penaltyLore = `<br><br><span class="text-rose-500 font-black">貪婪反噬：後續 60 分鐘潛航收益減半！</span>`;
                 }
                 CORE.damageSan(dmg);
                 loreEl.innerHTML = `${this.currentOpt.f}<br><br><span class="text-rose-400 font-bold">遭受反噬 -${Math.floor(dmg)} SAN</span>${penaltyLore}`;
@@ -2095,7 +2099,8 @@ const SYSTEM_UI = {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `NightCity_Defense_Backup_${Utils.getIsoDateString()}.json`;
+        // 防禦型備份：檔名包含當前 LV，利於長線管理
+        a.download = `NightCity_LV${STATE.lv}_Backup_${Utils.getIsoDateString()}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -2240,8 +2245,17 @@ CORE.completeFocus = function(mins, subjName, logText = "") {
         if (STATE.pet.hunger < 50) STATE.pet.mood = Math.max(0, STATE.pet.mood - Math.ceil(mins / 15));
     }
 
+    let debuffMsg = "";
+    if (STATE.debuffMins > 0) {
+        expGain = Math.floor(expGain * 0.5);
+        goldGain = Math.floor(goldGain * 0.5);
+        let reduced = Math.min(mins, STATE.debuffMins);
+        STATE.debuffMins -= reduced;
+        debuffMsg = `\n\n⚠️ 【防線受損狀態】：歷練與資金收益已減半。(受損狀態剩餘：${STATE.debuffMins} 分鐘)`;
+    }
+
     this.addExp(expGain); 
-    STATE.gold += goldGain; 
+    STATE.gold += goldGain;
     STATE.energy += energyGain;
     STATE.san = Math.min(STATE.maxSan, STATE.san + sanRegen);
 
@@ -2543,8 +2557,17 @@ CORE.completeFocus = function(mins, subjName, logText = "") {
         if (STATE.pet.hunger < 50) STATE.pet.mood = Math.max(0, STATE.pet.mood - Math.ceil(mins / 15));
     }
 
+    let debuffMsg = "";
+    if (STATE.debuffMins > 0) {
+        expGain = Math.floor(expGain * 0.5);
+        goldGain = Math.floor(goldGain * 0.5);
+        let reduced = Math.min(mins, STATE.debuffMins);
+        STATE.debuffMins -= reduced;
+        debuffMsg = `\n\n⚠️ 【防線受損狀態】：歷練與資金收益已減半。(受損狀態剩餘：${STATE.debuffMins} 分鐘)`;
+    }
+
     this.addExp(expGain); 
-    STATE.gold += goldGain; 
+    STATE.gold += goldGain;
     STATE.energy += energyGain;
     STATE.san = Math.min(STATE.maxSan, STATE.san + sanRegen);
 
@@ -2675,6 +2698,7 @@ CORE.completeFocus = function(mins, subjName, logText = "") {
     let msg = `累積研讀【${subjName}】：${mins} 分鐘\n\n獲得報酬：\n歷練 EXP +${expGain} ${streakMult>1?`(連勝加成 ${Math.round((streakMult-1)*100)}%)`:''}\n資金 Cr +${goldGain}\n行動體力 SP +${energyGain}\n${sanText}\n防線推進 +${((mins/10)*0.5).toFixed(1)}%\n\n獲得戰利品：${drops.length>0?drops.join(", "):"無"}`;
     
     if (hasScholarSet) msg += `\n\n🌟 【學者套裝】效果發動：EXP 與 資金額外提升 15%！`;
+    msg += debuffMsg;
     msg += petFeeMsg;
     msg += petEvoMsg; // 插入寵物進化與經驗訊息
     msg += eventMsg;
@@ -2697,21 +2721,24 @@ CORE.completeFocus = function(mins, subjName, logText = "") {
 // 終極成癮更新檔：第三階段 (長線防禦：主線首領討伐戰)
 // ============================================================================
 
-// 1. 初始化 Boss 狀態 (血量等同於你需要專注的分鐘數)
+// 1. 初始化 Boss 狀態 (從基礎的心魔開始)
 if (!STATE.boss) {
-    STATE.boss = { id: 'boss_2028', hp: 20000, maxHp: 20000, level: 1 };
+    STATE.boss = { id: 'boss_fatigue', hp: 3000, maxHp: 3000, level: 1 };
 }
 
-// 2. 新增 Boss 資料庫與極度克制的專屬戰利品
+// 2. 新增 Boss 資料庫與專屬戰利品 (針對輪班與遊戲成癮配速)
 DB.bosses = {
-    'boss_2028': { name: "2028 警佐法規巨獸", icon: "🦖", maxHp: 20000, next: 'boss_fud', reward: 'trophy_2028' },
-    'boss_fud': { name: "市場 FUD 恐慌聚合體", icon: "📉", maxHp: 50000, next: 'boss_2030', reward: 'trophy_fud' },
+    'boss_fatigue': { name: "大夜班疲勞反噬體", icon: "🥱", maxHp: 3000, next: 'boss_gaming', reward: 'trophy_fatigue' },
+    'boss_gaming': { name: "費倫大陸的低語 (遊戲成癮)", icon: "🎲", maxHp: 12000, next: 'boss_fomo', reward: 'trophy_gaming' },
+    'boss_fomo': { name: "短線合約與 FUD 聚合體", icon: "📉", maxHp: 25000, next: 'boss_2028', reward: 'trophy_fomo' },
+    'boss_2028': { name: "2028 警佐法規巨獸", icon: "🦖", maxHp: 50000, next: 'boss_2030', reward: 'trophy_2028' },
     'boss_2030': { name: "2030 財富奇異點", icon: "🌌", maxHp: 150000, next: null, reward: 'trophy_2030' }
 };
-
 Object.assign(DB.items, {
-    "trophy_2028": { name: "【紀念】2028 破關證明", cat: "gear", icon: "📜", desc: "長線戰役的第一座里程碑。被動：全收益 +1% (極度克制的數值，象徵意義大於實質)。", price: 0, css: "item-epic" },
-    "trophy_fud": { name: "【紀念】絕對鑽石手徽章", cat: "gear", icon: "💎", desc: "你戰勝了無數的恐慌。被動：全收益 +2%。", price: 0, css: "item-legendary" },
+    "trophy_fatigue": { name: "【紀念】破曉勳章", cat: "gear", icon: "☕", desc: "你戰勝了輪班的生理極限。被動：深潛 SAN 消耗減少 5%。", price: 0, css: "item-epic" },
+    "trophy_gaming": { name: "【紀念】斷線的搖桿", cat: "gear", icon: "🎮", desc: "你成功抵抗了 200 小時的虛擬誘惑。被動：專注 EXP +5%。", price: 0, css: "item-epic" },
+    "trophy_fomo": { name: "【紀念】絕對鑽石手徽章", cat: "gear", icon: "💎", desc: "你無視了市場所有的恐慌與誘惑。被動：Cr 獲取 +10%。", price: 0, css: "item-legendary" },
+    "trophy_2028": { name: "【傳奇】2028 躍升證明", cat: "gear", icon: "📜", desc: "長線戰役的第一座里程碑。被動：全收益 +15%。", price: 0, css: "item-legendary" },
     "trophy_2030": { name: "【神話】奇異點觀測者", cat: "gear", icon: "👁️", desc: "你抵達了終點。被動：無。你已經不需要任何數值了。", price: 0, css: "item-legendary" }
 });
 
